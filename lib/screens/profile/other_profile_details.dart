@@ -1,0 +1,221 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:tictoc/screens/profile/gallery_view.dart';
+import 'package:tictoc/utils/color.dart';
+import 'package:tictoc/utils/constants.dart';
+import 'package:tictoc/utils/custom_widgets.dart';
+import 'package:tictoc/utils/ui_helper.dart';
+import 'package:velocity_x/velocity_x.dart';
+class OtherProfileDetails extends StatefulWidget {
+  const OtherProfileDetails({super.key});
+
+  @override
+  State<OtherProfileDetails> createState() => _OtherProfileDetailsState();
+}
+
+class _OtherProfileDetailsState extends State<OtherProfileDetails> with SingleTickerProviderStateMixin {
+
+  late TabController _tabController;
+
+  final List soundScreenData = [
+    {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
+    {"image":"assets/images/soundScreen2.png","likeCount":"102.2K"},
+    {"image":"assets/images/soundScreen3.png","likeCount":"328.2K"},
+    {"image":"assets/images/soundScreen4.png","likeCount":"983.0K"},
+    {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
+    {"image":"assets/images/soundScreen2.png","likeCount":"663.09K"},
+    {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
+    {"image":"assets/images/soundScreen3.png","likeCount":"328.2K"},
+    {"image":"assets/images/soundScreen4.png","likeCount":"983.0K"},
+    {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
+    {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
+    {"image":"assets/images/soundScreen2.png","likeCount":"102.2K"},
+    {"image":"assets/images/soundScreen3.png","likeCount":"328.2K"},
+    {"image":"assets/images/soundScreen4.png","likeCount":"983.0K"},
+    {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
+    {"image":"assets/images/soundScreen2.png","likeCount":"663.09K"},
+    {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
+    {"image":"assets/images/soundScreen3.png","likeCount":"328.2K"},
+    {"image":"assets/images/soundScreen4.png","likeCount":"983.0K"},
+    {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0); // 3 tabs, "Following" as default
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+  final List storiesData = [
+    {"storyImage":"assets/images/profile2.png", "name":"Thiru", "isLive":true},
+    {"storyImage":"assets/images/profile3.png", "name":"Ram", "isLive":true},
+    {"storyImage":"assets/images/profile4.png", "name":"Mohan", "isLive":false},
+    {"storyImage":"assets/images/profile5.png", "name":"Lokesh", "isLive":false},
+    {"storyImage":"assets/images/profile2.png", "name":"Thiru", "isLive":true},
+    {"storyImage":"assets/images/profile3.png", "name":"Ram", "isLive":true},
+    {"storyImage":"assets/images/profile4.png", "name":"Mohan", "isLive":false},
+    {"storyImage":"assets/images/profile5.png", "name":"Lokesh", "isLive":false},
+    {"storyImage":"assets/images/profile2.png", "name":"Thiru", "isLive":true},
+    {"storyImage":"assets/images/profile3.png", "name":"Ram", "isLive":true},
+    {"storyImage":"assets/images/profile4.png", "name":"Mohan", "isLive":false},
+    {"storyImage":"assets/images/profile5.png", "name":"Lokesh", "isLive":false},
+  ];
+  final List inboxData = [
+    {"storyImage":"assets/images/inbox1.png", "name":"Thiru", "followStatus":"", "message":"lorem ipsum"},
+    {"storyImage":"assets/images/inbox2.png", "name":"DisaSmith", "followStatus":"Follow Back", "message":"Follows you"},
+    {"storyImage":"assets/images/inbox3.png", "name":"Suriya", "followStatus":"", "message":"lorem ipsum"},
+    {"storyImage":"assets/images/inbox1.png", "name":"Angel", "followStatus":"Following","message":"Following"},
+    {"storyImage":"assets/images/inbox2.png", "name":"Bengamine", "followStatus":"", "message":"lorem ipsum"},
+    {"storyImage":"assets/images/inbox3.png", "name":"Tokyo", "followStatus":"","message":"lorem ipsum"},
+    {"storyImage":"assets/images/inbox1.png", "name":"Thiru", "followStatus":"", "message":"lorem ipsum"},
+    {"storyImage":"assets/images/inbox2.png", "name":"DisaSmith", "followStatus":"Follow Back", "message":"Follows you"},
+    {"storyImage":"assets/images/inbox3.png", "name":"Suriya", "followStatus":"", "message":"lorem ipsum"},
+    {"storyImage":"assets/images/inbox1.png", "name":"Angel", "followStatus":"Following","message":"Following"},
+    {"storyImage":"assets/images/inbox2.png", "name":"Bengamine", "followStatus":"", "message":"lorem ipsum"},
+    {"storyImage":"assets/images/inbox3.png", "name":"Tokyo", "followStatus":"","message":"lorem ipsum"},
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: whiteColor,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          UiHelper.verticalSpace(height: screenHeight*0.070),
+          Column(
+            children: [
+              Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  MyInkWell(
+                      onTap: ()async{    Navigator.of(context).pop();},
+                      child: Image.asset('assets/images/back_arrow_black.png',height:25.5,width: 25.5,)),
+                  MyInkWell(
+                    onTap: ()async{
+                      Share.share('Check out this TicToc App');
+                    },
+                    child:Image.asset('assets/images/share1.png',height:25.5,width: 25.5,),),
+                ],
+              ).pOnly(left: 20,right: 20),
+              const SizedBox(height: 6,),
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/inbox2.png',height:100,width: 100,),
+                    UiHelper.verticalSpace(height: 3),
+                    largeText16(context, 'DisaSmith',fontWeight: FontWeight.w500),
+                    mediumText14(context, '@disasmith356',textColor: Color(0xff484848)),
+                    UiHelper.verticalSpace(height: 12),
+                    Row( mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            smallText12(context, '40.3K',fontWeight: FontWeight.w600),
+                            smallText12(context, 'Followers',),
+                          ],
+                        ),
+                        const SizedBox(width:40),
+                        Column(
+                          children: [
+                            smallText12(context, '300',fontWeight: FontWeight.w600),
+                            smallText12(context, 'Following',),
+                          ],
+                        ),
+                        const SizedBox(width:40),
+                        Column(
+                          children: [
+                            smallText12(context, '140,5K',fontWeight: FontWeight.w600),
+                            smallText12(context, 'Likes',),
+                          ],
+                        ),
+                      ],
+                    ),
+                    UiHelper.verticalSpace(height: 14),
+                    Row( mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SmallPinkButton(onTap: () {
+                         /* PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: const EditProfile(),
+                            withNavBar: false, // OPTIONAL VALUE. True by default.
+                            pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                          );*/
+                        }, label: "Message",),
+                        const SizedBox(width:12),
+                        MyInkWell(
+                          onTap: () async {
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: const BoxDecoration(
+                              color: buttonColor,
+                              borderRadius: BorderRadius.all(Radius.circular(4)),
+                            ),
+                            child: Image.asset('assets/images/add_to_follow.png',height: 16,width: 16,),
+                          ),
+                        ),
+                        const SizedBox(width:16),
+                      ],
+                    ),
+                    UiHelper.verticalSpace(height: 6),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              UiHelper.horizontalSpace(width: 18),
+              Expanded(
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorColor: const Color(0xff484848),
+                  indicatorWeight: 2.0,
+                  indicator:  UnderlineTabIndicator(
+                    borderSide: const BorderSide(width: 3.0, color: Color(0xff484848)),
+                    insets: const EdgeInsets.only(bottom: 6),
+                    borderRadius:BorderRadius.circular(0.0), // Adjust if needed
+                  ),
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.grey,
+                  labelStyle: GoogleFonts.jost(color: appGreyColor,fontSize: 16,fontWeight: FontWeight.w600),
+                  unselectedLabelStyle: GoogleFonts.jost(color: appGreyColor,fontSize: 12,fontWeight: FontWeight.w600),
+                  dividerColor:Colors.transparent,
+                  padding: EdgeInsets.zero,
+                  labelPadding: EdgeInsets.zero,
+                  tabs: [
+                    Tab(icon:Image.asset('assets/images/gridicons_posts.png',width: 25,height: 21.32,)),
+                    Tab(icon:Image.asset('assets/images/bookmark_grey.png',width: 25,height: 21.32,)),
+                  ],
+                ),
+              ),
+              UiHelper.horizontalSpace(width: 18),
+            ],
+          ),
+          const Divider(color: Color(0xffADADAD),thickness: 1.5,),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children:  [
+                // Center(child: Text('Explore Content', style: TextStyle(color: Colors.white))),
+                const GalleryView(),
+                Center(child: largeText16(context, 'Bookmark')),
+                //  ReelsScreen(),
+                // Center(child: Text('For You Content', style: TextStyle(color: Colors.white))),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
