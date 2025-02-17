@@ -8,7 +8,7 @@ import 'package:tictoc/screens/dummy/page_controller.dart';
 import 'package:tictoc/screens/dummy/white_code_reels_dummy.dart';
 import 'package:tictoc/screens/home/explore.dart';
 import 'package:tictoc/screens/home/following.dart';
-import 'package:tictoc/screens/home/for_you.dart';
+import 'package:tictoc/screens/home/foryou/for_you.dart';
 import 'package:tictoc/screens/search/search_screen.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
