@@ -4,7 +4,6 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/screens/auth/forgot_password.dart';
 import 'package:tictoc/screens/dummy/flick_dummy.dart';
 import 'package:tictoc/screens/dummy/videoPlayer_dumy.dart';
-import 'package:tictoc/screens/dummy/white_code_reels_dummy.dart';
 import 'package:tictoc/screens/dummy/whitecode_reels_dummy.dart';
 import 'package:tictoc/screens/friends/friends.dart';
 import 'package:tictoc/screens/home/foryou/for_you.dart';
@@ -61,8 +60,8 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
      //   githuvVideo(),
        // ForYou(controller: _controller),
         UploadVideo(controller: _controller), // Pass the controller here
-     //   Inbox(controller: _controller), // Pass the controller here
-        WhiteCodeReelsDummy(),
+        Inbox(controller: _controller), // Pass the controller here
+      //  ReelsScreen(),
         Profile(controller: _controller), // Pass the controller here
       ];
     }
