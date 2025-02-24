@@ -40,7 +40,8 @@ class _UploadVideoState extends State<UploadVideo> {
         backgroundColor: Colors.white,
         appBar: CustomAppBar(title: 'Upload Video',
           onBackPressed: () {
-            widget.controller.jumpToTab(0); // Navigate to Home tab directly
+            Navigator.of(context).pop();
+           // widget.controller.jumpToTab(0); // Navigate to Home tab directly
           },
         ),
         body: SingleChildScrollView(

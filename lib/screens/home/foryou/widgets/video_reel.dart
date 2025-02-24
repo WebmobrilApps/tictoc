@@ -26,44 +26,43 @@ class _VideoReelState extends State<VideoReel> {
   @override
   void initState() {
     super.initState();
-    // Initialize FlickManager and video player controller
     flickManager = FlickManager(
-      videoPlayerController: VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl)),
+      videoPlayerController: VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
+        ..initialize().then((_) {
+          if (mounted) {
+            setState(() {}); // Ensure the UI updates when initialization completes
+          }
+        }),
     );
   }
 
   @override
   void dispose() {
-    //   flickManager.dispose();
-    flickManager.flickControlManager?.pause(); // Pause the video
-    flickManager.flickVideoManager?.videoPlayerController?.dispose(); // Dispose of the video controller
-    flickManager.dispose(); // Dispose of FlickManager
+    if (flickManager.flickVideoManager?.videoPlayerController?.value.isInitialized == false) {
+      flickManager.flickVideoManager?.videoPlayerController?.pause();
+      flickManager.flickVideoManager?.videoPlayerController?.dispose();
+    }
+    flickManager.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
     return VisibilityDetector(
       key: Key(widget.videoUrl),
       onVisibilityChanged: (VisibilityInfo info) {
-        // Manage play and pause based on visibility
-        //    setState(() {
         isVisible = info.visibleFraction > 0;
-        //  });
 
         if (isVisible) {
           if (!isPlaying) {
             flickManager.flickControlManager?.play();
-            //    setState(() {
             isPlaying = true;
-            //  });
           }
         } else {
           if (isPlaying) {
             flickManager.flickControlManager?.pause();
-            //  setState(() {
             isPlaying = false;
-            // });
           }
         }
       },
@@ -75,7 +74,6 @@ class _VideoReelState extends State<VideoReel> {
               DeviceOrientation.portraitUp,
             ],
           ),
-          // Optionally, you can add custom controls here.
           const ReelsSideIcons(),
           const ReelsBottomDetails(),
         ],

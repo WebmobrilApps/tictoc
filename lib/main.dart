@@ -101,8 +101,11 @@ class _MyAppState extends State<MyApp> {
       // Use builder only if you need to use library outside ScreenUtilInit context
       builder: (_ , child) {
         return MaterialApp(
+          supportedLocales: const [
+            Locale('en'),
+          ],
           debugShowCheckedModeBanner: false,
-          title: 'First Method',
+          title: 'TicToc',
           // You can use the library anywhere in the app even in theme
           theme: ThemeData(
             primarySwatch: Colors.blue,

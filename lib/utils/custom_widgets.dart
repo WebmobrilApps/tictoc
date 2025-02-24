@@ -983,8 +983,9 @@ class TextFormFieldWithLabel extends StatelessWidget {
   final Color? bottomBorderColor;
   final Color? textFontColor;
   final Color? cursorColor;
+  final int? maxLength;
 
-  const TextFormFieldWithLabel({
+   const TextFormFieldWithLabel({
     super.key,
     this.label, // Now nullable
     required this.controller,
@@ -1004,7 +1005,8 @@ class TextFormFieldWithLabel extends StatelessWidget {
     this.readOnly = false,
     this.bottomBorderColor,
     this.textFontColor,
-    this.cursorColor
+    this.cursorColor,
+    this.maxLength
   });
 
   @override
@@ -1015,6 +1017,7 @@ class TextFormFieldWithLabel extends StatelessWidget {
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
+        maxLength: maxLength,
         obscuringCharacter: '*',
         inputFormatters: inputFormatters,
         textCapitalization: textCapitalization,
@@ -1048,6 +1051,7 @@ class TextFormFieldWithLabel extends StatelessWidget {
           border:  UnderlineInputBorder(
             borderSide: BorderSide(color:bottomBorderColor ?? Colors.white, width: 2),
           ),
+          counterText: ""
         ),
       ),
     );

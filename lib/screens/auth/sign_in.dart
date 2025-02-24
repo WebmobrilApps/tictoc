@@ -71,10 +71,10 @@ class _SignInState extends State<SignIn> {
                     //  UiHelper.verticalSpace(height: 36),
                       TextFormFieldWithLabel(
                         controller: emailController,
-                        label: "Email ID",
-                        hintText: 'example@gmail.com',
+                        label: "Email ID/Phone Number",
+                        hintText: 'Email/Phone Number',
                         textInputAction:TextInputAction.next,
-                        keyboardType: TextInputType.emailAddress,
+                     //   keyboardType: TextInputType.emailAddress,
                       ),
                       UiHelper.verticalSpace(height: 20),
                       TextFormFieldWithLabel(
@@ -108,7 +108,9 @@ class _SignInState extends State<SignIn> {
                         ),
                       ),
                       UiHelper.verticalSpace(height: 24),
-                      poppinsSmall12(context, '(Password must be at min 8 characters with 1 special \n character, 2 numbers, 1 uppercase, and 2 lowercase letters.)',
+                      poppinsSmall12(context,
+                       //   '(Password must be at min 8 characters with 1 special \n character, 2 numbers, 1 uppercase, and 2 lowercase letters.)',
+                          '(Password must be at min 8 characters with 1 special character, 2 numbers, 1 uppercase, and 2 lowercase letters.)',
                       fontSize: 10,
                       textColor: whiteColor, textAlign: TextAlign.center),
 
@@ -142,6 +144,27 @@ class _SignInState extends State<SignIn> {
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           CustomNavigator.push(context: context, screen: const SignUp());
+                        },
+                    ),
+                  ],
+                ),
+              ),
+              UiHelper.verticalSpace(height: 12),
+              RichText(
+                text: TextSpan(
+                  style: GoogleFonts.poppins(fontSize: 12,fontWeight: FontWeight.w500,color: const Color(0xff0B0B0B),),
+                  children: [
+                    const TextSpan(
+                      text: "Continue as a ",
+                    ),
+                    TextSpan(
+                      text: "Guest",
+                      style: GoogleFonts.poppins(fontSize: 14,fontWeight: FontWeight.w600,
+                        color: buttonColor,decoration: TextDecoration.underline,
+                          decorationThickness:2),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                      //    CustomNavigator.push(context: context, screen: const SignUp());
                         },
                     ),
                   ],

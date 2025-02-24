@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/screens/auth/forgot_password.dart';
-import 'package:tictoc/screens/dummy/flick_dummy.dart';
-import 'package:tictoc/screens/dummy/videoPlayer_dumy.dart';
-import 'package:tictoc/screens/dummy/whitecode_reels_dummy.dart';
+import 'package:tictoc/screens/dummy/blackbox.dart';
 import 'package:tictoc/screens/friends/friends.dart';
 import 'package:tictoc/screens/home/foryou/for_you.dart';
 import 'package:tictoc/screens/home/homescreen.dart';
@@ -35,6 +35,7 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
   PersistentTabController _controller = PersistentTabController(initialIndex: 0);
   ScrollController _scrollController = ScrollController();
 
+  DateTime? lastPressed;
 
   @override
   void initState() {
@@ -59,7 +60,9 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
    //    PreloadPage(),
      //   githuvVideo(),
        // ForYou(controller: _controller),
-        UploadVideo(controller: _controller), // Pass the controller here
+    //   UploadVideo(controller: _controller), // Pass the controller here
+      Container(),
+    //    CameraScreen(),
         Inbox(controller: _controller), // Pass the controller here
       //  ReelsScreen(),
         Profile(controller: _controller), // Pass the controller here
@@ -94,6 +97,15 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
           icon: Image.asset('assets/images/menuPlus.png', width: 50, height: 38,).pOnly(bottom: 8),
           activeColorPrimary: buttonColor,
           inactiveColorPrimary: Colors.white,
+          onPressed: (context) {
+            Navigator.of(context ?? this.context, rootNavigator: true).push(
+              MaterialPageRoute(
+                builder: (_) => UploadVideo(controller: _controller), // ✅ Ensure `_controller` is not null
+            //    builder: (_) => VideoRecorderScreen(), // ✅ Ensure `_controller` is not null
+               // builder: (_) => VideoFilterApp(), // ✅ Ensure `_controller` is not null
+              ),
+            );
+          },
         ),
         PersistentBottomNavBarItem(
           icon:  ImageIcon(const AssetImage('assets/images/inbox.png'),color: _currentIndex==0?const Color(0XFFFFFFFF):appBlackColor),
@@ -117,67 +129,94 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
     }
 
 
-    return Scaffold(
-        body: PersistentTabView(
-          context,
-          controller: _controller,
-          screens: buildScreens(),
-          margin: const EdgeInsets.symmetric(horizontal: 14 , vertical: 2 ),
-          padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 2 ),
-          navBarStyle : NavBarStyle.style13,
-          items: navBarsItems(),
-          confineToSafeArea: true,
-         // backgroundColor: const Color(0XFFFFFFFF),
-          backgroundColor: _currentIndex==0?appBlackColor:const Color(0XFFFFFFFF),
-          handleAndroidBackButtonPress: true, // Default is true.
-          resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-          stateManagement: true, // Default is true.
-          hideNavigationBarWhenKeyboardAppears: true,
-          decoration: NavBarDecoration(
-            borderRadius: BorderRadius.circular(30.0),
-            colorBehindNavBar: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color:  const Color(0xff555E68).withOpacity(0.15), // Specify color and opacity
-                spreadRadius: 0,
-                blurRadius: 1,
-                offset: const Offset(0, 2.5), // Offset for bottom shadow
-              ),
-              BoxShadow(
-                color:  const Color(0xff555E68).withOpacity(0.15), // Specify color and opacity
-                spreadRadius: 2,
-                blurRadius: 3,
-                offset: const Offset(1, 2.5), // Offset for bottom shadow
-              ),
-            ],
-          ),
-          onItemSelected: (index) async {
-            bool connected = await isConnected();
-            if (connected) {
-              setState(() {
-                _currentIndex = index;
-                /*  if(_currentIndex == 2){
-                PersistentNavBarNavigator.pushNewScreen(context,
-                  screen: const AddPostScreen(), withNavBar: false,  // OPTIONAL VALUE. True by default.
-                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                ).then((value) {
-                  *//*   setState(() {
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context){
-                    return const Dashboard();
-                  }), (route) => false);
-               //   controller.jumpToTab(0);
-                });*//*
+    return WillPopScope(
+      onWillPop: () async {
+        if (_controller.index == 0) {
+          DateTime now = DateTime.now();
+          if (lastPressed == null || now.difference(lastPressed!) > const Duration(seconds: 2)) {
+            // Show toast message if first tap
+            lastPressed = now;
+            UiHelper.toastMessage("Tap again to exit",timeInSecForIosWeb:2);
+            // Fluttertoast.showToast(
+            //   msg: "Tap again to exit",
+            //   toastLength: Toast.LENGTH_SHORT,
+            //   gravity: ToastGravity.BOTTOM,
+            //   backgroundColor: Colors.black54,
+            //   textColor: Colors.white,
+            // );
+            return false;
+          }
+          // Exit app if double-tapped within 2 seconds
+          SystemNavigator.pop();
+          return true;
+        } else {
+          // If not on the home screen, navigate to home instead of exiting
+          _controller.jumpToTab(0);
+          return false;
+        }
+      },
+      child: Scaffold(
+          body: PersistentTabView(
+            context,
+            controller: _controller,
+            screens: buildScreens(),
+            margin: const EdgeInsets.symmetric(horizontal: 14 , vertical: 2 ),
+            padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 2 ),
+            navBarStyle : NavBarStyle.style13,
+            items: navBarsItems(),
+            confineToSafeArea: true,
+           // backgroundColor: const Color(0XFFFFFFFF),
+            backgroundColor: _currentIndex==0?appBlackColor:const Color(0XFFFFFFFF),
+            handleAndroidBackButtonPress: true, // Default is true.
+            resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
+            stateManagement: true, // Default is true.
+            hideNavigationBarWhenKeyboardAppears: true,
+            decoration: NavBarDecoration(
+              borderRadius: BorderRadius.circular(30.0),
+              colorBehindNavBar: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color:  const Color(0xff555E68).withOpacity(0.15), // Specify color and opacity
+                  spreadRadius: 0,
+                  blurRadius: 1,
+                  offset: const Offset(0, 2.5), // Offset for bottom shadow
+                ),
+                BoxShadow(
+                  color:  const Color(0xff555E68).withOpacity(0.15), // Specify color and opacity
+                  spreadRadius: 2,
+                  blurRadius: 3,
+                  offset: const Offset(1, 2.5), // Offset for bottom shadow
+                ),
+              ],
+            ),
+            onItemSelected: (index) async {
+              bool connected = await isConnected();
+              if (connected) {
+                setState(() {
+                  _currentIndex = index;
+                  /*  if(_currentIndex == 2){
+                  PersistentNavBarNavigator.pushNewScreen(context,
+                    screen: const AddPostScreen(), withNavBar: false,  // OPTIONAL VALUE. True by default.
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  ).then((value) {
+                    *//*   setState(() {
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context){
+                      return const Dashboard();
+                    }), (route) => false);
+                 //   controller.jumpToTab(0);
+                  });*//*
+                  });
+                }*/
                 });
-              }*/
-              });
-              print('_currentIndex1:$_currentIndex');
-            }
-            else{
-              _controller.jumpToTab(_currentIndex);
-              UiHelper.toastMessage(notConnected); }
-          },
+                print('_currentIndex1:$_currentIndex');
+              }
+              else{
+                _controller.jumpToTab(_currentIndex);
+                UiHelper.toastMessage(notConnected); }
+            },
+            ),
           ),
-        );
+    );
   }
 
 

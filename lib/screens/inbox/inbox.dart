@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/screens/auth/forgot_password.dart';
 import 'package:tictoc/screens/inbox/activity_model_top.dart';
@@ -89,7 +90,7 @@ class _InboxState extends State<Inbox> {
                                 shape: BoxShape.circle,
                                 color: buttonColor
                             ),
-                            child: Center(child: smallText12(context, '2',textColor:Colors.white,fontSize: 10,fontWeight: FontWeight.w400)),
+                            child: Center(child: smallText12(context, '2',textColor:Colors.white,fontSize: 7.sp,fontWeight: FontWeight.w400)),
                           ),
                         )
                       ],

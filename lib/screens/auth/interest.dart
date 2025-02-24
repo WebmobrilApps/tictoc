@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:tictoc/screens/bottomnavigationbar/bottomnavigation.dart';
+import 'package:tictoc/utils/color.dart';
+import 'package:tictoc/utils/constants.dart';
+import 'package:tictoc/utils/custom_navigator.dart';
+import 'package:tictoc/utils/custom_widgets.dart';
+import 'package:tictoc/utils/ui_helper.dart';
+class Interest extends StatefulWidget {
+  const Interest({super.key});
+
+  @override
+  State<Interest> createState() => _InterestState();
+}
+
+class _InterestState extends State<Interest> {
+  List<String> interests = [
+    "Animals", "Comedy", "Travel", "Food", "Sports", "Beauty & style",
+    "Art", "Gaming", "Science & education", "Dance", "DIY", "Auto",
+    "Music", "Life hacks", "Oddly satisfying", "Outdoors", "Fandom"
+  ];
+
+  List<String> selectedInterests = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor:appBgColor ,
+      body: Padding(
+        padding: const EdgeInsets.only(left:18,right: 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: screenHeight*0.1,),
+            largeText16(context, 'Choose your \ninterest',fontSize: 36,fontWeight: FontWeight.w800,lineHeight: 1.2),
+            const SizedBox(height: 10),
+            largeText16(context, 'Get better video recommendations',textColor:const Color(0xff484848),fontWeight: FontWeight.w400,fontSize: 18),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4.0,
+              children: interests.map((interest) {
+                final isSelected = selectedInterests.contains(interest);
+                return ChoiceChip(
+                  label: Text(interest,style: GoogleFonts.jost(color: Colors.black, fontSize: 14,fontWeight: FontWeight.w500),),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    setState(() {
+                      if (selected) {
+                        selectedInterests.add(interest);
+                      } else {
+                        selectedInterests.remove(interest);
+                      }
+                    });
+                  },
+                  backgroundColor: Colors.white,
+                //  selectedColor: Colors.pink.shade100,
+                  selectedColor: Colors.green.shade100,
+                  labelPadding:const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                  labelStyle: TextStyle(
+                    color: isSelected ? Colors.pink : Colors.black,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // Rounded corners
+                    side: BorderSide(color: Colors.grey.shade200), // Light grey border
+                  ),
+                  elevation: 4, // Subtle shadow
+                  shadowColor: Colors.grey.shade200, // Light shadow color
+                );
+              }).toList(),
+            ),
+            SizedBox(height: screenHeight*0.1,),
+            Center(
+              child: pinkButton(
+                  width: 285, context: context, labelText:'Continue',
+                  //    isLoading:widget.fromPage=="ForgotPassword"?state.status == SpotsBallStatus.forgotOtpVerifyLoading:state.status == SpotsBallStatus.registerVerifyOTPLoading,
+                  onTap: (){
+                    if(selectedInterests.length<3){
+                      UiHelper.toastMessage("Please Select Any Three Interest");
+                    }else{
+                      CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
+                    }
+
+                  }
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

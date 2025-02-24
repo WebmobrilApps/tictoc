@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:tictoc/screens/auth/interest.dart';
 import 'package:tictoc/screens/auth/reset_password.dart';
 import 'package:tictoc/screens/auth/sign_in.dart';
 import 'package:tictoc/screens/bottomnavigationbar/bottomnavigation.dart';
@@ -119,7 +120,7 @@ class _OtpVerificationState extends State<OtpVerification> {
                           textColor: whiteColor,
                           fontWeight: FontWeight.w600, textAlign: TextAlign.center),
                       const SizedBox(height: 2,),
-                      mediumText14(context, 'Please Enter The 4 Digit Code Sent To \n Your Email',
+                      mediumText14(context, 'Please Enter The 4 Digit Code Sent To \n Your Email/Phone Number',
                           textAlign: TextAlign.center,textColor: whiteColor),
                       const SizedBox(height: 35,),
                       Column(
@@ -231,7 +232,8 @@ class _OtpVerificationState extends State<OtpVerification> {
                         CustomNavigator.push(context: context, screen: const ResetPassword());
                       }else{
                      //   CustomNavigator.pushAndRemoveUntil(context: context, screen: const SignIn());
-                        CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
+                      //  CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
+                        CustomNavigator.pushAndRemoveUntil(context: context, screen: const Interest());
                       }
 
                       /*  if(widget.fromPage=="ForgotPassword"){
