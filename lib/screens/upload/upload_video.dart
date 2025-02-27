@@ -10,9 +10,11 @@ import 'package:tictoc/screens/upload/chewie_video_player.dart';
 import 'package:tictoc/screens/upload/option_upload_bottomsheet.dart';
 import 'package:tictoc/screens/upload/video_player.dart';
 import 'package:tictoc/utils/color.dart';
+import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_appbar.dart';
 import 'package:tictoc/utils/custom_navigator.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
+import 'package:tictoc/utils/login_required_bottomsheet.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 import 'package:velocity_x/velocity_x.dart';
 class UploadVideo extends StatefulWidget {
@@ -28,6 +30,18 @@ class _UploadVideoState extends State<UploadVideo> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   File? selectedVideo; // Variable to store the selected video
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    // Ensure the widget tree is built before showing the bottom sheet
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isGuest) {
+        LoginRequiredBottomSheet.show(context,fromPage: "uploadVideo");
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

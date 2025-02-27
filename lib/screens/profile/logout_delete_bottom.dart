@@ -49,6 +49,7 @@ class _LogoutDeleteBottomState extends State<LogoutDeleteBottom> {
                       borderRadius: const BorderRadius.all(Radius.circular(22.5),),
                       onTap: (){
                         PreferenceManager.clearPreferences();
+                        UiHelper.toastMessage(widget.fromMenu=="logout"?'Logout Successfully':'Account Deleted Successfully');
                         CustomNavigator.pushAndRemoveUntil(context: context, screen: const SignIn());
                       },
                     ),

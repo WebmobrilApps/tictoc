@@ -29,6 +29,20 @@ Widget customImageAsset({
 }
 
 
+
+void snackBarMessage(BuildContext context, String msg, {TextAlign textAlign = TextAlign.left}) {
+  // Remove any currently displayed SnackBar to prevent stacking
+  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(
+      msg,
+      textAlign: textAlign,
+    ),
+  ));
+}
+
+
 // Common Button
 Widget blueButton({
   required BuildContext context,
@@ -733,7 +747,8 @@ class MyInkWell extends StatelessWidget {
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       onTap: () async {
-        FocusScope.of(context).requestFocus(FocusNode());
+     //   FocusScope.of(context).requestFocus(FocusNode());
+        FocusScope.of(context).unfocus();
         if (await isConnected()) {
           onTap();
         } else {
@@ -789,21 +804,10 @@ Widget cachedImageWidget({
     imageBuilder: (context, imageProvider) => Container(
       height: height,width: width,
       decoration: BoxDecoration(
-       // borderRadius: BorderRadius.circular(borderRadiusValue),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(borderRadiusValue),
-          topRight: Radius.circular(borderRadiusValue),
-        ),
+        borderRadius: BorderRadius.circular(borderRadiusValue),
         image: DecorationImage(image: imageProvider, fit: fit),
       ),
     ),
-    /* placeholder: (context, url) => Image.asset(
-      ImagePath.loadingImg,
-      height: height,width: width,
-    ),*/
-    /*  placeholder: (context, url) => const Center(
-      child: CircularProgressIndicator(color: Color(0xffFF0134)), // Replace this with your custom loader widget
-    ),*/
     placeholder: (context, url) => SizedBox(
       height: height,width: width,
       child: const Center(
@@ -812,9 +816,9 @@ Widget cachedImageWidget({
       ),
     ),
     errorWidget: (context, url, error) =>  ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(borderRadiusValue),
       child: Image.asset(
-        'assets/images/cat1.png',
+        'assets/images/no_image.jpeg',
         height: height,width: width,
       ),
     ),
@@ -837,7 +841,7 @@ Widget cachedImageFullHeight({
             color: Color(0xffFF0134),),
         ),
       ),
-      errorWidget: (context, url, error) => Image.asset('assets/images/cat1.png',),
+      errorWidget: (context, url, error) => Image.asset('assets/images/no_image.jpeg',),
     ),
   );
 }

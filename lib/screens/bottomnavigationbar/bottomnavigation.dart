@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/screens/auth/forgot_password.dart';
+import 'package:tictoc/screens/auth/sign_up.dart';
 import 'package:tictoc/screens/dummy/blackbox.dart';
 import 'package:tictoc/screens/friends/friends.dart';
 import 'package:tictoc/screens/home/foryou/for_you.dart';
@@ -16,7 +17,10 @@ import 'package:tictoc/screens/upload/upload_video.dart';
 import 'package:tictoc/utils/bottommenuicons.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
+import 'package:tictoc/utils/custom_navigator.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
+import 'package:tictoc/utils/login_required_bottomsheet.dart';
+import 'package:tictoc/utils/shared_preference.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -63,9 +67,10 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
     //   UploadVideo(controller: _controller), // Pass the controller here
       Container(),
     //    CameraScreen(),
-        Inbox(controller: _controller), // Pass the controller here
+        isGuest == false ? Inbox(controller: _controller) : Container(),// Prevent guest from accessing
       //  ReelsScreen(),
-        Profile(controller: _controller), // Pass the controller here
+        isGuest == false ? Profile(controller: _controller) : Container(), // Prevent guest from accessing
+
       ];
     }
     List<PersistentBottomNavBarItem> navBarsItems() {
@@ -98,11 +103,10 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
           activeColorPrimary: buttonColor,
           inactiveColorPrimary: Colors.white,
           onPressed: (context) {
+
             Navigator.of(context ?? this.context, rootNavigator: true).push(
               MaterialPageRoute(
                 builder: (_) => UploadVideo(controller: _controller), // ✅ Ensure `_controller` is not null
-            //    builder: (_) => VideoRecorderScreen(), // ✅ Ensure `_controller` is not null
-               // builder: (_) => VideoFilterApp(), // ✅ Ensure `_controller` is not null
               ),
             );
           },
@@ -134,23 +138,14 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
         if (_controller.index == 0) {
           DateTime now = DateTime.now();
           if (lastPressed == null || now.difference(lastPressed!) > const Duration(seconds: 2)) {
-            // Show toast message if first tap
             lastPressed = now;
             UiHelper.toastMessage("Tap again to exit",timeInSecForIosWeb:2);
-            // Fluttertoast.showToast(
-            //   msg: "Tap again to exit",
-            //   toastLength: Toast.LENGTH_SHORT,
-            //   gravity: ToastGravity.BOTTOM,
-            //   backgroundColor: Colors.black54,
-            //   textColor: Colors.white,
-            // );
             return false;
           }
           // Exit app if double-tapped within 2 seconds
           SystemNavigator.pop();
           return true;
         } else {
-          // If not on the home screen, navigate to home instead of exiting
           _controller.jumpToTab(0);
           return false;
         }
@@ -193,28 +188,22 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
               bool connected = await isConnected();
               if (connected) {
                 setState(() {
-                  _currentIndex = index;
-                  /*  if(_currentIndex == 2){
-                  PersistentNavBarNavigator.pushNewScreen(context,
-                    screen: const AddPostScreen(), withNavBar: false,  // OPTIONAL VALUE. True by default.
-                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                  ).then((value) {
-                    *//*   setState(() {
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context){
-                      return const Dashboard();
-                    }), (route) => false);
-                 //   controller.jumpToTab(0);
-                  });*//*
-                  });
-                }*/
+                  if (index == 4 || index == 3) { // Assuming Profile is at index 4
+                    if (isGuest) {
+                      LoginRequiredBottomSheet.show(context,);
+                      _controller.jumpToTab(_currentIndex); // Prevent navigation
+                    }
+                  } else {
+                    _currentIndex = index;
+                  }
                 });
-                print('_currentIndex1:$_currentIndex');
-              }
-              else{
+              } else {
                 _controller.jumpToTab(_currentIndex);
-                UiHelper.toastMessage(notConnected); }
+                UiHelper.toastMessage(notConnected);
+              }
             },
-            ),
+
+          ),
           ),
     );
   }

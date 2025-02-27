@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:tictoc/cubit/tictoc_cubit.dart';
+import 'package:tictoc/model/get_profile_response.dart';
 import 'package:tictoc/screens/auth/forgot_password.dart';
 import 'package:tictoc/screens/dummy/bardummu1.dart';
 import 'package:tictoc/screens/profile/edit_profile.dart';
@@ -12,6 +17,7 @@ import 'package:tictoc/screens/profile/share_profile.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
+import 'package:tictoc/utils/error_display.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 import 'package:tictoc/screens/home/explore.dart';
 import 'package:tictoc/screens/home/following.dart';
@@ -32,6 +38,8 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
+  GetProfileResponse getProfileResponse = GetProfileResponse();
 
   final List soundScreenData = [
     {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
@@ -56,11 +64,18 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
   ];
 
+
   @override
   void initState() {
-    super.initState();
+    _getHomeScreenAPi();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0); // 3 tabs, "Following" as default
+    super.initState();
   }
+
+  Future<void> _getHomeScreenAPi() async {
+    await BlocProvider.of<TicTocCubit>(context).getProfileCall();
+  }
+
 
   @override
   void dispose() {
@@ -107,190 +122,255 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
        // backgroundColor: whiteColor,
          //   backgroundColor: appBgColor,
         backgroundColor: appBgColor,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            UiHelper.verticalSpace(height: screenHeight*0.075),
-            Column(
+        body: BlocConsumer<TicTocCubit,TicTocState>(
+          listener: (context,state){
+            print("sate.status:${state.status}");
+            if(state.status == TicTocStatus.getProfileSuccess){
+              Loader.hide();
+              getProfileResponse = state.responseData?.response as GetProfileResponse;
+            }
+          },
+          builder: (context,state){
+            if (state.status == TicTocStatus.getProfileLoading) {
+              return Center(
+                child: LoadingAnimationWidget.flickr(
+                  leftDotColor: const Color(0xff68C71E),
+                  rightDotColor: buttonColor,
+                  size: 50,
+                ),
+              );
+            }
+            if (state.status == TicTocStatus.getProfileError) {
+              String? error = state.errorData?.message ?? state.error;
+              int? errorStatusCode = state.errorData?.code ?? 0; // Get the error code
+
+              print('error:$error');
+              print('errorStatusCode:$errorStatusCode');
+              return RefreshIndicator(
+                onRefresh: _refreshPage,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                      height: screenHeight * 0.6,
+                      child: ErrorDisplayWidget(
+                        error: state.errorData?.message ?? state.error ?? 'Unknown error occurred',
+                        statusCode: state.errorData?.code ?? 0,
+                        onRetry: _getHomeScreenAPi,
+                      )
+                  ),
+                ),
+              );
+            }
+            return  Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                UiHelper.verticalSpace(height: screenHeight*0.075),
+                Column(
                   children: [
-                    Row(
+                    Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        largeText16(context, 'UsernameTicToc',fontWeight: FontWeight.w500),
-                        const SizedBox(width: 8,),
-                        Image.asset('assets/images/down_arrow.png',height:18,width: 11,),
-                       // Image.asset('assets/images/dropdownnn.png',height:14,width: 8,),
+                        Row(
+                          children: [
+                            largeText16(context, getProfileResponse.data?.username??'',fontWeight: FontWeight.w500),
+                            const SizedBox(width: 8,),
+                            Image.asset('assets/images/down_arrow.png',height:18,width: 11,),
+                            // Image.asset('assets/images/dropdownnn.png',height:14,width: 8,),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            MyInkWell(
+                                onTap: ()async{
+                                  PersistentNavBarNavigator.pushNewScreen(
+                                    context,
+                                    screen: const ProfileViews(),
+                                    withNavBar: false, // OPTIONAL VALUE. True by default.
+                                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                  );
+                                },
+                                child: Image.asset('assets/images/footPrint.png',height:25,width: 25,)),
+                            const SizedBox(width: 16,),
+                            MyInkWell(
+                                onTap: ()async {
+                                  final result = await showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    useRootNavigator: true,
+                                    context: context,
+                                    builder: (context) => const MenuProfileBottom(),
+                                  );
+                                  if (result != null) {
+                                    setState(() {
+                                    });
+                                    //      Navigator.pop(context); // Close the bottom sheet
+                                  }
+                                },
+                                child: Image.asset('assets/images/menu.png',height:26,width: 26,)),
+                          ],
+                        ),
                       ],
-                    ),
-                    Row(
-                      children: [
-                        MyInkWell(
-                            onTap: ()async{
-                              PersistentNavBarNavigator.pushNewScreen(
-                                context,
-                                screen: const ProfileViews(),
-                                withNavBar: false, // OPTIONAL VALUE. True by default.
-                                pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                              );
-                            },
-                            child: Image.asset('assets/images/footPrint.png',height:25,width: 25,)),
-                        const SizedBox(width: 16,),
-                        MyInkWell(
-                            onTap: ()async {
-                              final result = await showModalBottomSheet(
-                                isScrollControlled: true,
-                                useRootNavigator: true,
-                                context: context,
-                                builder: (context) => const MenuProfileBottom(),
-                              );
-                              if (result != null) {
-                                setState(() {
-                                });
-                                //      Navigator.pop(context); // Close the bottom sheet
-                              }
-                            },
-                            child: Image.asset('assets/images/menu.png',height:26,width: 26,)),
-                      ],
+                    ).pOnly(left: 20,right: 20),
+                    const SizedBox(height: 6,),
+                    Container(
+                      color: const Color(0xffF2F2F2),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          UiHelper.verticalSpace(height: 10),
+                          getProfileResponse.data?.profilePic!=null?
+                          Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: buttonColor, width: 1), // Border color and width
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: cachedImageWidget(
+                                    image:"$BASEURL/${getProfileResponse.data?.profilePic??''}",
+                                    borderRadiusValue:50,
+                                    height: 80,width: 80),
+                              ),
+                              Positioned(
+                                  right: 0,
+                                  bottom: 3,
+                                  child: Image.asset('assets/images/create.png',height:22,width: 22,)),
+                            ],
+                          ):
+                          Stack(
+                            children: [
+                              Image.asset('assets/images/profile1.png',height:80,width: 81,),
+                              Positioned(
+                                  right: 0,
+                                  bottom: 3,
+                                  child: Image.asset('assets/images/create.png',height:22,width: 22,)),
+                            ],
+                          ),
+                          UiHelper.verticalSpace(height: 3),
+                          largeText16(context, getProfileResponse.data?.username??'',fontWeight: FontWeight.w500),
+                          mediumText14(context, getProfileResponse.data?.tictocid??''),
+                          UiHelper.verticalSpace(height: 10),
+                          Row( mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                children: [
+                                  smallText12(context, '40.3K',fontWeight: FontWeight.w600),
+                                  smallText12(context, 'Followers',),
+                                ],
+                              ),
+                              const SizedBox(width:40),
+                              Column(
+                                children: [
+                                  smallText12(context, '300',fontWeight: FontWeight.w600),
+                                  smallText12(context, 'Following',),
+                                ],
+                              ),
+                              const SizedBox(width:40),
+                              Column(
+                                children: [
+                                  smallText12(context, '140,5K',fontWeight: FontWeight.w600),
+                                  smallText12(context, 'Likes',),
+                                ],
+                              ),
+                            ],
+                          ),
+                          UiHelper.verticalSpace(height: 10),
+                          Row( mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SmallPinkButton(onTap: () {
+                                PersistentNavBarNavigator.pushNewScreen(
+                                  context,
+                                  screen:  EditProfile(getProfileResponse: getProfileResponse),
+                                  withNavBar: false, // OPTIONAL VALUE. True by default.
+                                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                );
+                              }, label: "Edit Profile",),
+                              const SizedBox(width:16),
+                              SmallPinkButton(label: "Share Profile",
+                                onTap: () {
+                                  PersistentNavBarNavigator.pushNewScreen(
+                                    context,
+                                    screen: const ShareProfile(),
+                                    withNavBar: false, // OPTIONAL VALUE. True by default.
+                                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                  );
+                                },
+                              ),
+                              const SizedBox(width:16),
+                              SmallPinkButton(onTap: () {
+                                widget.controller.jumpToTab(1);
+                              }, label: "Add friends",),
+                            ],
+                          ),
+                          UiHelper.verticalSpace(height: 8),
+                          smallText12(context, 'Add Bio'),
+                          UiHelper.verticalSpace(height: 4),
+                          Row( mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset('assets/images/studio.png',height: 15,width: 14,),
+                              UiHelper.horizontalSpace(width: 12),
+                              smallText12(context, 'Tictoc Studio'),
+                            ],
+                          ),
+                          UiHelper.verticalSpace(height: 12),
+                        ],
+                      ),
                     ),
                   ],
-                ).pOnly(left: 20,right: 20),
-                const SizedBox(height: 6,),
-                Container(
-                  color: const Color(0xffF2F2F2),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      UiHelper.verticalSpace(height: 10),
-                      Stack(
-                        children: [
-                          Image.asset('assets/images/profile1.png',height:80,width: 81,),
-                          Positioned(
-                              right: 0,
-                              bottom: 3,
-                              child: Image.asset('assets/images/create.png',height:22,width: 22,)),
-                        ],
-                      ),
-                      UiHelper.verticalSpace(height: 3),
-                      largeText16(context, 'UsernameTicToc',fontWeight: FontWeight.w500),
-                      mediumText14(context, '@usernametictoc'),
-                      UiHelper.verticalSpace(height: 10),
-                      Row( mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            children: [
-                              smallText12(context, '40.3K',fontWeight: FontWeight.w600),
-                              smallText12(context, 'Followers',),
-                            ],
-                          ),
-                          const SizedBox(width:40),
-                          Column(
-                            children: [
-                              smallText12(context, '300',fontWeight: FontWeight.w600),
-                              smallText12(context, 'Following',),
-                            ],
-                          ),
-                          const SizedBox(width:40),
-                          Column(
-                            children: [
-                              smallText12(context, '140,5K',fontWeight: FontWeight.w600),
-                              smallText12(context, 'Likes',),
-                            ],
-                          ),
-                        ],
-                      ),
-                      UiHelper.verticalSpace(height: 10),
-                      Row( mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SmallPinkButton(onTap: () {
-                            PersistentNavBarNavigator.pushNewScreen(
-                              context,
-                              screen: const EditProfile(),
-                              withNavBar: false, // OPTIONAL VALUE. True by default.
-                              pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                            );
-                          }, label: "Edit Profile",),
-                          const SizedBox(width:16),
-                          SmallPinkButton(label: "Share Profile",
-                            onTap: () {
-                              PersistentNavBarNavigator.pushNewScreen(
-                                context,
-                                screen: const ShareProfile(),
-                                withNavBar: false, // OPTIONAL VALUE. True by default.
-                                pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                              );
-                            },
-                          ),
-                          const SizedBox(width:16),
-                          SmallPinkButton(onTap: () {
-                            widget.controller.jumpToTab(1);
-                          }, label: "Add friends",),
-                        ],
-                      ),
-                      UiHelper.verticalSpace(height: 8),
-                      smallText12(context, 'Add Bio'),
-                      UiHelper.verticalSpace(height: 4),
-                      Row( mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/images/studio.png',height: 15,width: 14,),
-                          UiHelper.horizontalSpace(width: 12),
-                          smallText12(context, 'Tictoc Studio'),
-                        ],
-                      ),
-                      UiHelper.verticalSpace(height: 12),
-                    ],
-                  ),
                 ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                UiHelper.horizontalSpace(width: 18),
-                Expanded(
-                  child: TabBar(
-                    controller: _tabController,
-                    indicatorColor: const Color(0xff484848),
-                    indicatorWeight: 2.0,
-                    indicator:  UnderlineTabIndicator(
-                      borderSide: const BorderSide(width: 3.0, color: Color(0xff484848)),
-                     insets: const EdgeInsets.only(bottom: 6),
-                      borderRadius:BorderRadius.circular(0.0), // Adjust if needed
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    UiHelper.horizontalSpace(width: 18),
+                    Expanded(
+                      child: TabBar(
+                        controller: _tabController,
+                        indicatorColor: const Color(0xff484848),
+                        indicatorWeight: 2.0,
+                        indicator:  UnderlineTabIndicator(
+                          borderSide: const BorderSide(width: 3.0, color: Color(0xff484848)),
+                          insets: const EdgeInsets.only(bottom: 6),
+                          borderRadius:BorderRadius.circular(0.0), // Adjust if needed
+                        ),
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.grey,
+                        labelStyle: GoogleFonts.jost(color: appGreyColor,fontSize: 16,fontWeight: FontWeight.w600),
+                        unselectedLabelStyle: GoogleFonts.jost(color: appGreyColor,fontSize: 12,fontWeight: FontWeight.w600),
+                        dividerColor:Colors.transparent,
+                        padding: EdgeInsets.zero,
+                        labelPadding: EdgeInsets.zero,
+                        tabs: [
+                          Tab(icon:Image.asset('assets/images/gridicons_posts.png',width: 25,height: 21.32,)),
+                          Tab(icon:Image.asset('assets/images/bookmark_grey.png',width: 25,height: 21.32,)),
+                        ],
+                      ),
                     ),
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.grey,
-                    labelStyle: GoogleFonts.jost(color: appGreyColor,fontSize: 16,fontWeight: FontWeight.w600),
-                    unselectedLabelStyle: GoogleFonts.jost(color: appGreyColor,fontSize: 12,fontWeight: FontWeight.w600),
-                    dividerColor:Colors.transparent,
-                    padding: EdgeInsets.zero,
-                    labelPadding: EdgeInsets.zero,
-                    tabs: [
-                      Tab(icon:Image.asset('assets/images/gridicons_posts.png',width: 25,height: 21.32,)),
-                      Tab(icon:Image.asset('assets/images/bookmark_grey.png',width: 25,height: 21.32,)),
+                    UiHelper.horizontalSpace(width: 18),
+                  ],
+                ),
+                const Divider(color: Color(0xffADADAD),thickness: 1.5,),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children:  [
+                      // Center(child: Text('Explore Content', style: TextStyle(color: Colors.white))),
+                      const GalleryView(),
+                      Center(child: largeText16(context, 'Bookmark')),
+                      //  ReelsScreen(),
+                      // Center(child: Text('For You Content', style: TextStyle(color: Colors.white))),
                     ],
                   ),
                 ),
-                UiHelper.horizontalSpace(width: 18),
               ],
-            ),
-            const Divider(color: Color(0xffADADAD),thickness: 1.5,),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children:  [
-                  // Center(child: Text('Explore Content', style: TextStyle(color: Colors.white))),
-                  const GalleryView(),
-                  Center(child: largeText16(context, 'Bookmark')),
-                  //  ReelsScreen(),
-                  // Center(child: Text('For You Content', style: TextStyle(color: Colors.white))),
-                ],
-              ),
-            ),
-          ],
+            );
+
+
+          },
         ),
       ),
     );
+  }
+  Future<void> _refreshPage() async{
+    await _getHomeScreenAPi();
   }
 }

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tictoc/screens/auth/sign_in.dart';
-import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/custom_navigator.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/ui_helper.dart';
-import 'package:velocity_x/velocity_x.dart';
 class BottomPasswordResetSuccess extends StatefulWidget {
   const BottomPasswordResetSuccess({super.key});
 

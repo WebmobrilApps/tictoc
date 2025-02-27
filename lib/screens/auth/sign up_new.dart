@@ -147,7 +147,7 @@ class _SignUpState extends State<SignUp> {
                     onTap: () {
                       CustomNavigator.push(
                         context: context,
-                        screen: const OtpVerification(fromPage: 'signUp'),
+                        screen: const OtpVerification(fromPage: 'signUp',tempToken:''),
                       );
                     },
                     labelText: 'Sign Up',

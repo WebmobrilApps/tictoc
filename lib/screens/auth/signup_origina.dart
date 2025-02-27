@@ -128,7 +128,7 @@ class _SignUpState extends State<SignUp> {
                   bottom: 0,
                   child:  pinkButton(context: context,
                       onTap: (){
-                        CustomNavigator.push(context: context, screen: const OtpVerification(fromPage: 'signUp',));
+                        CustomNavigator.push(context: context, screen: const OtpVerification(fromPage: 'signUp',tempToken:''));
                       },
                       labelText:'Sign Up',width: 285),)
               ],
