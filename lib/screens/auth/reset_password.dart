@@ -6,6 +6,7 @@ import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/screens/auth/bottom_Password_reset_success.dart';
 import 'package:tictoc/screens/auth/otp_verification.dart';
 import 'package:tictoc/screens/auth/sign_in.dart';
+import 'package:tictoc/screens/auth/widgets/common_auth_widgets.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_navigator.dart';
@@ -25,6 +26,13 @@ class _ResetPasswordState extends State<ResetPassword> {
   TextEditingController confirmPasswordController = TextEditingController();
   bool _isPasswordVisible1 = false;
   bool _isPasswordVisible2 = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+ //   newPasswordController.text= "Thiru@003";
+  //  confirmPasswordController.text= "Thiru@003";
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -101,6 +109,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                           obscureText: !_isPasswordVisible1,
                           label: "New Password",
                           hintText: '*********',
+                          maxLength: 16,
                           textInputAction:TextInputAction.done,
                           suffixIcon: UnconstrainedBox(
                             child: IconButton(
@@ -122,6 +131,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                           obscureText: !_isPasswordVisible2,
                           label: "Confirm Password",
                           hintText: '*********',
+                          maxLength: 16,
                           textInputAction:TextInputAction.done,
                           suffixIcon: UnconstrainedBox(
                             child: IconButton(
@@ -138,12 +148,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                           ),
                         ),
                         UiHelper.verticalSpace(height: screenHeight*0.069),
-                        poppinsSmall12(context,
-                            //   '(Password must be at min 8 characters with 1 special \n character, 2 numbers, 1 uppercase, and 2 lowercase letters.)',
-                            '(Password must be at min 8 characters with 1 special character, 2 numbers, 1 uppercase, and 2 lowercase letters.)',
-                            fontSize: 10,
-                            textColor: Colors.white,
-                            textAlign: TextAlign.center),
+                        const PasswordRequirementText(),
                         //   UiHelper.verticalSpace(height: 10),
                       ],
                     ),
@@ -156,10 +161,7 @@ class _ResetPasswordState extends State<ResetPassword> {
 
                       RegExp passwordRegExp = RegExp(passwordPattern.trim());
                       if (newPasswordController.text.isEmpty) {
-                        UiHelper.toastMessage("Please Enter New Password");
-                      } else if (newPasswordController.text.length < 8 ||
-                          newPasswordController.text.length > 16) {
-                        snackBarMessage(context,'Password should be Between 8-16 characters long.And it should contain Atleast One Number, One Special Character, One Uppercase and One Lowercase.');
+                        UiHelper.toastMessage("Please enter New Password");
                       } else if (!passwordRegExp
                           .hasMatch(newPasswordController.text)) {
                         snackBarMessage(context,PASSWORD_LENGTH_VALIDATION);
@@ -167,7 +169,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                         UiHelper.toastMessage(EMPTY_CONFIRM_PASSWORD_VALIDATION??'');
                       } else if (newPasswordController.text !=
                           confirmPasswordController.text) {
-                        UiHelper.toastMessage(MATCHING_PASSWORD_VALIDATION??'');
+                        UiHelper.toastMessage(PASSWORD_DID_NOT_MATCHED);
                       }else{
                         BlocProvider.of<TicTocCubit>(context).resetPasswordCall(widget.tempToken??'',newPasswordController.text,confirmPasswordController.text);
                       }

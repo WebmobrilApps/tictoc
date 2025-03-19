@@ -73,6 +73,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            widget.titleName!="Bio"?
             SizedBox(
               height: 45, // Adjust this value as needed
               child: TextFormField(
@@ -93,6 +94,39 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
                     child: const Icon(Icons.cancel, color: Colors.grey),
                   ),
                 ),
+              ),
+            ):
+            Container(
+              // height: 134,
+              // width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color:appGreyColor, width: 1.0,
+                    style: BorderStyle.solid),
+              ),
+              child: TextFormField(
+                controller: titleValueController,
+                minLines: 6, // Initial number of lines
+                maxLines: null, // Allows the TextFormField to expand dynamically
+                style: const TextStyle(
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: appBlackColor
+                ),
+                decoration: const InputDecoration(
+                  hintText: '',
+                  hintStyle: TextStyle(
+                    color: appGreyColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  border:InputBorder.none,
+                  focusedBorder:InputBorder.none,
+                  enabledBorder:InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                ),
+
               ),
             ),
           ],

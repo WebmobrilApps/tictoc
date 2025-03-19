@@ -113,20 +113,14 @@ class _EditProfileState extends State<EditProfile> {
                       children: [
                         RowEditProfileWidget(title: 'Name', desc: profileData?.name??'',
                             onTap:() async {
-                              final updatedValue = await Navigator.push(
-                                context,
+                              final updatedValue = await Navigator.push(context,
                                 MaterialPageRoute(builder: (context) =>  EditProfileFields(titleName: 'Name', titleValue: profileData?.name ?? ''),),
                               );
-              
                               print('updatedValue:$updatedValue');
                               if (updatedValue != null) {
                                 setState(() {
                                   profileData?.name = updatedValue; // Update UI with new value
-                                  print('profileData?.name:${profileData?.name}');
-                                });
-                              }
-                        //  CustomNavigator.push(context: context, screen: EditProfileFields(titleName:'Name',titleValue:profileData?.name??'',));
-                              },),
+                                });}},),
                         const SizedBox(height: 10,),
                         RowEditProfileWidget(title: 'Username', desc: profileData?.username??'',),
                         const SizedBox(height: 10,),
@@ -135,9 +129,18 @@ class _EditProfileState extends State<EditProfile> {
                           trailingIcon: Image.asset('assets/images/copy_id.png',height: 12.5, width: 13,
                           ),),
                         const SizedBox(height: 10,),
-                        RowEditProfileWidget(title: 'Bio', desc:  profileData?.bio??'Add',),
-                        const SizedBox(height: 10,),
-                        RowEditProfileWidget(title: 'Links', desc: profileData?.link?.map((e) => e.link).join(", ") ?? 'Add', ),
+                        RowEditProfileWidget(title: 'Bio', desc:  profileData?.bio??'Add',
+                          onTap:() async {
+                            final updatedValue = await Navigator.push(context,
+                              MaterialPageRoute(builder: (context) =>  EditProfileFields(titleName: 'Bio', titleValue: profileData?.bio ?? ''),),
+                            );
+                            print('updatedValue:$updatedValue');
+                            if (updatedValue != null) {
+                              setState(() {
+                                profileData?.bio = updatedValue; // Update UI with new value
+                              });}},),
+                     //   const SizedBox(height: 10,),
+                      //  RowEditProfileWidget(title: 'Links', desc: profileData?.link?.map((e) => e.link).join(", ") ?? 'Add', ),
               
                       ],
                     ),),
@@ -182,7 +185,7 @@ class _EditProfileState extends State<EditProfile> {
                             selectedImage,
                             profileData?.name??'',
                             jsonEncode(profileData?.link?.map((e) => e.toJson()).toList() ?? []),
-                            "bio");
+                            profileData?.bio??'',);
                       }
                   )),
                 ],

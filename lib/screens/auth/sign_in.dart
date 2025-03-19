@@ -7,8 +7,10 @@ import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/guest_login_response.dart';
 import 'package:tictoc/model/sign_in_response.dart';
 import 'package:tictoc/screens/auth/forgot_password.dart';
+import 'package:tictoc/screens/auth/interest.dart';
 import 'package:tictoc/screens/auth/otp_verification.dart';
 import 'package:tictoc/screens/auth/sign_up.dart';
+import 'package:tictoc/screens/auth/widgets/common_auth_widgets.dart';
 import 'package:tictoc/screens/bottomnavigationbar/bottomnavigation.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
@@ -31,7 +33,7 @@ class _SignInState extends State<SignIn> {
   @override
   void initState() {
     // TODO: implement initState
-    passwordController.text = "Thiru@003";
+  //  passwordController.text = "Thiru@003";
     _fetchDeviceId();
 
     super.initState();
@@ -42,9 +44,42 @@ class _SignInState extends State<SignIn> {
     print('deviceId:$deviceId');
   }
   @override
+  void dispose() {
+    emailOrPhoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+  void _clearControllers() {
+    emailOrPhoneController.clear();
+    passwordController.clear();
+    FocusScope.of(context).unfocus(); // Remove focus from text fields
+  }
+  void _validateAndSubmit() {
+    String input = emailOrPhoneController.text.trim();
+    String password = passwordController.text.trim();
+
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+    final phoneRegex = RegExp(r'^(?!0+$)\d{5,15}$');
+
+    if (input.isEmpty) {
+      return UiHelper.toastMessage(PLEASE_ENTER_EMAIL_OR_PHONENUMBER);
+    }
+    if (!emailRegex.hasMatch(input) && !phoneRegex.hasMatch(input)) {
+      return UiHelper.toastMessage(PLEASE_ENTER_VALID_EMAIL_OR_PHONENUMBER);
+    }
+    if (password.isEmpty) {
+      return UiHelper.toastMessage(PLEASE_ENTER_PASSWORD);
+    }
+
+    Map<String, dynamic> signInDetails = {
+      "username": input,
+      "password": password,
+    };
+    print('SignIn Details: $signInDetails');
+    BlocProvider.of<TicTocCubit>(context).signInCall(signInDetails);
+  }
+  @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: bgColor, // Green status bar
@@ -57,29 +92,36 @@ class _SignInState extends State<SignIn> {
             if (state.status == TicTocStatus.signInSuccess){
               SignInResponse signInResponse = state.responseData?.response as SignInResponse;
 
-              if(signInResponse.data?.user?.isVerify == 1){
-                UiHelper.toastMessage(signInResponse.msg??'');
+              if(signInResponse.data?.user?.isVerify != 1){
+                print('Not verified');
+                CustomNavigator.push(
+                  context: context,
+                  screen: OtpVerification(fromPage: 'signIn',tempToken:signInResponse.data?.tempToken??'',
+                    tmpOtp:signInResponse.data?.otp.toString()??'',
+                  ),
+                );
+              }else if(signInResponse.data?.interest==false){
+                print('No interese');
+                CustomNavigator.pushAndRemoveUntil(context: context, screen: Interest(tmpToken: signInResponse.data?.token??'',));
+              }else{
                 PreferenceManager.insertValue(key: TOKEN, value: signInResponse.data?.token.toString());
                 PreferenceManager.insertValue(key: PHONE_NO, value: signInResponse.data?.user?.phone.toString());
                 PreferenceManager.insertValue(key: EMAIL_ID, value: signInResponse.data?.user?.email.toString());
                 CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
-              }else{
-                print('Not verified');
-                UiHelper.toastMessage(signInResponse.data?.otp.toString()??'');
-                CustomNavigator.push(
-                  context: context,
-                  screen: OtpVerification(fromPage: 'signIn',tempToken:signInResponse.data?.tempToken??''),
-                );
               }
             }
             else if (state.status == TicTocStatus.guestLoginSuccess){
               GuestLoginResponse guestLoginResponse = state.responseData?.response as GuestLoginResponse;
-
-              UiHelper.toastMessage(guestLoginResponse.msg??'');
               isGuest = true;
-              PreferenceManager.insertValue(key: TOKEN, value: guestLoginResponse.token.toString());
               PreferenceManager.insertValue(key: ISGUEST, value: true);
-              CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
+              if(guestLoginResponse.interest==false){
+                 CustomNavigator.pushAndRemoveUntil(context: context, screen: Interest(tmpToken: guestLoginResponse.token??'',));
+              }else{
+                PreferenceManager.insertValue(key: TOKEN, value: guestLoginResponse.token.toString());
+                PreferenceManager.insertValue(key: ISGUEST, value: true);
+                CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
+              }
+
             }
             if(state.status == TicTocStatus.signInError){
               print(state.errorData?.message);
@@ -94,6 +136,7 @@ class _SignInState extends State<SignIn> {
           },
           builder: (context,state){
             return  SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -114,33 +157,24 @@ class _SignInState extends State<SignIn> {
                         //   mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(height:screenHeight*0.10,),
-                          Center(child: Image.asset('assets/images/logo.png',height: 135,width: 135,)),
-                          UiHelper.verticalSpace(height: 14),
-                          largeText16(context,'"India Owned TicToc App for \n Indians & Rest of the World"',
-                              textColor: Colors.white,
-                              fontWeight:FontWeight.w500,fontSize: 15),
+                          const AuthLogoAndText(),
                           UiHelper.verticalSpace(height: screenHeight*0.11),
-
-                          /*  customTextField2(
-                        label: 'Email ID',
-                        hintText: 'example@gmail.com',
-                        height: 90,
-                        controller: emailorPhoneController,
-                        keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.next,
-                      ),*/
-                          //  UiHelper.verticalSpace(height: 36),
                           TextFormFieldWithLabel(
                             controller: emailOrPhoneController,
                             label: "Email ID/Phone Number",
                             hintText: 'Email/Phone Number',
                             textInputAction:TextInputAction.next,
+                            maxLength: 50,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')), // Prevents spaces
+                            ],
                             //   keyboardType: TextInputType.emailAddress,
                           ),
                           UiHelper.verticalSpace(height: 20),
                           TextFormFieldWithLabel(
                             controller: passwordController,
                             obscureText: !_isPasswordVisible1,
+                            maxLength: 16,
                             label: "Password",
                             hintText: '*********',
                             textInputAction:TextInputAction.done,
@@ -161,6 +195,7 @@ class _SignInState extends State<SignIn> {
                           UiHelper.verticalSpace(height: 12),
                           MyInkWell(
                             onTap: ()async{
+                              _clearControllers();
                               CustomNavigator.push(context: context, screen: const ForgotPassword());
                             },
                             child: Align(
@@ -169,17 +204,7 @@ class _SignInState extends State<SignIn> {
                             ),
                           ),
                           UiHelper.verticalSpace(height: 24),
-                          poppinsSmall12(context,
-                              //   '(Password must be at min 8 characters with 1 special \n character, 2 numbers, 1 uppercase, and 2 lowercase letters.)',
-                              '(Password must be at min 8 characters with 1 special character, 2 numbers, 1 uppercase, and 2 lowercase letters.)',
-                              fontSize: 10,
-                              textColor: whiteColor, textAlign: TextAlign.center),
-
-                          /*    customTextField(height:90,hintText: 'thiru@gmail.com',
-                        controller: emailorPhoneController,
-                      contentPadding: const EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 12),
-                      ),*/
-
+                          const PasswordRequirementText(),
                         ],
                       ),
                     ),
@@ -187,20 +212,7 @@ class _SignInState extends State<SignIn> {
                   UiHelper.verticalSpace(height: 34),
                   pinkButton(context: context,
                       isLoading: state.status == TicTocStatus.signInLoading,
-                      onTap: (){
-                    if(emailOrPhoneController.text.isEmpty){
-                      UiHelper.toastMessage(PLEASE_ENTER_EMAIL_OR_PHONENUMBER);
-                    }else if(passwordController.text.isEmpty){
-                      UiHelper.toastMessage("Please Enter Your Password");
-                    }else{
-                      Map<String,dynamic> signInDetails = {
-                        "username": emailOrPhoneController.text,
-                        "password": passwordController.text,
-                      };
-                      print('signInDetails:$signInDetails');
-                      BlocProvider.of<TicTocCubit>(context).signInCall(signInDetails);
-                    }
-                      },
+                      onTap: _validateAndSubmit,
                       labelText:'Log In',width: 285),
                   UiHelper.verticalSpace(height: 12),
                   RichText(
@@ -215,6 +227,7 @@ class _SignInState extends State<SignIn> {
                           style: GoogleFonts.poppins(fontSize: 14,fontWeight: FontWeight.w600,color: const Color(0xff0B0B0B),),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
+                              _clearControllers();
                               CustomNavigator.push(context: context, screen: const SignUp());
                             },
                         ),
@@ -239,7 +252,7 @@ class _SignInState extends State<SignIn> {
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               Map<String,dynamic> signInDetails = {
-                                "deviceId": deviceId,
+                               "deviceId": deviceId,
                               };
                               print('signInDetails:$signInDetails');
                               BlocProvider.of<TicTocCubit>(context).guestLoginCall(signInDetails);

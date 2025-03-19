@@ -22,7 +22,8 @@ import 'package:velocity_x/velocity_x.dart';
 class OtpVerification extends StatefulWidget {
   final String fromPage;
   final String? tempToken;
-  const OtpVerification({super.key, required this.fromPage,required this.tempToken});
+  final String? tmpOtp;
+  const OtpVerification({super.key, required this.fromPage,required this.tempToken, this.tmpOtp});
 
   @override
   State<OtpVerification> createState() => _OtpVerificationState();
@@ -40,10 +41,14 @@ class _OtpVerificationState extends State<OtpVerification> {
   late Timer countdownTimer;
   bool isResendButtonEnabled = false;
 
+  String tmpOTP = "";
+
   @override
   void initState() {
     super.initState();
+    tmpOTP = widget.tmpOtp??'';
     startCountdown();
+
   }
 
   void startCountdown() {
@@ -89,19 +94,20 @@ class _OtpVerificationState extends State<OtpVerification> {
             print('state.status:${state.status}');
             if (state.status == TicTocStatus.registerVerifyOTPSuccess){
               VerifyOtpResponse verifyOtpResponse = state.responseData?.response as VerifyOtpResponse;
+
               UiHelper.toastMessage(verifyOtpResponse.msg??'');
               if(widget.fromPage=="ForgotPassword"){
                 CustomNavigator.push(context: context, screen: ResetPassword(tempToken:widget.tempToken));
               }else{
-                PreferenceManager.insertValue(key: TOKEN, value: verifyOtpResponse.data?.token.toString());
-                CustomNavigator.pushAndRemoveUntil(context: context, screen: const Interest());
+             //   PreferenceManager.insertValue(key: TOKEN, value: verifyOtpResponse.data?.token.toString());
+                CustomNavigator.pushAndRemoveUntil(context: context, screen:  Interest(tmpToken: verifyOtpResponse.data?.token??'',));
               }
-
             }
             if(state.status == TicTocStatus.resendVerifyOTPSuccess){
               startCountdown();
               ResendVerifyOtpResponse resendVerifyOtpResponse = state.responseData?.response as ResendVerifyOtpResponse;
-              UiHelper.toastMessage(resendVerifyOtpResponse.data?.otp.toString()??'');
+              tmpOTP = resendVerifyOtpResponse.data?.otp.toString()??'';
+              UiHelper.toastMessage(resendVerifyOtpResponse.message??'');
             }
 /*
             if (state.status == TicTocStatus.forgotOtpVerifySuccess){
@@ -173,7 +179,10 @@ class _OtpVerificationState extends State<OtpVerification> {
                           const SizedBox(height: 2,),
                           mediumText14(context, 'Please Enter The 4 Digit Code Sent To \n Your Email/Phone Number',
                               textAlign: TextAlign.center,textColor: whiteColor),
-                          const SizedBox(height: 35,),
+                       //   const SizedBox(height: 35,),
+                          const SizedBox(height: 25,),
+                          mediumText14(context, "(OTP:  $tmpOTP)",textColor: whiteColor,fontWeight: FontWeight.bold),
+                          UiHelper.verticalSpace(height: screenHeight*0.01),
                           Column(
                             children: [
                               const SizedBox(height: 30,),
@@ -259,7 +268,6 @@ class _OtpVerificationState extends State<OtpVerification> {
                                 ),
                               ),
                               UiHelper.verticalSpace(height: 40),
-
                             ],
                           ),
                           // UiHelper.verticalSpace(height: 85),
@@ -276,10 +284,10 @@ class _OtpVerificationState extends State<OtpVerification> {
                       //    isLoading:widget.fromPage=="ForgotPassword"?state.status == TicTocStatus.forgotOtpVerifyLoading:state.status == TicTocStatus.registerVerifyOTPLoading,
                       onTap: (){
                         if(currentText.isEmpty){
-                          UiHelper.toastMessage("Please Enter An OTP");
+                          UiHelper.toastMessage("Please enter OTP");
                         }
                         else if(currentText.length != 4){
-                          UiHelper.toastMessage("OTP Should Be Of Four Digits");
+                          UiHelper.toastMessage("Please enter correct OTP/ Verification Code");
                         }else{
                           String otp = currentText.toString();
                           print("otp:$otp");

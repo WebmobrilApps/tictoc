@@ -39,7 +39,7 @@ class _LoginRequiredBottomSheetWidgetState extends State<LoginRequiredBottomShee
                 fontSize: 14,textColor: appBlackColor,
             ),
             const SizedBox(height: 30),
-            pinkButton(context: context, labelText: 'Sign UP',
+            pinkButton(context: context, labelText: 'Sign Up',
               onTap: () {
                 Navigator.pop(context);
                 isGuest = false;

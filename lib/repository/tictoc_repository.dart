@@ -155,9 +155,9 @@ class TicTocRepository {
     }
   }
 
-  Future<ResponseData> userInterest(Map<String,dynamic> interestList) async {
+  Future<ResponseData> userInterest(Map<String,dynamic> interestList, String tmpToken) async {
     try {
-      final response = await ApiService(token: getToken()).sendRequest.post(
+      final response = await ApiService(token:tmpToken).sendRequest.post(
         "/user/user-interest",
         data: interestList, // Sending list as JSON
       );

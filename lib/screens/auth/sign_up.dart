@@ -1,4 +1,3 @@
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +8,8 @@ import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/sign_up_response.dart';
 import 'package:tictoc/screens/auth/otp_verification.dart';
 import 'package:tictoc/screens/auth/sign_in.dart';
-import 'package:tictoc/screens/auth/widgets/password_req_text.dart';
+import 'package:tictoc/screens/auth/widgets/common_auth_widgets.dart';
+import 'package:tictoc/screens/auth/widgets/phone_input_widget.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_navigator.dart';
@@ -31,35 +31,44 @@ class _SignUpState extends State<SignUp> {
   TextEditingController confirmPasswordController = TextEditingController();
   bool _isPasswordVisible1 = false;
   bool _isPasswordVisible2 = false;
-  bool _isChecked1 = false;
+  bool isTermsChecked = false;
   String selectedCountryCode = '+91';
-  String countryCode = "";
-  String countryISOCode = "IN";
 
   @override
   void initState() {
     // TODO: implement initState
-    passwordController.text = "Thiru@003";
-    confirmPasswordController.text = "Thiru@003";
+  //  passwordController.text = "Thiru@003";
+   // confirmPasswordController.text = "Thiru@003";
     super.initState();
+  }
+  void _clearControllers() {
+    nameController.clear();
+    emailController.clear();
+    phoneController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+    selectedCountryCode = '+91';
+    isTermsChecked = false;
+    FocusScope.of(context).unfocus(); // Remove focus from text fields
   }
 
   @override
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: whiteColor,
       body: BlocConsumer<TicTocCubit, TicTocState>(
         listener: (context, state) {
           if (state.status == TicTocStatus.signUpSuccess) {
             SignUpResponse signUpResponse = state.responseData?.response as SignUpResponse;
-        //    UiHelper.toastMessage(signUpResponse.msg ?? '');
-            UiHelper.toastMessage(signUpResponse.data?.otp.toString() ?? '');
+            UiHelper.toastMessage(signUpResponse.msg ?? '');
+            _clearControllers();
             CustomNavigator.push(
               context: context,
-              screen: OtpVerification(fromPage: 'signUp',tempToken:signUpResponse.data?.tempToken??''),
+              screen: OtpVerification(fromPage: 'signUp',
+                  tempToken:signUpResponse.data?.tempToken??'',
+                  tmpOtp: signUpResponse.data?.otp.toString()??'',
+              ),
             );
           }
           if (state.status == TicTocStatus.signUpError) {
@@ -90,19 +99,8 @@ class _SignUpState extends State<SignUp> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            //  SizedBox(height:screenHeight*0.10,),
-                            // SizedBox(height:screenWidth>750?92.h:38.h,),
                             SizedBox(height:screenHeight>720?68.h:36.h,),
-                            //  SizedBox(height:screenHeight*0.10,),
-                            Center(child: Image.asset('assets/images/logo.png',height: 135,width: 135,)),
-                            UiHelper.verticalSpace(height: 14),
-                            largeText16(
-                              context,
-                              '"India Owned TicToc App for \n Indians & Rest of the World"',
-                              textColor: whiteColor,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15,
-                            ),
+                            const AuthLogoAndText(),
                             UiHelper.verticalSpace(height: screenHeight * 0.03), // Dynamic space
                             TextFormFieldWithLabel(
                               controller: nameController,
@@ -110,8 +108,16 @@ class _SignUpState extends State<SignUp> {
                               hintText: 'Thiru',
                               textInputAction: TextInputAction.next,
                               textCapitalization: TextCapitalization.words,
+                              maxLength: 50,
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp("[a-z A-Z]")),
+                                FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z ]")), // Allows only letters and spaces
+                                FilteringTextInputFormatter.deny(RegExp(r"\s{2,}")), // Prevents consecutive spaces
+                               /* TextInputFormatter.withFunction((oldValue, newValue) {
+                                  if (newValue.text.length > 50) {
+                                    return oldValue; // Reject input if it exceeds 50 characters
+                                  }
+                                  return newValue; // Accept input otherwise
+                                }),*/
                               ],
                             ),
                             UiHelper.verticalSpace(height: 20),
@@ -120,6 +126,7 @@ class _SignUpState extends State<SignUp> {
                               label: "Email ID",
                               hintText: 'abc@gmail.com',
                               textInputAction: TextInputAction.next,
+                              maxLength: 50,
                               inputFormatters: [
                                 FilteringTextInputFormatter.deny(
                                     RegExp(r'\s')), // No spaces allowed
@@ -133,70 +140,13 @@ class _SignUpState extends State<SignUp> {
                                   alignment: Alignment.centerLeft,
                                   child: mediumText14(context, "Phone Number",fontWeight: FontWeight.w500, fontSize: 14, textColor: Colors.white,)),
                             ),
-                            SizedBox(
-                              height: 40,
-                              child: TextFormField(
-                                controller: phoneController,
-                                textInputAction: TextInputAction.next,
-                                keyboardType: TextInputType.phone,
-                                maxLength: 10,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly, // Allows only numbers
-                                ],
-                                cursorColor: Colors.white,
-                                decoration: InputDecoration(
-                                    hintText: '987654321',
-                                    labelStyle: GoogleFonts.jost(fontWeight: FontWeight.w500, fontSize: 18, color: Colors.white,),
-                                    hintStyle: GoogleFonts.jost(fontWeight: FontWeight.w400, fontSize: 16, color: const Color(0xffc4c4c4),),
-                                    floatingLabelBehavior: FloatingLabelBehavior.always,
-
-                                    prefixIcon: Container(
-                                      padding: const EdgeInsets.only(left: 6,top: 0),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          CountryCodePicker(
-                                            onChanged: (country) {
-                                              FocusScope.of(context).requestFocus(FocusNode());
-                                              /*      WidgetsBinding.instance.addPostFrameCallback((_) {
-                                            FocusScope.of(context).unfocus();
-                                          });*/
-                                              selectedCountryCode = country.dialCode??'';
-                                              print("Selected Country Code: ${country.dialCode}");
-                                            },
-                                            initialSelection: 'IN', // Default country (India)
-                                            favorite: const ['+91',], // Favorite country codes
-                                            showCountryOnly: false,
-                                            showOnlyCountryWhenClosed: false,
-                                            padding :  EdgeInsets.zero,
-                                            margin: const EdgeInsets.only(right:4),
-                                            backgroundColor: Colors.transparent,
-                                            barrierColor: Colors.transparent,
-                                            showFlag: true, // Ensures the flag is shown
-                                            flagWidth: 26, // Reduce flag size
-                                            showFlagDialog: true, // Shows flag in dialog
-                                            showDropDownButton: false, // Adds dropdown arrow
-                                            dialogSize: const Size(double.infinity, 500), // Set dialog width and height
-                                            textStyle:  GoogleFonts.jost(fontWeight: FontWeight.w400, fontSize: 12, color: const Color(0xffc4c4c4),),
-                                            dialogTextStyle: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500,),
-                                            searchStyle: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500,),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    contentPadding: const EdgeInsets.only(left: 20, right: 10, top: 6, bottom: 10,),
-                                    focusedBorder:  const UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.white, width: 2),
-                                    ),
-                                    enabledBorder:const  UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.white, width: 2),
-                                    ),
-                                    border:const  UnderlineInputBorder(
-                                      borderSide: BorderSide(color:Colors.white, width: 2),
-                                    ),
-                                    counterText: ""
-                                ),
-                              ),
+                            PhoneInputWidget(
+                              controller: phoneController,
+                              initialCountryCode: 'IN',
+                              onCountryChanged: (code) {
+                                selectedCountryCode = code;
+                                print("Selected Country Code: $code");
+                              },
                             ),
                             UiHelper.verticalSpace(height: 20),
                             TextFormFieldWithLabel(
@@ -204,6 +154,7 @@ class _SignUpState extends State<SignUp> {
                               obscureText: !_isPasswordVisible1,
                               label: "Password",
                               hintText: '*********',
+                              maxLength: 16,
                               textInputAction: TextInputAction.next,
                               suffixIcon: UnconstrainedBox(
                                 child: IconButton(
@@ -226,6 +177,7 @@ class _SignUpState extends State<SignUp> {
                               obscureText: !_isPasswordVisible2,
                               label: "Confirm Password",
                               hintText: '*********',
+                              maxLength: 16,
                               textInputAction: TextInputAction.done,
                               suffixIcon: UnconstrainedBox(
                                 child: IconButton(
@@ -252,12 +204,12 @@ class _SignUpState extends State<SignUp> {
                                   child: Transform.scale(
                                     scale: 1.0,
                                     child: Checkbox(
-                                      value: _isChecked1,
+                                      value: isTermsChecked,
                                       checkColor:const Color(0xffFFFFFF),
                                       onChanged: (bool? value) {
                                         setState(() {
-                                          //  _isChecked1 = value ?? false;
-                                          _isChecked1 = !_isChecked1;
+                                          //  isTermsChecked = value ?? false;
+                                          isTermsChecked = !isTermsChecked;
                                         });
                                       },
                                       activeColor: Colors.transparent,
@@ -292,7 +244,7 @@ class _SignUpState extends State<SignUp> {
                                               print('result:$result');
                                               if (result == 'Agree') {
                                                 setState(() {
-                                                  _isChecked1 = true;
+                                                  isTermsChecked = true;
                                                 });
                                               }
                                             },
@@ -320,36 +272,30 @@ class _SignUpState extends State<SignUp> {
                         isLoading: state.status == TicTocStatus.signUpLoading,
                         onTap: () {
                           RegExp passwordRegExp = RegExp(passwordPattern.trim());
-                          if(nameController.text.isEmpty){
-                            UiHelper.toastMessage("Please Enter Your Name");
+                          if (nameController.text.trim().isEmpty) {
+                            UiHelper.toastMessage("Please enter Name");
                           }else if(emailController.text.isEmpty && phoneController.text.isEmpty){
                             UiHelper.toastMessage(PLEASE_ENTER_EMAIL_OR_PHONENUMBER);
-                          //  UiHelper.toastMessage("Please enter your email or phone number");
-                          }else if (phoneController.text.length!=10 && phoneController.text.isNotEmpty) {
-                            UiHelper.toastMessage("Please Enter A Valid Phone Number");
-                          } else if (!RegExp(
-                              r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$')
+                          }else if (!RegExp(
+                          r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$')
                               .hasMatch(emailController.text) && emailController.text.isNotEmpty) {
-                            UiHelper.toastMessage("Please Enter A Valid Email Address");
-                          }else if (passwordController.text.isEmpty) {
-                            UiHelper.toastMessage("Please Enter Password");
-                          } else if (passwordController.text.length < 8 ||
-                              passwordController.text.length > 16) {
-                            snackBarMessage(context,
-                                'Password should be Between 8-16 characters long and it should contain Atleast One Number, One Special Character, One Uppercase and One Lowercase.');
-                          } else if (!passwordRegExp
+                          UiHelper.toastMessage(PLEASE_ENTER_VALID_EMAIL);
+                          }
+                          else if (phoneController.text.isNotEmpty &&
+                              (phoneController.text.length < 5 || phoneController.text.length > 15 || RegExp(r'^0+$').hasMatch(phoneController.text))) {
+                            UiHelper.toastMessage(PLEASE_ENTER_VALID_PHONE_NUMBER);
+                          } else if (passwordController.text.isEmpty) {
+                            UiHelper.toastMessage("Please enter Password");
+                          }else if (!passwordRegExp
                               .hasMatch(passwordController.text)) {
                             snackBarMessage(context, PASSWORD_LENGTH_VALIDATION);
                           } else if (confirmPasswordController.text.isEmpty) {
+                            UiHelper.toastMessage("Please enter Confirm Password");
+                          } else if (passwordController.text != confirmPasswordController.text) {
+                            UiHelper.toastMessage(MATCHING_PASSWORD_VALIDATION ?? '');
+                          }else if(!isTermsChecked){
                             UiHelper.toastMessage(
-                                EMPTY_CONFIRM_PASSWORD_VALIDATION ?? '');
-                          } else if (passwordController.text !=
-                              confirmPasswordController.text) {
-                            UiHelper.toastMessage(
-                                MATCHING_PASSWORD_VALIDATION ?? '');
-                          }else if(!_isChecked1){
-                            UiHelper.toastMessage(
-                                "Please Accept Terms of Service and Privacy Policy");
+                                "Please accept Terms of Service and Privacy Policy");
                           }else{
                             Map<String, dynamic> signUpDetails = {
                               "name": nameController.text,
@@ -388,6 +334,7 @@ class _SignUpState extends State<SignUp> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
+                            _clearControllers();
                             CustomNavigator.push(
                               context: context,
                               screen: const SignIn(),

@@ -4,6 +4,7 @@ class GuestLoginResponse {
   final String? msg;
   final Data? data;
   final String? token;
+  final bool? interest;
 
   GuestLoginResponse({
     this.resCode,
@@ -11,21 +12,24 @@ class GuestLoginResponse {
     this.msg,
     this.data,
     this.token,
+    this.interest,
   });
 
   GuestLoginResponse.fromJson(Map<String, dynamic> json)
-      : resCode = json['resCode'] as int?,
-        success = json['success'] as bool?,
-        msg = json['msg'] as String?,
-        data = (json['data'] as Map<String,dynamic>?) != null ? Data.fromJson(json['data'] as Map<String,dynamic>) : null,
-        token = json['token'] as String?;
+    : resCode = json['resCode'] as int?,
+      success = json['success'] as bool?,
+      msg = json['msg'] as String?,
+      data = (json['data'] as Map<String,dynamic>?) != null ? Data.fromJson(json['data'] as Map<String,dynamic>) : null,
+      token = json['token'] as String?,
+      interest = json['interest'] as bool?;
 
   Map<String, dynamic> toJson() => {
     'resCode' : resCode,
     'success' : success,
     'msg' : msg,
     'data' : data?.toJson(),
-    'token' : token
+    'token' : token,
+    'interest' : interest
   };
 }
 
@@ -49,13 +53,13 @@ class Data {
   });
 
   Data.fromJson(Map<String, dynamic> json)
-      : pkGuest = json['pk_guest'] as int?,
-        deviceId = json['deviceId'] as String?,
-        status = json['status'] as int?,
-        fcmToken = json['fcmToken'],
-        createdDate = json['createdDate'] as String?,
-        updatedDate = json['updatedDate'] as String?,
-        type = json['type'] as String?;
+    : pkGuest = json['pk_guest'] as int?,
+      deviceId = json['deviceId'] as String?,
+      status = json['status'] as int?,
+      fcmToken = json['fcmToken'],
+      createdDate = json['createdDate'] as String?,
+      updatedDate = json['updatedDate'] as String?,
+      type = json['type'] as String?;
 
   Map<String, dynamic> toJson() => {
     'pk_guest' : pkGuest,

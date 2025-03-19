@@ -115,10 +115,10 @@ class TicTocCubit extends Cubit<TicTocState> {
       emit(state.copyWith(status: TicTocStatus.resetPasswordError,error: e.toString(),errorData: null));
     }
   }
-  Future<void> userInterestCall(Map<String,dynamic> interestList) async{
+  Future<void> userInterestCall(Map<String,dynamic> interestList, String tmpToken) async{
     emit(state.copyWith(status: TicTocStatus.userInterestLoading));
     try{
-      ResponseData responseData = await repository.userInterest(interestList);
+      ResponseData responseData = await repository.userInterest(interestList,tmpToken);
       emit(state.copyWith(status: TicTocStatus.userInterestSuccess,responseData: responseData));
     }
     on ErrorData catch (errorData){

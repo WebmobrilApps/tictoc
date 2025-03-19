@@ -47,6 +47,7 @@ class _FollowingState extends State<Following> {
       body: Column(
         children: [
           UiHelper.verticalSpace(height: screenHeight * 0.011),
+      //    UiHelper.verticalSpace(height: screenHeight * 0.14),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

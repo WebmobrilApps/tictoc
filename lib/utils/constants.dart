@@ -65,7 +65,12 @@ const String emailPattern =
 /// VALIDATION MESSAGE
 //const String notConnected = 'You are not connected to internet, Please check your internet connection';
 const String notConnected = 'Please Check Your Internet Connection';
-const  PLEASE_ENTER_EMAIL_OR_PHONENUMBER = 'Please Enter Email Or Phone Number';
+const  PLEASE_ENTER_EMAIL_OR_PHONENUMBER = 'Please enter Email/Phone Number';
+const  PLEASE_ENTER_VALID_EMAIL = 'Please enter Valid Email';
+const  PLEASE_ENTER_VALID_EMAIL_OR_PHONENUMBER = 'Please enter valid Email/Phone Number';
+const  PLEASE_ENTER_VALID_PHONE_NUMBER = 'Please enter valid phone number';
+const  PLEASE_ENTER_PASSWORD = 'Please enter Password';
+const  PASSWORD_DID_NOT_MATCHED = "Password didn't matched";
 const EMPTY_NAME_VALIDATION = 'Please Enter First Name';
 const VALID_NAME_VALIDATION = 'Please Enter Correct Name';
 const EMPTY_LASTNAME_VALIDATION = 'Please enter your last name';
@@ -77,7 +82,7 @@ const EMPTY_CONFIRM_PASSWORD_VALIDATION = 'Please Enter Confirm Password';
 const EMPTY_OTP_VALIDATION = 'Please enter an OTP';
 const EMPTY_EMAIL_VALIDATION = 'Please enter Email ID';
 const PASSWORD_LENGTH_VALIDATION =
-    'Password should be Between 8-16 characters long.And it should contain Atleast One Number, One Special Character, One Uppercase and One Lowercase.';
+    'Password should be between 8 to 16 characters and should include 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Character';
 const EMPTY_PHONE_NUMBER_VALIDATION = 'Please enter phone number';
 const EMPTY_ADDRESS_VALIDATION = 'Please enter your full address';
 const EMPTY_DROPDOWN_VALIDATION = 'Please select Content Creator Category';

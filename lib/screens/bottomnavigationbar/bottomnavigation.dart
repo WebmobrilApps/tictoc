@@ -37,7 +37,7 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
   int _currentIndex = 0;
 
   PersistentTabController _controller = PersistentTabController(initialIndex: 0);
-  ScrollController _scrollController = ScrollController();
+
 
   DateTime? lastPressed;
 
@@ -45,13 +45,11 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-    _controller = PersistentTabController(initialIndex: _currentIndex);
-    _scrollController = ScrollController();
+
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
   }
   @override
@@ -59,16 +57,9 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
     List<Widget> buildScreens() {
       return  [
         const HomeScreen(),
-        const Friends(),
-       // MyApp(),
-   //    PreloadPage(),
-     //   githuvVideo(),
-       // ForYou(controller: _controller),
-    //   UploadVideo(controller: _controller), // Pass the controller here
-      Container(),
-    //    CameraScreen(),
+        isGuest == false ? const Friends() : Container(),// Prevent guest from accessing
+        Container(),
         isGuest == false ? Inbox(controller: _controller) : Container(),// Prevent guest from accessing
-      //  ReelsScreen(),
         isGuest == false ? Profile(controller: _controller) : Container(), // Prevent guest from accessing
 
       ];
@@ -93,7 +84,7 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
           activeColorPrimary: buttonColor,
           inactiveColorPrimary: const Color(0xff0B0B0B),
         ),
-     /*   PersistentBottomNavBarItem(
+        /*   PersistentBottomNavBarItem(
           icon: const Icon(Icons.add , color: Colors.white , size: 33),
           activeColorPrimary: const Color(0xffFF0236),
           inactiveColorPrimary: Colors.white,
@@ -151,60 +142,62 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
         }
       },
       child: Scaffold(
-          body: PersistentTabView(
-            context,
-            controller: _controller,
-            screens: buildScreens(),
-            margin: const EdgeInsets.symmetric(horizontal: 14 , vertical: 2 ),
-            padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 2 ),
-            navBarStyle : NavBarStyle.style13,
-            items: navBarsItems(),
-            confineToSafeArea: true,
-           // backgroundColor: const Color(0XFFFFFFFF),
-            backgroundColor: _currentIndex==0?appBlackColor:const Color(0XFFFFFFFF),
-            handleAndroidBackButtonPress: true, // Default is true.
-            resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-            stateManagement: true, // Default is true.
-            hideNavigationBarWhenKeyboardAppears: true,
-            decoration: NavBarDecoration(
-              borderRadius: BorderRadius.circular(30.0),
-              colorBehindNavBar: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color:  const Color(0xff555E68).withOpacity(0.15), // Specify color and opacity
-                  spreadRadius: 0,
-                  blurRadius: 1,
-                  offset: const Offset(0, 2.5), // Offset for bottom shadow
-                ),
-                BoxShadow(
-                  color:  const Color(0xff555E68).withOpacity(0.15), // Specify color and opacity
-                  spreadRadius: 2,
-                  blurRadius: 3,
-                  offset: const Offset(1, 2.5), // Offset for bottom shadow
-                ),
-              ],
-            ),
+        body: PersistentTabView(
+          context,
+          controller: _controller,
+          screens: buildScreens(),
+          margin: const EdgeInsets.symmetric(horizontal: 14 , vertical: 2 ),
+          padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 2 ),
+          navBarStyle : NavBarStyle.style13,
+          items: navBarsItems(),
+          confineToSafeArea: true,
+          backgroundColor: _currentIndex==0?appBlackColor:const Color(0XFFFFFFFF),
+          handleAndroidBackButtonPress: true, // Default is true.
+          resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
+          stateManagement: true, // Default is true.
+          hideNavigationBarWhenKeyboardAppears: true,
+          decoration: NavBarDecoration(
+            borderRadius: BorderRadius.circular(30.0),
+            colorBehindNavBar: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color:  const Color(0xff555E68).withOpacity(0.15), // Specify color and opacity
+                spreadRadius: 0,
+                blurRadius: 1,
+                offset: const Offset(0, 2.5), // Offset for bottom shadow
+              ),
+              BoxShadow(
+                color:  const Color(0xff555E68).withOpacity(0.15), // Specify color and opacity
+                spreadRadius: 2,
+                blurRadius: 3,
+                offset: const Offset(1, 2.5), // Offset for bottom shadow
+              ),
+            ],
+          ),
             onItemSelected: (index) async {
               bool connected = await isConnected();
-              if (connected) {
-                setState(() {
-                  if (index == 4 || index == 3) { // Assuming Profile is at index 4
-                    if (isGuest) {
-                      LoginRequiredBottomSheet.show(context,);
-                      _controller.jumpToTab(_currentIndex); // Prevent navigation
-                    }
-                  } else {
-                    _currentIndex = index;
-                  }
-                });
-              } else {
-                _controller.jumpToTab(_currentIndex);
-                UiHelper.toastMessage(notConnected);
-              }
-            },
 
-          ),
-          ),
+              if (!connected) {
+                UiHelper.toastMessage(notConnected);
+                _controller.jumpToTab(_currentIndex);
+                return;
+              }
+
+              if ((index == 1 || index == 3 || index == 4) && isGuest) {
+                // Show login required sheet before changing state
+                LoginRequiredBottomSheet.show(context);
+                _controller.jumpToTab(_currentIndex);
+                return;
+              }
+
+              setState(() {
+                _currentIndex = index;
+              });
+            }
+
+
+        ),
+      ),
     );
   }
 

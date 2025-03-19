@@ -29,10 +29,10 @@ class Data {
   final int? pkUser;
   String? name;
   final int? guest;
-  final String? username;
-  final String? tictocid;
-  final List<Link>? link;
-  final String? bio;
+  String? username;
+  String? tictocid;
+  List<Link>? link;
+  String? bio;
   final dynamic profilePic;
   final String? countryCode;
   final String? email;
