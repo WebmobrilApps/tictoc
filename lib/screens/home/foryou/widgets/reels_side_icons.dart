@@ -11,7 +11,8 @@ import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 import 'package:velocity_x/velocity_x.dart';
 class ReelsSideIcons extends StatefulWidget {
-  const ReelsSideIcons({super.key});
+  final String fromPage;
+  const ReelsSideIcons({super.key, required this.fromPage});
 
   @override
   State<ReelsSideIcons> createState() => _ReelsSideIconsState();
@@ -21,7 +22,7 @@ class _ReelsSideIconsState extends State<ReelsSideIcons> {
   @override
   Widget build(BuildContext context) {
     return  Positioned(
-      bottom: 70,
+      bottom:  widget.fromPage=="FollowingTab"?160:70,
       right: 10,
       child: SizedBox(
         //height: 450,

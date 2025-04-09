@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tictoc/screens/auth/forgot_password.dart';
+import 'package:tictoc/screens/profile/following_list.dart';
 import 'package:tictoc/screens/settings_policies_and_support/content_preference.dart';
 import 'package:tictoc/screens/settings_policies_and_support/security/manage_app_permissions.dart';
 import 'package:tictoc/screens/settings_policies_and_support/security/manage_device.dart';
@@ -177,7 +178,9 @@ class _PrivacyState extends State<Privacy> {
                       Image.asset('assets/images/right_arrow_1.png', height: 20, width: 20,),
                     ],
                   ),
-                  onTap:(){}),
+                  onTap:(){
+                    CustomNavigator.push(context: context, screen: const FollowingList());
+                  }),
               RowPrivacyWidget(
                   labelText: 'Liked videos',
                   leadingPath: 'assets/images/liked_videos.png',

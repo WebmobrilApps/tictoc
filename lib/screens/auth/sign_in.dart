@@ -101,12 +101,16 @@ class _SignInState extends State<SignIn> {
                   ),
                 );
               }else if(signInResponse.data?.interest==false){
-                print('No interese');
-                CustomNavigator.pushAndRemoveUntil(context: context, screen: Interest(tmpToken: signInResponse.data?.token??'',));
+                print('No interest');
+                CustomNavigator.pushAndRemoveUntil(context: context,
+                    screen: Interest(tmpToken: signInResponse.data?.token??'',
+                        userID:signInResponse.data?.user?.pkUser??0));
               }else{
                 PreferenceManager.insertValue(key: TOKEN, value: signInResponse.data?.token.toString());
                 PreferenceManager.insertValue(key: PHONE_NO, value: signInResponse.data?.user?.phone.toString());
                 PreferenceManager.insertValue(key: EMAIL_ID, value: signInResponse.data?.user?.email.toString());
+                PreferenceManager.insertValue(key: USER_ID, value: signInResponse.data?.user?.pkUser);
+                userID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
                 CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
               }
             }
@@ -115,7 +119,8 @@ class _SignInState extends State<SignIn> {
               isGuest = true;
               PreferenceManager.insertValue(key: ISGUEST, value: true);
               if(guestLoginResponse.interest==false){
-                 CustomNavigator.pushAndRemoveUntil(context: context, screen: Interest(tmpToken: guestLoginResponse.token??'',));
+                 CustomNavigator.pushAndRemoveUntil(context: context, screen: Interest(tmpToken: guestLoginResponse.token??'',
+                     userID:guestLoginResponse.data?.pkGuest??0));
               }else{
                 PreferenceManager.insertValue(key: TOKEN, value: guestLoginResponse.token.toString());
                 PreferenceManager.insertValue(key: ISGUEST, value: true);

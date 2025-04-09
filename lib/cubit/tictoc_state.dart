@@ -50,79 +50,94 @@ enum TicTocStatus {
   updateProfileSuccess,
   updateProfileError,
 
-  changePasswordLoading,
-  changePasswordSuccess,
-  changePasswordError,
+  suggestedAccountLoading,
+  suggestedAccountSuccess,
+  suggestedAccountError,
 
-  getAllContestLoading,
-  getAllContestSuccess,
-  getAllContestError,
+  followerListLoading,
+  followerListSuccess,
+  followerListError,
 
-  howToPlayLoading,
-  howToPlaySuccess,
-  howToPlayError,
+  followUserLoading,
+  followUserSuccess,
+  followUserError,
 
-  pressLoading,
-  pressSuccess,
-  pressError,
+  unFollowUserLoading,
+  unFollowUserSuccess,
+  unFollowUserError,
 
-  rulesOfPlayLoading,
-  rulesOfPlaySuccess,
-  rulesOfPlayError,
+  followingListLoading,
+  followingListSuccess,
+  followingListError,
 
-  faqLoading,
-  faqSuccess,
-  faqError,
+  forYouFeedLoading,
+  forYouFeedSuccess,
+  forYouFeedError,
 
-  deActivateAccountLoading,
-  deActivateAccountSuccess,
-  deActivateAccountError,
+  uploadContentLoading,
+  uploadContentSuccess,
+  uploadContentError,
 
-  deleteAccountLoading,
-  deleteAccountSuccess,
-  deleteAccountError,
+  getUserContentLoading,
+  getUserContentSuccess,
+  getUserContentError,
 
-  addToCartLoading,
-  addToCartSuccess,
-  addToCartError,
+  getOtherUserContentLoading,
+  getOtherUserContentSuccess,
+  getOtherUserContentError,
 
-  getCartLoading,
-  getCartSuccess,
-  getCartError,
+  deletePostLoading,
+  deletePostSuccess,
+  deletePostError,
 
-  getCartLoading1,
-  getCartSuccess1,
-  getCartError1,
+  getOtherProfileLoading,
+  getOtherProfileSuccess,
+  getOtherProfileError,
 
-  removeCartLoading,
-  removeCartSuccess,
-  removeCartError,
+  exploreLoading,
+  exploreSuccess,
+  exploreError,
+
+  followingFeedLoading,
+  followingFeedSuccess,
+  followingFeedError,
+
+  hitLikeFollowingReelsLoading,
+  hitLikeFollowingReelsSuccess,
+  hitLikeFollowingReelsError,
+
+  hitLikeProfileLoading,
+  hitLikeProfileSuccess,
+  hitLikeProfileError,
+
+  bookmarkFollowingLoading,
+  bookmarkFollowingSuccess,
+  bookmarkFollowingError,
+
+  bookmarkProfileLoading,
+  bookmarkProfileSuccess,
+  bookmarkProfileError,
+
+  getBookmarkContentLoading,
+  getBookmarkContentSuccess,
+  getBookmarkContentError,
+
+  getCommentsLoading,
+  getCommentsSuccess,
+  getCommentsError,
+
+  sendCommentLoading,
+  sendCommentSuccess,
+  sendCommentError,
+
+  otherUserFollowersLoading,
+  otherUserFollowersSuccess,
+  otherUserFollowersError,
 
 
 
-  getNotificationLoading,
-  getNotificationSuccess,
-  getNotificationError,
 
-  uidStatusLoading,
-  uidStatusSuccess,
-  uidStatusError,
 
-  uidStatusLoginLoading,
-  uidStatusLoginSuccess,
-  uidStatusLoginError,
-
-  socialLoginLoading,
-  socialLoginSuccess,
-  socialLoginError,
-
-  socialSignUpLoading,
-  socialSignUpSuccess,
-  socialSignUpError,
-
-  markAsReadAllNotificationLoading,
-  markAsReadAllNotificationSuccess,
-  markAsReadAllNotificationError,
 
 }
 

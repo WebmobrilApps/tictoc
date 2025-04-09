@@ -3,31 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/get_profile_response.dart';
-import 'package:tictoc/screens/auth/forgot_password.dart';
-import 'package:tictoc/screens/dummy/bardummu1.dart';
-import 'package:tictoc/screens/profile/edit_profile.dart';
-import 'package:tictoc/screens/profile/gallery_view.dart';
-import 'package:tictoc/screens/profile/menu_profile_bottom.dart';
-import 'package:tictoc/screens/profile/profile_views.dart';
-import 'package:tictoc/screens/profile/share_profile.dart';
+import 'package:tictoc/model/get_user_content_response.dart';
+import 'package:tictoc/screens/profile/bookmark/bookmarked_reels.dart';
+import 'package:tictoc/screens/profile/feeds/gallery_view.dart';
+import 'package:tictoc/screens/profile/widgets/profile_appbar.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
-import 'package:tictoc/utils/custom_widgets.dart';
+import 'package:tictoc/utils/custom_loader.dart';
 import 'package:tictoc/utils/error_display.dart';
 import 'package:tictoc/utils/ui_helper.dart';
-import 'package:tictoc/screens/home/explore.dart';
-import 'package:tictoc/screens/home/following.dart';
-import 'package:tictoc/screens/home/foryou/for_you.dart';
-import 'package:tictoc/screens/search/search_screen.dart';
-import 'package:tictoc/utils/color.dart';
-import 'package:tictoc/utils/constants.dart';
-import 'package:tictoc/utils/custom_widgets.dart';
-import 'package:tictoc/utils/ui_helper.dart';
-import 'package:velocity_x/velocity_x.dart';
 class Profile extends StatefulWidget {
   final PersistentTabController controller;
   const Profile({super.key, required this.controller});
@@ -40,39 +27,16 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   GetProfileResponse getProfileResponse = GetProfileResponse();
-
-  final List soundScreenData = [
-    {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
-    {"image":"assets/images/soundScreen2.png","likeCount":"102.2K"},
-    {"image":"assets/images/soundScreen3.png","likeCount":"328.2K"},
-    {"image":"assets/images/soundScreen4.png","likeCount":"983.0K"},
-    {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
-    {"image":"assets/images/soundScreen2.png","likeCount":"663.09K"},
-    {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
-    {"image":"assets/images/soundScreen3.png","likeCount":"328.2K"},
-    {"image":"assets/images/soundScreen4.png","likeCount":"983.0K"},
-    {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
-    {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
-    {"image":"assets/images/soundScreen2.png","likeCount":"102.2K"},
-    {"image":"assets/images/soundScreen3.png","likeCount":"328.2K"},
-    {"image":"assets/images/soundScreen4.png","likeCount":"983.0K"},
-    {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
-    {"image":"assets/images/soundScreen2.png","likeCount":"663.09K"},
-    {"image":"assets/images/soundScreen1.png","likeCount":"203.2K"},
-    {"image":"assets/images/soundScreen3.png","likeCount":"328.2K"},
-    {"image":"assets/images/soundScreen4.png","likeCount":"983.0K"},
-    {"image":"assets/images/soundScreen5.png","likeCount":"324.11K"},
-  ];
-
+  GetUserContentResponse getUserContentResponse = GetUserContentResponse();
 
   @override
   void initState() {
-    _getHomeScreenAPi();
+    _getProfileAPi();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0); // 3 tabs, "Following" as default
     super.initState();
   }
 
-  Future<void> _getHomeScreenAPi() async {
+  Future<void> _getProfileAPi() async {
     await BlocProvider.of<TicTocCubit>(context).getProfileCall();
   }
 
@@ -82,34 +46,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     _tabController.dispose();
     super.dispose();
   }
-  final List storiesData = [
-    {"storyImage":"assets/images/profile2.png", "name":"Thiru", "isLive":true},
-    {"storyImage":"assets/images/profile3.png", "name":"Ram", "isLive":true},
-    {"storyImage":"assets/images/profile4.png", "name":"Mohan", "isLive":false},
-    {"storyImage":"assets/images/profile5.png", "name":"Lokesh", "isLive":false},
-    {"storyImage":"assets/images/profile2.png", "name":"Thiru", "isLive":true},
-    {"storyImage":"assets/images/profile3.png", "name":"Ram", "isLive":true},
-    {"storyImage":"assets/images/profile4.png", "name":"Mohan", "isLive":false},
-    {"storyImage":"assets/images/profile5.png", "name":"Lokesh", "isLive":false},
-    {"storyImage":"assets/images/profile2.png", "name":"Thiru", "isLive":true},
-    {"storyImage":"assets/images/profile3.png", "name":"Ram", "isLive":true},
-    {"storyImage":"assets/images/profile4.png", "name":"Mohan", "isLive":false},
-    {"storyImage":"assets/images/profile5.png", "name":"Lokesh", "isLive":false},
-  ];
-  final List inboxData = [
-    {"storyImage":"assets/images/inbox1.png", "name":"Thiru", "followStatus":"", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox2.png", "name":"DisaSmith", "followStatus":"Follow Back", "message":"Follows you"},
-    {"storyImage":"assets/images/inbox3.png", "name":"Suriya", "followStatus":"", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox1.png", "name":"Angel", "followStatus":"Following","message":"Following"},
-    {"storyImage":"assets/images/inbox2.png", "name":"Bengamine", "followStatus":"", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox3.png", "name":"Tokyo", "followStatus":"","message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox1.png", "name":"Thiru", "followStatus":"", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox2.png", "name":"DisaSmith", "followStatus":"Follow Back", "message":"Follows you"},
-    {"storyImage":"assets/images/inbox3.png", "name":"Suriya", "followStatus":"", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox1.png", "name":"Angel", "followStatus":"Following","message":"Following"},
-    {"storyImage":"assets/images/inbox2.png", "name":"Bengamine", "followStatus":"", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox3.png", "name":"Tokyo", "followStatus":"","message":"lorem ipsum"},
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -119,8 +55,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         statusBarIconBrightness: Brightness.dark, // Light icons for better contrast
       ),
       child: Scaffold(
-       // backgroundColor: whiteColor,
-         //   backgroundColor: appBgColor,
         backgroundColor: appBgColor,
         body: BlocConsumer<TicTocCubit,TicTocState>(
           listener: (context,state){
@@ -128,194 +62,41 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             if(state.status == TicTocStatus.getProfileSuccess){
               Loader.hide();
               getProfileResponse = state.responseData?.response as GetProfileResponse;
+              BlocProvider.of<TicTocCubit>(context).getUserContentCall("1", "50");
+            }
+            if(state.status == TicTocStatus.getUserContentSuccess){
+              Loader.hide();
+              getUserContentResponse = state.responseData?.response as GetUserContentResponse;
             }
           },
           builder: (context,state){
             if (state.status == TicTocStatus.getProfileLoading) {
-              return Center(
-                child: LoadingAnimationWidget.flickr(
-                  leftDotColor: const Color(0xff68C71E),
-                  rightDotColor: buttonColor,
-                  size: 50,
-                ),
-              );
+              return const CustomLoader();
             }
             if (state.status == TicTocStatus.getProfileError) {
-              String? error = state.errorData?.message ?? state.error;
-              int? errorStatusCode = state.errorData?.code ?? 0; // Get the error code
-
-              print('error:$error');
-              print('errorStatusCode:$errorStatusCode');
-              return RefreshIndicator(
+              return CustomErrorWidget(
+                errorMessage: state.errorData?.message ?? state.error,
+                statusCode: state.errorData?.code,
+                onRetry: _refreshPage,
                 onRefresh: _refreshPage,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: SizedBox(
-                      height: screenHeight * 0.6,
-                      child: ErrorDisplayWidget(
-                        error: state.errorData?.message ?? state.error ?? 'Unknown error occurred',
-                        statusCode: state.errorData?.code ?? 0,
-                        onRetry: _getHomeScreenAPi,
-                      )
-                  ),
-                ),
               );
             }
             return  Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 UiHelper.verticalSpace(height: screenHeight*0.075),
-                Column(
-                  children: [
-                    Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                RefreshIndicator( // Ensures pull to refresh works
+                  onRefresh: _refreshPage, // Calls API on pull down
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(), // Allows pull down even if content is small
+                    child: Column(
                       children: [
-                        Row(
-                          children: [
-                            largeText16(context, getProfileResponse.data?.username??'',fontWeight: FontWeight.w500),
-                            const SizedBox(width: 8,),
-                            Image.asset('assets/images/down_arrow.png',height:18,width: 11,),
-                            // Image.asset('assets/images/dropdownnn.png',height:14,width: 8,),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            MyInkWell(
-                                onTap: ()async{
-                                  PersistentNavBarNavigator.pushNewScreen(
-                                    context,
-                                    screen: const ProfileViews(),
-                                    withNavBar: false, // OPTIONAL VALUE. True by default.
-                                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                                  );
-                                },
-                                child: Image.asset('assets/images/footPrint.png',height:25,width: 25,)),
-                            const SizedBox(width: 16,),
-                            MyInkWell(
-                                onTap: ()async {
-                                  final result = await showModalBottomSheet(
-                                    isScrollControlled: true,
-                                    useRootNavigator: true,
-                                    context: context,
-                                    builder: (context) => const MenuProfileBottom(),
-                                  );
-                                  if (result != null) {
-                                    setState(() {
-                                    });
-                                    //      Navigator.pop(context); // Close the bottom sheet
-                                  }
-                                },
-                                child: Image.asset('assets/images/menu.png',height:26,width: 26,)),
-                          ],
-                        ),
+                        ProfileAppBar(getProfileResponse: getProfileResponse,),
+                        ProfileInfo(getProfileResponse: getProfileResponse, controller: widget.controller),
+                        const SizedBox(height: 6,),
                       ],
-                    ).pOnly(left: 20,right: 20),
-                    const SizedBox(height: 6,),
-                    Container(
-                      color: const Color(0xffF2F2F2),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          UiHelper.verticalSpace(height: 10),
-                          getProfileResponse.data?.profilePic!=null?
-                          Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: buttonColor, width: 1), // Border color and width
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: cachedImageWidget(
-                                    image:"$BASEURL/${getProfileResponse.data?.profilePic??''}",
-                                    borderRadiusValue:50,
-                                    height: 80,width: 80),
-                              ),
-                              Positioned(
-                                  right: 0,
-                                  bottom: 3,
-                                  child: Image.asset('assets/images/create.png',height:22,width: 22,)),
-                            ],
-                          ):
-                          Stack(
-                            children: [
-                              Image.asset('assets/images/profile1.png',height:80,width: 81,),
-                              Positioned(
-                                  right: 0,
-                                  bottom: 3,
-                                  child: Image.asset('assets/images/create.png',height:22,width: 22,)),
-                            ],
-                          ),
-                          UiHelper.verticalSpace(height: 3),
-                          largeText16(context, getProfileResponse.data?.username??'',fontWeight: FontWeight.w500),
-                          mediumText14(context, getProfileResponse.data?.tictocid??''),
-                          UiHelper.verticalSpace(height: 10),
-                          Row( mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Column(
-                                children: [
-                                  smallText12(context, '40.3K',fontWeight: FontWeight.w600),
-                                  smallText12(context, 'Followers',),
-                                ],
-                              ),
-                              const SizedBox(width:40),
-                              Column(
-                                children: [
-                                  smallText12(context, '300',fontWeight: FontWeight.w600),
-                                  smallText12(context, 'Following',),
-                                ],
-                              ),
-                              const SizedBox(width:40),
-                              Column(
-                                children: [
-                                  smallText12(context, '140,5K',fontWeight: FontWeight.w600),
-                                  smallText12(context, 'Likes',),
-                                ],
-                              ),
-                            ],
-                          ),
-                          UiHelper.verticalSpace(height: 10),
-                          Row( mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SmallPinkButton(onTap: () {
-                                PersistentNavBarNavigator.pushNewScreen(
-                                  context,
-                                  screen:  EditProfile(getProfileResponse: getProfileResponse),
-                                  withNavBar: false, // OPTIONAL VALUE. True by default.
-                                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                                );
-                              }, label: "Edit Profile",),
-                              const SizedBox(width:16),
-                              SmallPinkButton(label: "Share Profile",
-                                onTap: () {
-                                  PersistentNavBarNavigator.pushNewScreen(
-                                    context,
-                                    screen: const ShareProfile(),
-                                    withNavBar: false, // OPTIONAL VALUE. True by default.
-                                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                                  );
-                                },
-                              ),
-                              const SizedBox(width:16),
-                              SmallPinkButton(onTap: () {
-                                widget.controller.jumpToTab(1);
-                              }, label: "Add friends",),
-                            ],
-                          ),
-                          UiHelper.verticalSpace(height: 8),
-                          smallText12(context, 'Add Bio'),
-                          UiHelper.verticalSpace(height: 4),
-                          Row( mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset('assets/images/studio.png',height: 15,width: 14,),
-                              UiHelper.horizontalSpace(width: 12),
-                              smallText12(context, 'Tictoc Studio'),
-                            ],
-                          ),
-                          UiHelper.verticalSpace(height: 12),
-                        ],
-                      ),
                     ),
-                  ],
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -353,11 +134,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   child: TabBarView(
                     controller: _tabController,
                     children:  [
-                      // Center(child: Text('Explore Content', style: TextStyle(color: Colors.white))),
-                      const GalleryView(),
-                      Center(child: largeText16(context, 'Bookmark')),
-                      //  ReelsScreen(),
-                      // Center(child: Text('For You Content', style: TextStyle(color: Colors.white))),
+                      state.status == TicTocStatus.getUserContentLoading ? const CustomLoader() :
+                      GalleryView(getUserContentResponse:getUserContentResponse,getProfileResponse: getProfileResponse,),
+                      const BookmarkedReels(),
+                     // Center(child: largeText16(context, 'Bookmark')),
                     ],
                   ),
                 ),
@@ -371,6 +151,6 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     );
   }
   Future<void> _refreshPage() async{
-    await _getHomeScreenAPi();
+    await _getProfileAPi();
   }
 }

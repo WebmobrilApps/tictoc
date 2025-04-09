@@ -1,5 +1,12 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:tictoc/cubit/tictoc_cubit.dart';
+import 'package:tictoc/model/for_you_feed_response.dart';
+import 'package:tictoc/utils/custom_loader.dart';
+import 'package:tictoc/utils/error_display.dart';
 
 import 'widgets/video_reel.dart';
 
@@ -29,22 +36,60 @@ class ForYou extends StatefulWidget {
 }
 
 class _ForYouState extends State<ForYou> {
+  ForYouFeedResponse forYouFeedResponse = ForYouFeedResponse();
 
+  @override
+  void initState() {
+    _forYouFeedAPI();
+    super.initState();
+  }
+
+  Future<void> _forYouFeedAPI() async {
+    await BlocProvider.of<TicTocCubit>(context).forYouFeedCall("1", "10");
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: PageView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: videoUrls.length,
-        itemBuilder: (context, index) {
-          return VideoReel(
-            videoUrl: videoUrls[index],
+      body: BlocConsumer<TicTocCubit,TicTocState>(
+        listener: (context,state){
+          print("sate.status:${state.status}");
+          if(state.status == TicTocStatus.forYouFeedSuccess){
+            Loader.hide();
+            forYouFeedResponse = state.responseData?.response as ForYouFeedResponse;
+          }
+        },
+        builder: (context,state){
+          if (state.status == TicTocStatus.forYouFeedLoading) {
+            return const CustomLoader();
+          }
+          if (state.status == TicTocStatus.forYouFeedError) {
+            return CustomErrorWidget(
+              errorMessage: state.errorData?.message ?? state.error,
+              statusCode: state.errorData?.code,
+              onRetry: _forYouFeedAPI,
+              onRefresh: _refreshPage,
+            );
+          }
+          return PageView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: videoUrls.length,
+            itemBuilder: (context, index) {
+              return VideoReel(
+                videoUrl: videoUrls[index],
+              );
+            },
           );
+
+
         },
       ),
     );
+  }
+
+  Future<void> _refreshPage() async{
+    await _forYouFeedAPI();
   }
 }
 

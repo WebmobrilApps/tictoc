@@ -74,8 +74,8 @@ class _VideoReelState extends State<VideoReel> {
               DeviceOrientation.portraitUp,
             ],
           ),
-          const ReelsSideIcons(),
-          const ReelsBottomDetails(),
+          const ReelsSideIcons(fromPage:'ForYouTab'),
+          const ReelsBottomDetails(fromPage:'ForYouTab'),
         ],
       ),
     );

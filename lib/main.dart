@@ -11,8 +11,10 @@ import 'package:tictoc/repository/tictoc_repository.dart';
 import 'package:tictoc/screens/auth/interest.dart';
 //import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:tictoc/screens/auth/sign_in.dart';
+import 'package:tictoc/screens/banuba_video_editor/audio_browser.dart';
 import 'package:tictoc/screens/bottomnavigationbar/bottomnavigation.dart';
 import 'package:tictoc/utils/constants.dart';
+import 'package:tictoc/utils/network_check/connectivity_listener.dart';
 import 'package:tictoc/utils/shared_preference.dart';
 
 import 'firebase_options.dart';
@@ -21,13 +23,6 @@ bool loginValue = false;
 bool isIOSDevice = true;
 String deviceType = "";
 String userName = "";
-
-
-
-/*void main() {
-  getStoredValue();
-  runApp(const MyApp());
-}*/
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -41,43 +36,16 @@ void main() async {
       systemNavigationBarIconBrightness:Brightness.dark,
     statusBarIconBrightness:Brightness.dark,
   ));
-  // await FirebaseApi().initNotifications();
-  /*if (Platform.isAndroid) {
-    deviceType = 'android';
-    await FirebaseMessaging.instance.requestPermission(
-        alert: true, badge: true, provisional: false, sound: true);
-  } else {
-    deviceType = 'ios';
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-  }
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await PushNotificationService().setupInteractedMessage();
-  //
-  // ///notification permission
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-      IOSFlutterLocalNotificationsPlugin>()
-      ?.requestPermissions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );*/
 
   getStoredValue();
   await Future.delayed(const Duration(seconds: 2));
   FlutterNativeSplash.remove();
   runApp(const MyApp());
 }
+
+@pragma('vm:entry-point')
+void audioBrowser() => runApp(AudioBrowserWidget());
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -124,41 +92,23 @@ class _MyAppState extends State<MyApp> {
           );
         },
         child: loginValue == true
-           ? const PersistentCustomBottomMenu(initialIndex:0):
-         //    const Interest():
+           ? const ConnectivityListener(child: PersistentCustomBottomMenu(initialIndex:0)):
+        //   ? PersistentCustomBottomMenu(initialIndex:0):
+
               const SignIn(),
       ),
     );
   }
-  /*Widget build(BuildContext context) {
-    return ResponsiveSizer(builder: (context, orientation, screenType) {
-      screenHeight = MediaQuery.of(context).size.height;
-      screenWidth = MediaQuery.of(context).size.width;
-      print('screenHeight:$screenHeight');
-      print('screenWidth:$screenHeight');
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
-      return MaterialApp(
-        title: 'TicToc',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const SignIn(),
-      );
-    });
-  }*/
 }
 
 
 Future<void> getStoredValue() async {
   var token = PreferenceManager.getStringValue(key: TOKEN) ?? '';
   isGuest = PreferenceManager.getBooleanValue(key: ISGUEST) ?? false;
+  userID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
 
   print('isGuest:$isGuest');
+  print('userID:$userID');
   print('tokenMain:$token');
   if (token != '') {
     loginValue = true;

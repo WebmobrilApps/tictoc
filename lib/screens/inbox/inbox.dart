@@ -295,12 +295,12 @@ class _InboxState extends State<Inbox> {
                                 children: [
                                   MyInkWell(
                                     onTap:()async{
-                                      PersistentNavBarNavigator.pushNewScreen(
+                                    /*  PersistentNavBarNavigator.pushNewScreen(
                                         context,
                                         screen: const ChatScreen(),
                                         withNavBar: false, // OPTIONAL VALUE. True by default.
                                         pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                                      );
+                                      );*/
                                     },
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,6 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 
+class CustomErrorWidget extends StatelessWidget {
+  final String? errorMessage;
+  final int? statusCode;
+  final VoidCallback onRetry;
+  final Future<void> Function() onRefresh;
+
+  const CustomErrorWidget({
+    super.key,
+    required this.errorMessage,
+    required this.statusCode,
+    required this.onRetry,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: ErrorDisplayWidget(
+            error: errorMessage ?? 'Unknown error occurred',
+            statusCode: statusCode ?? 0,
+            onRetry: onRetry,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
 class ErrorDisplayWidget extends StatelessWidget {
   final String error;
   final int statusCode;

@@ -150,7 +150,8 @@ class _ForYouState extends State<ForYou> with WidgetsBindingObserver {
                                 Colors.black.withOpacity(0.0),
                                 Colors.black.withOpacity(0.2),
                                 Colors.black.withOpacity(0.5),
-                              ],),),
+                              ],),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

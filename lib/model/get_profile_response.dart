@@ -2,7 +2,7 @@ class GetProfileResponse {
   final int? resCode;
   final bool? success;
   final String? msg;
-  final Data? data;
+  Data? data;
 
   GetProfileResponse({
     this.resCode,
@@ -31,9 +31,8 @@ class Data {
   final int? guest;
   String? username;
   String? tictocid;
-  List<Link>? link;
   String? bio;
-  final dynamic profilePic;
+  dynamic profilePic;
   final String? countryCode;
   final String? email;
   final String? phone;
@@ -43,6 +42,9 @@ class Data {
   final dynamic fcmToken;
   final String? createdDate;
   final String? updatedDate;
+  final int? followers;
+  final int? following;
+  final int? likes;
 
   Data({
     this.pkUser,
@@ -50,7 +52,6 @@ class Data {
     this.guest,
     this.username,
     this.tictocid,
-    this.link,
     this.bio,
     this.profilePic,
     this.countryCode,
@@ -62,6 +63,9 @@ class Data {
     this.fcmToken,
     this.createdDate,
     this.updatedDate,
+    this.followers,
+    this.following,
+    this.likes,
   });
 
   Data.fromJson(Map<String, dynamic> json)
@@ -70,7 +74,6 @@ class Data {
         guest = json['guest'] as int?,
         username = json['username'] as String?,
         tictocid = json['tictocid'] as String?,
-        link = (json['link'] as List?)?.map((dynamic e) => Link.fromJson(e as Map<String,dynamic>)).toList(),
         bio = json['bio'] as String?,
         profilePic = json['profile_pic'],
         countryCode = json['countryCode'] as String?,
@@ -81,7 +84,10 @@ class Data {
         isVerify = json['isVerify'] as int?,
         fcmToken = json['fcmToken'],
         createdDate = json['createdDate'] as String?,
-        updatedDate = json['updatedDate'] as String?;
+        updatedDate = json['updatedDate'] as String?,
+        followers = json['followers'] as int?,
+        following = json['following'] as int?,
+        likes = json['likes'] as int?;
 
   Map<String, dynamic> toJson() => {
     'pk_user' : pkUser,
@@ -89,7 +95,6 @@ class Data {
     'guest' : guest,
     'username' : username,
     'tictocid' : tictocid,
-    'link' : link?.map((e) => e.toJson()).toList(),
     'bio' : bio,
     'profile_pic' : profilePic,
     'countryCode' : countryCode,
@@ -100,25 +105,9 @@ class Data {
     'isVerify' : isVerify,
     'fcmToken' : fcmToken,
     'createdDate' : createdDate,
-    'updatedDate' : updatedDate
-  };
-}
-
-class Link {
-  final String? type;
-  final String? link;
-
-  Link({
-    this.type,
-    this.link,
-  });
-
-  Link.fromJson(Map<String, dynamic> json)
-      : type = json['type'] as String?,
-        link = json['link'] as String?;
-
-  Map<String, dynamic> toJson() => {
-    'type' : type,
-    'link' : link
+    'updatedDate' : updatedDate,
+    'followers' : followers,
+    'following' : following,
+    'likes' : likes
   };
 }

@@ -51,7 +51,7 @@ class _LoginRequiredBottomSheetWidgetState extends State<LoginRequiredBottomShee
               onPressed: () {
                 Navigator.pop(context);
                 if(widget.fromPage=="uploadVideo"){
-                  Navigator.pop(context);
+                //  Navigator.pop(context);
                 }
                // widget.controller?.jumpToTab(0);
                // CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/screens/home/explore.dart';
-import 'package:tictoc/screens/home/following.dart';
+import 'package:tictoc/screens/home/following/following_feed.dart';
 import 'package:tictoc/screens/home/foryou/for_you.dart';
 import 'package:tictoc/screens/search/search_screen.dart';
 import 'package:tictoc/utils/color.dart';
@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 children:  const [
                   // Center(child: Text('Explore Content', style: TextStyle(color: Colors.white))),
                   Explore(),
-                  Following(),
+                  FollowingFeed(),
                   ForYou(),
            //       ReelsScreen(),
                   //ForYou(),

@@ -2,19 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:tictoc/screens/auth/forgot_password.dart';
-import 'package:tictoc/screens/dummy/page_controller.dart';
-//import 'package:tictoc/screens/dummy/reel1.dart';
-import 'package:tictoc/screens/dummy/white_code_reels_dummy.dart';
 import 'package:tictoc/screens/home/explore.dart';
-import 'package:tictoc/screens/home/following.dart';
-import 'package:tictoc/screens/home/foryou/for_you.dart';
+import 'package:tictoc/screens/home/following/following_feed.dart';
 import 'package:tictoc/screens/search/search_screen.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/ui_helper.dart';
-import 'package:velocity_x/velocity_x.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -124,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPageChanged: _onPageChanged,
                 children: [
                   Explore(),
-                  Following(),
+                  FollowingFeed(),
                   //  ForYou(),
                   SizedBox(),
                 ],

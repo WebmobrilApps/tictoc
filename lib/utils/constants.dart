@@ -7,7 +7,6 @@ import 'dart:async';
 //String BASEURL = "http://74.102.68.36:9208";
 String BASEURL = "http://52.22.241.165:10055";
 String wsContext = "";
-String userID = "";
 String savedToken = "";
 int ipadScreenSize = 600;
 double screenHeight = 926.0;
@@ -15,11 +14,17 @@ double screenWidth = 428.0;
 String? deviceId;
 bool isGuest = false;
 
+int? userID;
+
 const TOKEN = 'token';
 const EMAIL_ID = 'emailId';
 const USER_ID = 'userId';
 const PHONE_NO = 'phone_no';
 const ISGUEST = 'isGuest';
+
+const amNotFollowing = 0;
+const amFollowing = 1;
+
 
 final StreamController<bool> videoPauseStream = StreamController<bool>.broadcast();
 

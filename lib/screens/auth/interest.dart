@@ -11,7 +11,8 @@ import 'package:tictoc/utils/shared_preference.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 class Interest extends StatefulWidget {
   final String tmpToken;
-  const Interest({super.key, required this.tmpToken});
+  final int userID;
+  const Interest({super.key, required this.tmpToken,required this.userID});
 
   @override
   State<Interest> createState() => _InterestState();
@@ -39,6 +40,8 @@ class _InterestState extends State<Interest> {
             if (state.status == TicTocStatus.userInterestSuccess){
              // UiHelper.toastMessage(state.responseData?.response ?? '');
               PreferenceManager.insertValue(key: TOKEN, value: widget.tmpToken);
+              PreferenceManager.insertValue(key: USER_ID, value: widget.userID);
+              userID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
               CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
             }
             else if(state.status == TicTocStatus.userInterestError){

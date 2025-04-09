@@ -100,7 +100,9 @@ class _OtpVerificationState extends State<OtpVerification> {
                 CustomNavigator.push(context: context, screen: ResetPassword(tempToken:widget.tempToken));
               }else{
              //   PreferenceManager.insertValue(key: TOKEN, value: verifyOtpResponse.data?.token.toString());
-                CustomNavigator.pushAndRemoveUntil(context: context, screen:  Interest(tmpToken: verifyOtpResponse.data?.token??'',));
+                CustomNavigator.pushAndRemoveUntil(context: context, screen:  Interest(
+                    tmpToken: verifyOtpResponse.data?.token??'',
+                    userID:verifyOtpResponse.data?.user?.pkUser??0));
               }
             }
             if(state.status == TicTocStatus.resendVerifyOTPSuccess){

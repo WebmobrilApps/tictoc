@@ -7,7 +7,8 @@ import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 class ReelsBottomDetails extends StatefulWidget {
-  const ReelsBottomDetails({super.key});
+  final String fromPage;
+  const ReelsBottomDetails({super.key, required this.fromPage});
 
   @override
   State<ReelsBottomDetails> createState() => _ReelsBottomDetailsState();
@@ -17,7 +18,7 @@ class _ReelsBottomDetailsState extends State<ReelsBottomDetails> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 0,
+      bottom:  widget.fromPage=="FollowingTab"?80:0,
       left: 0,
       right: 00, // Add right padding to avoid mingling with other widgets
       child: Container(
@@ -99,6 +100,7 @@ class _ReelsBottomDetailsState extends State<ReelsBottomDetails> {
               ],
             ),
             UiHelper.verticalSpace(height: 8),
+            widget.fromPage=="FollowingTab"?const SizedBox():
             IntrinsicWidth(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),

@@ -571,7 +571,9 @@ Widget customMultipleTextField1({
             child: TextFormField(
               controller: controller,
               keyboardType: TextInputType.multiline,
-              maxLines: null,
+            //  maxLines: null,
+              maxLines: 4,
+              minLines: 1,
               style: GoogleFonts.inter(
                 fontWeight: textFontWeight,
                 fontSize: textFontSize,
@@ -749,11 +751,11 @@ class MyInkWell extends StatelessWidget {
       onTap: () async {
      //   FocusScope.of(context).requestFocus(FocusNode());
         FocusScope.of(context).unfocus();
-        if (await isConnected()) {
+      //  if (await isConnected()) {
           onTap();
-        } else {
+      /*  } else {
           UiHelper.toastMessage(notConnectedMessage);
-        }
+        }*/
       },
       child: child,
     );
@@ -798,6 +800,7 @@ Widget cachedImageWidget({
   double? width = 65.0,
   double borderRadiusValue = 10.0, // Default value for borderRadius
   BoxFit fit = BoxFit.cover, // Default value for fit
+  bool? hasProfileImg = false,
 }) {
   return CachedNetworkImage(
     imageUrl: image.isNotEmpty ? image : "",
@@ -817,8 +820,7 @@ Widget cachedImageWidget({
     ),
     errorWidget: (context, url, error) =>  ClipRRect(
       borderRadius: BorderRadius.circular(borderRadiusValue),
-      child: Image.asset(
-        'assets/images/no_image.jpeg',
+      child: Image.asset(hasProfileImg==true?'assets/images/no_profile.png':'assets/images/no_image.jpeg',
         height: height,width: width,
       ),
     ),
@@ -829,12 +831,17 @@ Widget cachedImageFullHeight({
   required String image,
   double borderRadiusValue = 20.0, // Default value for borderRadius
   BoxFit fit = BoxFit.cover, // Default value for fit
+  double? width = double.infinity,
+  double? height,                  // Optional height
+
 }) {
   return ClipRRect(
     borderRadius: BorderRadius.circular(borderRadiusValue),
     child: CachedNetworkImage(
       imageUrl: image,
       fit: fit,
+      width: width,
+      height: height,
       placeholder: (context, url) => const SizedBox(
         child: Center(
           child: CupertinoActivityIndicator(
@@ -928,43 +935,6 @@ Future<String?> getDeviceId() async {
 }
 
 
-class SuffixIcon extends StatelessWidget {
-  final String imagePath;
-  final double elevation;
-  final Color backgroundColor;
-  final EdgeInsets padding;
-  final BorderRadius borderRadius;
-  final double width;
-
-  const SuffixIcon({
-    super.key,
-    required this.imagePath,
-    this.elevation = 2.0,
-    this.backgroundColor = const Color(0xFFEEEEEE), // default grey shade
-    this.padding = const EdgeInsets.all(12.0),
-    this.borderRadius = const BorderRadius.only(
-      topRight: Radius.circular(10.0),
-      bottomRight: Radius.circular(10.0),
-    ),
-    this.width = 40,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: Material(
-        elevation: elevation,
-        color: backgroundColor,
-        borderRadius: borderRadius,
-        child: Padding(
-          padding: padding,
-          child: Image.asset(imagePath),
-        ),
-      ),
-    );
-  }
-}
 
 
 class TextFormFieldWithLabel extends StatelessWidget {
@@ -1200,7 +1170,8 @@ class GreenCircle extends StatelessWidget {
 
 class SmallPinkButton extends StatelessWidget {
   final VoidCallback? onTap; // Make onTap nullable
-  final String label;
+  final String? label;
+  final Widget? icon;
   final Color backgroundColor;
   final Color textColor;
   final double fontSize;
@@ -1208,11 +1179,14 @@ class SmallPinkButton extends StatelessWidget {
   final EdgeInsetsGeometry padding; // Padding for the button
   final BorderRadiusGeometry borderRadius; // Border radius
   final Border? border; // Optional border property
+  final bool isLoading;
+  final double? width;
 
   const SmallPinkButton({
     super.key,
     this.onTap, // onTap is now optional
-    required this.label,
+    this.label,
+    this.icon,
     this.backgroundColor = buttonColor,
     this.textColor = Colors.white,
     this.fontSize = 11.0,
@@ -1220,6 +1194,8 @@ class SmallPinkButton extends StatelessWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
     this.borderRadius = const BorderRadius.all(Radius.circular(4)),
     this.border, // Default is no border
+    this.isLoading = false,
+    this.width,
 
   });
 
@@ -1233,12 +1209,15 @@ class SmallPinkButton extends StatelessWidget {
       },
       child: Container(
         padding: padding,
+        width: width,
         decoration: BoxDecoration(
           border: border, // Use the optional border
           color: backgroundColor,
           borderRadius: borderRadius,
         ),
-        child: smallText12(context, label,textColor: textColor,fontSize:fontSize,fontWeight: fontWeight),
+        child: isLoading
+            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: CupertinoColors.white,strokeWidth:2.5),):
+            label != null?Center(child: smallText12(context, label!,textColor: textColor,fontSize:fontSize,fontWeight: fontWeight)): icon!,
       ),
     );
   }
@@ -1248,3 +1227,34 @@ String getCurrentTime() {
   final now = DateTime.now();
   return DateFormat('h:mm a').format(now); // Formats time like "2:17 PM"
 }
+
+/*class EmptyListFound extends StatelessWidget {
+  final double topPadding;
+  final String message;
+  final double fontSize;
+  final Color textColor;
+
+  const EmptyListFound({
+    super.key,
+    this.topPadding = 150,
+    this.message = 'There is no suggestion list',
+    this.fontSize = 18,
+    this.textColor = appBlackColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Padding(
+        padding: EdgeInsets.only(top: topPadding),
+        child: Center(
+          child: mediumText14(context, message, fontSize: fontSize,textColor: textColor,textAlign: TextAlign.center),
+        ),
+      ),
+    );
+  }
+}*/
+
+
+

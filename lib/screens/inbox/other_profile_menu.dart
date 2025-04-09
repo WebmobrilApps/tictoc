@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tictoc/screens/profile/other_profile_details.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/custom_appbar.dart';
 import 'package:tictoc/utils/custom_navigator.dart';
@@ -35,7 +34,7 @@ class _OtherProfileMenuState extends State<OtherProfileMenu> {
                   child: MyInkWell(
                     onTap:()async{
                       //   Navigator.of(context).pop();
-                      CustomNavigator.push(context: context, screen: const OtherProfileDetails());
+                   //   CustomNavigator.push(context: context, screen: OtherProfileDetails(userId:suggestedData.pkUser.toString()));
                     },
                     child: Row(
                       children: [

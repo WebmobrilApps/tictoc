@@ -1,26 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:tictoc/screens/auth/forgot_password.dart';
-import 'package:tictoc/screens/auth/sign_up.dart';
-import 'package:tictoc/screens/dummy/blackbox.dart';
+import 'package:tictoc/screens/banuba_video_editor/banuba_video_editor_helper.dart';
 import 'package:tictoc/screens/friends/friends.dart';
-import 'package:tictoc/screens/home/foryou/for_you.dart';
 import 'package:tictoc/screens/home/homescreen.dart';
 import 'package:tictoc/screens/inbox/inbox.dart';
-import 'package:tictoc/screens/preload/home_page.dart';
-import 'package:tictoc/screens/preload/preload_page.dart';
 import 'package:tictoc/screens/profile/profile.dart';
+import 'package:tictoc/screens/upload/upload_image.dart';
 import 'package:tictoc/screens/upload/upload_video.dart';
-import 'package:tictoc/utils/bottommenuicons.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
-import 'package:tictoc/utils/custom_navigator.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/login_required_bottomsheet.dart';
-import 'package:tictoc/utils/shared_preference.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -35,23 +27,20 @@ class PersistentCustomBottomMenu extends StatefulWidget {
 
 class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu> {
   int _currentIndex = 0;
-
-  PersistentTabController _controller = PersistentTabController(initialIndex: 0);
-
-
+  final PersistentTabController _controller = PersistentTabController(initialIndex: 0);
   DateTime? lastPressed;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-
   }
 
   @override
   void dispose() {
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> buildScreens() {
@@ -84,22 +73,18 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
           activeColorPrimary: buttonColor,
           inactiveColorPrimary: const Color(0xff0B0B0B),
         ),
-        /*   PersistentBottomNavBarItem(
-          icon: const Icon(Icons.add , color: Colors.white , size: 33),
-          activeColorPrimary: const Color(0xffFF0236),
-          inactiveColorPrimary: Colors.white,
-        ),*/
         PersistentBottomNavBarItem(
           icon: Image.asset('assets/images/menuPlus.png', width: 50, height: 38,).pOnly(bottom: 8),
           activeColorPrimary: buttonColor,
           inactiveColorPrimary: Colors.white,
-          onPressed: (context) {
-
+          onPressed: isGuest?null:(context) {
+          //  BanubaVideoEditorHelper.startVideoEditor(context ?? this.context,_controller); // ✅ Use helper class
             Navigator.of(context ?? this.context, rootNavigator: true).push(
               MaterialPageRoute(
-                builder: (_) => UploadVideo(controller: _controller), // ✅ Ensure `_controller` is not null
+                builder: (_) => UploadImage(controller: _controller), // ✅ Ensure `_controller` is not null
               ),
             );
+
           },
         ),
         PersistentBottomNavBarItem(
@@ -182,20 +167,16 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
                 _controller.jumpToTab(_currentIndex);
                 return;
               }
-
-              if ((index == 1 || index == 3 || index == 4) && isGuest) {
+              if ((index != 0) && isGuest) {
                 // Show login required sheet before changing state
                 LoginRequiredBottomSheet.show(context);
                 _controller.jumpToTab(_currentIndex);
                 return;
               }
-
               setState(() {
                 _currentIndex = index;
               });
             }
-
-
         ),
       ),
     );

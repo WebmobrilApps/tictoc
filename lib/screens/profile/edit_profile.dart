@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/get_profile_response.dart';
+import 'package:tictoc/model/update_profile_response.dart';
 import 'package:tictoc/screens/profile/choose_photo_bottom.dart';
 import 'package:tictoc/screens/profile/widgets/edit_profile_fields.dart';
 import 'package:tictoc/screens/profile/widgets/row_edit_profile_widget.dart';
@@ -31,7 +32,13 @@ class _EditProfileState extends State<EditProfile> {
       body: BlocConsumer<TicTocCubit,TicTocState>(
         listener: (context,state){
           if (state.status == TicTocStatus.updateProfileSuccess){
-            UiHelper.toastMessage(state.responseData?.response ?? '');
+          //  UiHelper.toastMessage(state.responseData?.response ?? '');
+
+            UpdateProfileResponse updateProfileResponse = state.responseData?.response as UpdateProfileResponse;
+            UiHelper.toastMessage(updateProfileResponse.msg ?? '');
+            UiHelper.toastMessage(updateProfileResponse.msg??'');
+            profileData?.profilePic =updateProfileResponse.data?.image??'';
+            Navigator.pop(context, profileData); // Return updated profile data
           }
           else if(state.status == TicTocStatus.updateProfileError){
             print(state.errorData?.message);
@@ -76,6 +83,7 @@ class _EditProfileState extends State<EditProfile> {
                               profileData?.profilePic== null?Image.asset('assets/images/change_photo.png', height: 60, width: 60):
                               cachedImageWidget(
                                   image:"$BASEURL/${profileData?.profilePic??''}",
+                                  hasProfileImg:true,
                                   borderRadiusValue:50,
                                   height: 60,width: 60),),
                             const SizedBox(height: 2,),
@@ -122,7 +130,17 @@ class _EditProfileState extends State<EditProfile> {
                                   profileData?.name = updatedValue; // Update UI with new value
                                 });}},),
                         const SizedBox(height: 10,),
-                        RowEditProfileWidget(title: 'Username', desc: profileData?.username??'',),
+                        RowEditProfileWidget(title: 'Username', desc: profileData?.username??'',
+                          onTap:() async {
+                            final updatedValue = await Navigator.push(context,
+                              MaterialPageRoute(builder: (context) =>  EditProfileFields(titleName: 'Username', titleValue: profileData?.username ?? ''),),
+                            );
+                            print('updatedValue:$updatedValue');
+                            if (updatedValue != null) {
+                              setState(() {
+                                profileData?.username = updatedValue; // Update UI with new value
+                              });}},
+                        ),
                         const SizedBox(height: 10,),
                         RowEditProfileWidget(title: 'TicToc id',
                           desc: profileData?.tictocid??'',
@@ -181,11 +199,19 @@ class _EditProfileState extends State<EditProfile> {
                       isLoading: state.status == TicTocStatus.updateProfileLoading,
                       labelText: 'Update',
                       onTap: (){
-                        BlocProvider.of<TicTocCubit>(context).updateProfileCall(
-                            selectedImage,
-                            profileData?.name??'',
-                            jsonEncode(profileData?.link?.map((e) => e.toJson()).toList() ?? []),
-                            profileData?.bio??'',);
+                        print('profileData?.name??'':${profileData?.name??''}');
+                        if(profileData?.bio==null || profileData?.bio==""){
+                          UiHelper.toastMessage('Bio should not empty');
+                        }else{
+                          BlocProvider.of<TicTocCubit>(context).updateProfileCall(
+                              selectedImage,
+                              profileData?.name??'',
+                              profileData?.bio??'',
+                              profileData?.username??''
+                            // jsonEncode(profileData?.link?.map((e) => e.toJson()).toList() ?? []),
+                          );
+                        }
+
                       }
                   )),
                 ],
