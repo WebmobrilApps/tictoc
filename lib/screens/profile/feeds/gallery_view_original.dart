@@ -5,16 +5,13 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/model/get_profile_response.dart' as dfrProfile;
 import 'package:tictoc/model/get_user_content_response.dart'as dfrContent;
 import 'package:tictoc/screens/profile/feeds/detailed_feed.dart';
-import 'package:tictoc/screens/profile/profile.dart';
 import 'package:tictoc/utils/color.dart';
-import 'package:tictoc/utils/custom_loader.dart';
 import 'package:tictoc/utils/empty_list_found.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 class GalleryView extends StatefulWidget {
   final dfrContent.GetUserContentResponse getUserContentResponse;
   final dfrProfile.GetProfileResponse getProfileResponse;
-  final bool showLoader;
-  const GalleryView({super.key, required this.getUserContentResponse, required this.getProfileResponse, required this.showLoader});
+  const GalleryView({super.key, required this.getUserContentResponse, required this.getProfileResponse});
 
   @override
   State<GalleryView> createState() => _GalleryViewState();
@@ -22,11 +19,9 @@ class GalleryView extends StatefulWidget {
 
 class _GalleryViewState extends State<GalleryView> {
   List<dfrContent.Data> contentData = [];
-  bool showLoader = true;
   @override
   void initState() {
     super.initState();
-    showLoader = widget.showLoader;
     contentData = List.from(widget.getUserContentResponse.data!); // safe copy
   }
   @override
@@ -34,8 +29,7 @@ class _GalleryViewState extends State<GalleryView> {
     // List<dfrContent.Data>? contentData = widget.getUserContentResponse.data; // Extract API data
 
 
-    return widget.showLoader==true?const CustomLoader():
-    SingleChildScrollView(
+    return SingleChildScrollView(
       child: Column(
         children: [
           Padding(
@@ -68,14 +62,10 @@ class _GalleryViewState extends State<GalleryView> {
                     );
 
                     if (result != null && result['deleted'] == true) {
-                      profileKey.currentState?.refreshPage();
-                    }
-
-                  /*  if (result != null && result['deleted'] == true) {
                       setState(() {
                         contentData.removeWhere((element) => element.pkVideos.toString() == result['id'].toString());
                       });
-                    }*/
+                    }
                   },
                   child: Column(
                     children: [

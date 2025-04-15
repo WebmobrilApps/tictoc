@@ -751,11 +751,11 @@ class MyInkWell extends StatelessWidget {
       onTap: () async {
      //   FocusScope.of(context).requestFocus(FocusNode());
         FocusScope.of(context).unfocus();
-      //  if (await isConnected()) {
+        if (await isConnected()) {
           onTap();
-      /*  } else {
+        } else {
           UiHelper.toastMessage(notConnectedMessage);
-        }*/
+        }
       },
       child: child,
     );
@@ -1226,6 +1226,20 @@ class SmallPinkButton extends StatelessWidget {
 String getCurrentTime() {
   final now = DateTime.now();
   return DateFormat('h:mm a').format(now); // Formats time like "2:17 PM"
+}
+
+class NoLeadingSpaceFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    // If the new text starts with a space, keep the old value
+    if (newValue.text.startsWith(' ')) {
+      return oldValue;
+    }
+    return newValue;
+  }
 }
 
 /*class EmptyListFound extends StatelessWidget {

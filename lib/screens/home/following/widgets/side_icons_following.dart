@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +8,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/screens/home/following/widgets/comment_following.dart';
 import 'package:tictoc/screens/home/sound_screen.dart';
+import 'package:tictoc/screens/otherprofile/other_profile.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/color.dart';
@@ -57,6 +60,7 @@ class _SideIconsFollowingState extends State<SideIconsFollowing> {
           });
         }
         if (state.status == TicTocStatus.hitLikeFollowingReelsError) {
+          log(state.errorData?.code.toString()??'');
           UiHelper.toastMessage(state.errorData?.message ?? state.error ?? "");
         }
       },
@@ -67,20 +71,30 @@ class _SideIconsFollowingState extends State<SideIconsFollowing> {
           child: SizedBox(
             child: Column(
               children: [
-                Stack( alignment: Alignment.bottomCenter,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 11),
-                      child: cachedImageWidget(
-                          image:"$BASEURL/${reelsData?.profilePic??''}",
-                          borderRadiusValue:50,
-                          hasProfileImg:true,
-                          height: 49,width: 49),
-                    ),
-                    Positioned(bottom: 2,
-                        right: 14,
-                        child: Image.asset('assets/images/plus.png', width: 20.47,height:21.74,)),
-                  ],
+                MyInkWell(
+                  onTap: () async {
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen:  OtherProfile(userId: reelsData!.uploaderId.toString()),
+                      withNavBar: false, // OPTIONAL VALUE. True by default.
+                      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                    );
+                  },
+                  child: Stack( alignment: Alignment.bottomCenter,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 11),
+                        child: cachedImageWidget(
+                            image:"$BASEURL/${reelsData?.profilePic??''}",
+                            borderRadiusValue:50,
+                            hasProfileImg:true,
+                            height: 49,width: 49),
+                      ),
+                      Positioned(bottom: 2,
+                          right: 14,
+                          child: Image.asset('assets/images/plus.png', width: 20.47,height:21.74,)),
+                    ],
+                  ),
                 ),
                 UiHelper.verticalSpace(height: 14),
                 MyInkWell(

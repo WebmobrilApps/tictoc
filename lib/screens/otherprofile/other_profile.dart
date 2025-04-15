@@ -5,9 +5,11 @@ import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/get_other_profile_response.dart';
 import 'package:tictoc/model/get_other_user_content_response.dart';
 import 'package:tictoc/model/get_user_content_response.dart';
+import 'package:tictoc/screens/otherprofile/bookmark/other_bookmark_gallery.dart';
 import 'package:tictoc/screens/otherprofile/other_gallery_view.dart';
 import 'package:tictoc/screens/otherprofile/other_profile_appbar.dart';
 import 'package:tictoc/screens/profile/bookmark/bookmarked_reels.dart';
+import 'package:tictoc/screens/profile/bookmark/my_bookmark_gallery.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_loader.dart';
@@ -110,7 +112,8 @@ class _OtherProfileState extends State<OtherProfile> with SingleTickerProviderSt
                     children:  [
                       state.status == TicTocStatus.getOtherUserContentLoading ? const CustomLoader() :
                       OtherGalleryView(getOtherUserContentResponse:getOtherUserContentResponse, getOtherProfileResponse: getOtherProfileResponse,),
-                      BookmarkedReels(otherUserID:widget.userId),
+                 //     BookmarkedReels(otherUserID:widget.userId),
+                      OtherBookmarkGallery(otherUserID:widget.userId,getOtherProfileResponse: getOtherProfileResponse,),
                       //  ReelsScreen(),
                       // Center(child: Text('For You Content', style: TextStyle(color: Colors.white))),
                     ],

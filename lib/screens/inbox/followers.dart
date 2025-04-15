@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/follower_list_response.dart';
-import 'package:tictoc/screens/inbox/chat_screen.dart';
+import 'package:tictoc/screens/otherprofile/other_profile.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_appbar.dart';
 import 'package:tictoc/utils/custom_loader.dart';
@@ -22,16 +22,55 @@ class Followers extends StatefulWidget {
 class _FollowersState extends State<Followers> {
   FollowerListResponse followerListResponse = FollowerListResponse();
   int selectedIndex = -1;
+
+  bool showLoader = true;
+  int currentPage = 1;
+  final int limit = 14;
+  bool isLoadingMore = false;
+  bool hasMore = true;
+  int totalItems = 0;
+  final ScrollController _scrollController = ScrollController();
+
+
   @override
   void initState() {
     getFollowersListApi();
+    _scrollController.addListener(_onScroll);
     super.initState();
   }
-
-  Future<void> getFollowersListApi() async {
-    await BlocProvider.of<TicTocCubit>(context).followerListCall("1");
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+        !isLoadingMore && hasMore) {
+      _loadMore();
+    }
+  }
+  Future<void> getFollowersListApi({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      setState(() => isLoadingMore = true);
+      currentPage++;
+    } else {
+      currentPage = 1;
+      setState(() {
+        showLoader = true;
+        hasMore = true;
+      });
+    }
+    await BlocProvider.of<TicTocCubit>(context).followerListCall(currentPage.toString(), limit.toString());
+  }
+  Future<void> _loadMore() async {
+    await getFollowersListApi(isLoadMore: true);
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+ /* Future<void> getFollowersListApi() async {
+    await BlocProvider.of<TicTocCubit>(context).followerListCall("1","50");
+  }
+*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,9 +79,26 @@ class _FollowersState extends State<Followers> {
       body: BlocConsumer<TicTocCubit,TicTocState>(
         listener: (context,state){
           print("sate.status:${state.status}");
-          if(state.status == TicTocStatus.followerListSuccess){
+       /*   if(state.status == TicTocStatus.followerListSuccess){
             Loader.hide();
             followerListResponse = state.responseData?.response as FollowerListResponse;
+          }*/
+          if (state.status == TicTocStatus.followerListSuccess) {
+            final response = state.responseData?.response as FollowerListResponse;
+            final newData = response.data ?? [];
+
+            setState(() {
+              totalItems = response.total ?? 0;
+
+              if (currentPage == 1) {
+                followerListResponse.data = newData;
+              } else {
+                followerListResponse.data?.addAll(newData);
+              }
+              showLoader = false;
+              isLoadingMore = false;
+              hasMore = (followerListResponse.data?.length ?? 0) < totalItems;
+            });
           }
           if(state.status == TicTocStatus.followUserSuccess){
             Loader.hide();
@@ -50,13 +106,11 @@ class _FollowersState extends State<Followers> {
           }
           if (state.status == TicTocStatus.followUserError){
             Loader.hide();
-            print(state.errorData?.message);
-            String message = state.errorData?.message ?? state.error ?? "";
-            UiHelper.toastMessage(message);
+            UiHelper.toastMessage(state.errorData?.message ?? state.error ?? "");
           }
         },
         builder: (context,state){
-          if (state.status == TicTocStatus.followerListLoading) {
+          if (showLoader) {
             return const CustomLoader();
           }
           if (state.status == TicTocStatus.followerListError) {
@@ -70,6 +124,7 @@ class _FollowersState extends State<Followers> {
           return  RefreshIndicator(
             onRefresh: _refreshPage,
             child: SingleChildScrollView(
+              controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               child: Padding(
                 padding: const EdgeInsets.only(top:4,left: 18,right: 18),
@@ -95,7 +150,8 @@ class _FollowersState extends State<Followers> {
                                 Expanded(
                                   child: MyInkWell(
                                     onTap:()async{
-                                      CustomNavigator.push(context: context, screen:  ChatScreen(userId:followersData.userId.toString()));
+                                    //  CustomNavigator.push(context: context, screen:  ChatScreen(userId:followersData.userId.toString()));
+                                      CustomNavigator.push(context: context, screen: OtherProfile(userId:followersData.userId.toString()));
                                     },
                                     child: Row(
                                       children: [
@@ -160,6 +216,8 @@ class _FollowersState extends State<Followers> {
                       },
                     ),
                     const SizedBox(height: 2,),
+                    if (isLoadingMore) const CustomLoader(size: 30),
+                    const SizedBox(height: 12,),
                   ],
                 ),
               ),
@@ -171,7 +229,11 @@ class _FollowersState extends State<Followers> {
       ),
     );
   }
-  Future<void> _refreshPage() async{
+  Future<void> _refreshPage() async {
+    setState(() {
+      showLoader = true;
+      hasMore = true;
+    });
     await getFollowersListApi();
   }
 }

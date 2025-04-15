@@ -28,59 +28,14 @@ class _CommentBottomSheetWrapperState extends State<CommentBottomSheetWrapper> {
   bool showLoader = true;
   int _commentCount = 0;
 
-  int currentPage = 1;
-  final int limit = 10;
-  bool hasMore = true;
-  bool isLoadingMore = false;
-  bool showNoMoreMessage = false;
-
-  final ScrollController _scrollController = ScrollController(); // new
-
-
 
   @override
   void initState() {
     super.initState();
     _getAllCommentsApi();
-    _scrollController.addListener(_onScroll);
-
   }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 100 &&
-        !isLoadingMore && hasMore) {
-      _loadMore();
-    }
-  }
-
-  Future<void> _getAllCommentsApi({bool isLoadMore = false}) async {
-    if (isLoadMore) {
-      setState(() => isLoadingMore = true);
-      currentPage++;
-    } else {
-      currentPage = 1;
-    //  showLoader = true;
-      hasMore = true;
-    }
-
-    await BlocProvider.of<TicTocCubit>(context)
-        .getCommentsCall(widget.videoId, currentPage.toString(), limit.toString());
-  }
-
-  Future<void> _loadMore() async {
-    await _getAllCommentsApi(isLoadMore: true);
-  }
-
-
-
-
-  /* Future<void> _getAllCommentsApi() async {
+  Future<void> _getAllCommentsApi() async {
     BlocProvider.of<TicTocCubit>(context).getCommentsCall(widget.videoId, "1", "100");
-  }*/
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -89,47 +44,18 @@ class _CommentBottomSheetWrapperState extends State<CommentBottomSheetWrapper> {
       child: Padding(
         padding: MediaQuery.of(context).viewInsets, // 👈 keyboard-aware padding
         child: DraggableScrollableSheet(
-          initialChildSize: 0.65, // Starts at 50% screen height
-          minChildSize: 0.65,     // Minimum height
+          initialChildSize: 0.6, // Starts at 50% screen height
+          minChildSize: 0.6,     // Minimum height
           maxChildSize: 0.95,    // Full screen when scrolled
           expand: false,
           builder: (context, scrollController) {
             return BlocConsumer<TicTocCubit, TicTocState>(
               listener: (context, state) {
                 if (state.status == TicTocStatus.getCommentsSuccess) {
-                  final response = state.responseData?.response as GetCommentsResponse;
-                  final newData = response.data ?? [];
-
-                  setState(() {
-                    if (currentPage == 1) {
-                      getCommentsResponse.data = newData;
-                    } else {
-                      getCommentsResponse.data?.addAll(newData);
-                    }
-
-                    _commentCount = response.total ?? 0;
-                    showLoader = false;
-                    isLoadingMore = false;
-                    hasMore = (getCommentsResponse.data?.length ?? 0) < (response.total ?? 0);
-                  });
-
-                  if (!hasMore && currentPage > 1) {
-                    setState(() {
-                      showNoMoreMessage = true;
-                    });
-
-                    Future.delayed(const Duration(seconds: 2), () {
-                      if (mounted) {
-                        setState(() {
-                          showNoMoreMessage = false;
-                        });
-                      }
-                    });
-                  }
-
-
+                  showLoader = false;
+                  getCommentsResponse = state.responseData?.response as GetCommentsResponse;
+                  _commentCount = getCommentsResponse.data?.length ?? 0;
                 }
-
                 if (state.status == TicTocStatus.sendCommentSuccess) {
                   commentController.clear();
                   _refreshPage();
@@ -162,8 +88,7 @@ class _CommentBottomSheetWrapperState extends State<CommentBottomSheetWrapper> {
                           child: EmptyListFound(message: 'No Comments available for this post',topHeight: 120,),
                         )
                             : ListView.builder(
-                      //    controller: scrollController, // 👈 pass this
-                          controller: _scrollController, // 👈 pass this
+                          controller: scrollController, // 👈 pass this
                           padding: EdgeInsets.zero,
                           itemCount: getCommentsResponse.data?.length,
                           itemBuilder: (context, index) {
@@ -198,12 +123,7 @@ class _CommentBottomSheetWrapperState extends State<CommentBottomSheetWrapper> {
                           },
                         ),
                       ),
-                      UiHelper.verticalSpace(height: 10),
-                      if (isLoadingMore) const CustomLoader(size:30),
-                  //    if (!hasMore && currentPage > 1)
-                      if (showNoMoreMessage)
-                        smallText12(context, 'No more comments', textColor: Colors.grey),
-                      UiHelper.verticalSpace(height: 10),
+                      UiHelper.verticalSpace(height: 18),
                       customMultipleTextField1(
                         height: 50,
                         hintText: 'Type your comments',

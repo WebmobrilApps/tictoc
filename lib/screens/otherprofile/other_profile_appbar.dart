@@ -83,10 +83,14 @@ class _OtherProfileAppBarState extends State<OtherProfileAppBar> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset('assets/images/inbox2.png',height:100,width: 100,),
+                cachedImageWidget(
+                    image:"$BASEURL/${otherProfileData?.profilePic??''}",
+                    borderRadiusValue:50,
+                    hasProfileImg:true,
+                    height: 100,width: 100),
                 UiHelper.verticalSpace(height: 3),
                 largeText16(context, otherProfileData?.name??'',fontWeight: FontWeight.w500),
-                mediumText14(context, '@${otherProfileData?.username??''}',textColor: Color(0xff484848)),
+                mediumText14(context, '@${otherProfileData?.username??''}',textColor: const Color(0xff484848)),
                 UiHelper.verticalSpace(height: 12),
                 Row( mainAxisAlignment: MainAxisAlignment.center,
                   children: [

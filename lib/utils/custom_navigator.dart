@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:tictoc/utils/network_check/connectivity_listener.dart';
 
 dynamic onValue(val) {}
 
@@ -32,7 +33,7 @@ class CustomNavigator {
   }) {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => screen),
+        MaterialPageRoute(builder: (context) => ConnectivityListener(child: screen)),
             (route) => false);
   }
 

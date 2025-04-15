@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +6,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/suggested_account_response.dart';
+import 'package:tictoc/screens/friends/widgets/friends_search_bar.dart';
 import 'package:tictoc/screens/friends/widgets/suggested_item.dart';
 import 'package:tictoc/screens/otherprofile/other_profile.dart';
 import 'package:tictoc/utils/color.dart';
@@ -30,6 +30,14 @@ class _FriendsState extends State<Friends> {
   bool showLoader = true;
   Timer? _debounce; // To debounce search requests
 
+  final ScrollController _scrollController = ScrollController();
+  bool isLoadingMore = false;
+  bool hasMore = true;
+  int currentPage = 1;
+  final int limit = 10;
+
+
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +47,32 @@ class _FriendsState extends State<Friends> {
     searchController.addListener(() {
       _onSearchChanged();
     });
+    _scrollController.addListener(_onScroll);
   }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+        !isLoadingMore && hasMore) {
+      _loadMore();
+    }
+  }
+  Future<void> _getSuggestedAccount({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      setState(() => isLoadingMore = true);
+      currentPage++;
+    } else {
+      currentPage = 1;
+      showLoader = true;
+      hasMore = true;
+    }
+    await BlocProvider.of<TicTocCubit>(context).suggestedAccountCall(searchController.text, currentPage.toString(), limit.toString());
+  }
+
+  Future<void> _loadMore() async {
+    await _getSuggestedAccount(isLoadMore: true);
+  }
+
+
 
   // Debounced function to handle search input
   void _onSearchChanged() {
@@ -51,15 +84,15 @@ class _FriendsState extends State<Friends> {
     });
   }
 
-  Future<void> _getSuggestedAccount() async {
- //   await BlocProvider.of<TicTocCubit>(context).suggestedAccountCall("", "1");
+  /*Future<void> _getSuggestedAccount() async {
     await BlocProvider.of<TicTocCubit>(context).suggestedAccountCall(searchController.text, "1");
-  }
+  }*/
 
   @override
   void dispose() {
     searchController.dispose();
     _debounce?.cancel(); // Cancel debounce timer to avoid memory leaks
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -75,10 +108,26 @@ class _FriendsState extends State<Friends> {
         body: BlocConsumer<TicTocCubit,TicTocState>(
           listener: (context,state){
             print("sate.status:${state.status}");
-            if(state.status == TicTocStatus.suggestedAccountSuccess){
+          /*  if(state.status == TicTocStatus.suggestedAccountSuccess){
               showLoader = false;
               suggestedAccountResponse = state.responseData?.response as SuggestedAccountResponse;
+            }*/
+            if(state.status == TicTocStatus.suggestedAccountSuccess){
+              final response = state.responseData?.response as SuggestedAccountResponse;
+              final newData = response.data ?? [];
+
+              setState(() {
+                if (currentPage == 1) {
+                  suggestedAccountResponse.data = newData;
+                } else {
+                  suggestedAccountResponse.data?.addAll(newData);
+                }
+                hasMore = (suggestedAccountResponse.data?.length ?? 0) < (response.total ?? 0);
+                showLoader = false;
+                isLoadingMore = false;
+              });
             }
+
             if(state.status == TicTocStatus.followUserSuccess){
               UiHelper.toastMessage(state.responseData?.response ?? '');
             }
@@ -89,7 +138,6 @@ class _FriendsState extends State<Friends> {
             }
           },
           builder: (context,state){
-          //  if (state.status == TicTocStatus.suggestedAccountLoading) {
             if (showLoader) {
               return const CustomLoader();
             }
@@ -104,69 +152,26 @@ class _FriendsState extends State<Friends> {
             return  Padding(
               padding: const EdgeInsets.only(left: 18,right: 18),
               child: Column(
+
                 children: [
                   UiHelper.verticalSpace(height: screenHeight*0.08),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: customTextFieldWithBorder(
-                          height: 42,
-                          hintText: 'Find Friends',
-                          controller: searchController,
-                          hintFontColor: const Color(0XFF0B0B0B),
-                          hintFontSize: 15,
-                          textFontSize: 15,
-                          bgColor:const Color(0XFFF2F2F2),
-                          borderRadiusValue: 10,
-                          borderColor:const Color(0XFFF2F2F2),
-                          prefixIcon: Image.asset('assets/images/search_black.png',color: const Color(0xff0B0B0B), height: 20, width: 20),
-                          suffixIcon: MyInkWell(
-                              onTap: () async {
-                                searchController.clear();
-                                _getSuggestedAccount(); // Reset API call
-                              },
-                              child: Image.asset('assets/images/clear.png', color:appBlackColor,height: 20, width: 20)),
-                        ),
-                      ),
-                      const SizedBox(width: 12,),
-                      Image.asset('assets/images/scan.png', height: 24, width: 24),
-                    ],
+                  FriendsSearchBar(
+                    commentController: searchController,
+                    onClear: () async {
+                      searchController.clear();
+                      await _getSuggestedAccount();
+                    },
                   ),
                   Expanded(
                     child: RefreshIndicator(
                       onRefresh: _refreshPage,
                       child:  ListView(
+                        controller: _scrollController,
                         padding: EdgeInsets.zero,
                         physics: const AlwaysScrollableScrollPhysics(), // Enables pull-to-refresh
                         children: [
                           UiHelper.verticalSpace(height: 24),
-                          SuggestedItem(
-                            imagePath: 'assets/images/invite_friends.png',
-                            title: 'Invite friends',
-                            subtitle: 'Stay connected on TikTok',
-                            buttonLabel: 'Invite',
-                            onTap: () {
-                              Share.share('Check out this awesome Flutter package!');
-                            },
-                          ),
-                          SuggestedItem(
-                            imagePath: 'assets/images/contacts.png',
-                            title: 'Contacts',
-                            subtitle: 'Find your contacts',
-                            buttonLabel: 'Find',
-                            onTap: () {
-                              // Add your logic for finding contacts here
-                            },
-                          ),
-                          SuggestedItem(
-                            imagePath: 'assets/images/facebook.png',
-                            title: 'Facebook Friends',
-                            subtitle: 'Find friends on Facebook',
-                            buttonLabel: 'Find',
-                            onTap: () {
-                              // Add your logic for finding Facebook friends here
-                            },
-                          ),
+                          const StaticSuggestionsList(),
                           UiHelper.verticalSpace(height: 10),
                           mediumText14(context, 'Suggested accounts',textColor: const Color(0xff484848),fontWeight: FontWeight.w500),
                           UiHelper.verticalSpace(height: 12),
@@ -197,17 +202,9 @@ class _FriendsState extends State<Friends> {
                                                     withNavBar: false,
                                                     pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                                   );
-
                                                   if (result == true) {
-                                                    // User followed/unfollowed in OtherProfile → Refresh the list or update UI
                                                     _getSuggestedAccount(); // or update single item if preferred
                                                   }
-                                                 /* PersistentNavBarNavigator.pushNewScreen(
-                                                    context,
-                                                    screen:  OtherProfile(userId:suggestedData.pkUser.toString()),
-                                                    withNavBar: false, // OPTIONAL VALUE. True by default.
-                                                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                                                  );*/
                                                 },
                                                 child: cachedImageWidget(
                                                     image:"$BASEURL/${suggestedData.profilePic??''}",
@@ -221,7 +218,7 @@ class _FriendsState extends State<Friends> {
                                                 children: [
                                                   mediumText14(context,capsFirstChar(suggestedData.name.toString()),
                                                       maxLines: 1,overflow: TextOverflow.ellipsis, fontWeight: FontWeight.w500),
-                                                  smallText12(context, suggestedData.followingStatus==amNotFollowing?'follows you':'Following',  maxLines: 1,overflow: TextOverflow.ellipsis,),
+                                                  smallText12(context, suggestedData.followingStatus==amNotFollowing?'People you may know':'Following',  maxLines: 1,overflow: TextOverflow.ellipsis,),
                                                 ],
                                               ),
                                             ),
@@ -248,7 +245,6 @@ class _FriendsState extends State<Friends> {
                                                     suggestedAccountResponse.data![index].followingStatus = 1; // Update the status
                                                     selectedIndex = -1; // Reset selected index
                                                   });
-                                                  //  _getSuggestedAccount();
                                                 }).catchError((error) {
                                                   // Handle error (optional)
                                                   print("Error following user: $error");
@@ -259,7 +255,6 @@ class _FriendsState extends State<Friends> {
                                                     suggestedAccountResponse.data![index].followingStatus = 0; // Update the status
                                                     selectedIndex = -1; // Reset selected index
                                                   });
-                                                  //  _getSuggestedAccount();
                                                 }).catchError((error) {
                                                   // Handle error (optional)
                                                   print("Error following user: $error");
@@ -284,6 +279,7 @@ class _FriendsState extends State<Friends> {
                       ),
                     ),
                   ),
+                  if (isLoadingMore) const CustomLoader(size: 30),
                 ],
               ),
             );

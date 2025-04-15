@@ -2,26 +2,30 @@ class FollowingFeedResponse {
   final int? resCode;
   final bool? success;
   final String? msg;
-  final List<Data>? data;
+  List<Data>? data;
+  final int? total;
 
   FollowingFeedResponse({
     this.resCode,
     this.success,
     this.msg,
     this.data,
+    this.total,
   });
 
   FollowingFeedResponse.fromJson(Map<String, dynamic> json)
       : resCode = json['resCode'] as int?,
         success = json['success'] as bool?,
         msg = json['msg'] as String?,
-        data = (json['data'] as List?)?.map((dynamic e) => Data.fromJson(e as Map<String,dynamic>)).toList();
+        data = (json['data'] as List?)?.map((dynamic e) => Data.fromJson(e as Map<String,dynamic>)).toList(),
+        total = json['total'] as int?;
 
   Map<String, dynamic> toJson() => {
     'resCode' : resCode,
     'success' : success,
     'msg' : msg,
-    'data' : data?.map((e) => e.toJson()).toList()
+    'data' : data?.map((e) => e.toJson()).toList(),
+    'total' : total
   };
 }
 

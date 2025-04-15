@@ -8,8 +8,7 @@ import 'package:tictoc/model/get_user_content_response.dart'as dfrContent;
 import 'package:tictoc/model/get_profile_response.dart' as dfrProfile;
 class BottomDetailsProfile extends StatefulWidget {
   final dfrContent.Data reelsData; // <-- Receive the Data object
-  final dfrProfile.GetProfileResponse getProfileResponse;
-  const BottomDetailsProfile({super.key, required this.getProfileResponse,required this.reelsData});
+  const BottomDetailsProfile({super.key,required this.reelsData});
 
   @override
   State<BottomDetailsProfile> createState() => _BottomDetailsProfileState();
@@ -18,7 +17,6 @@ class BottomDetailsProfile extends StatefulWidget {
 class _BottomDetailsProfileState extends State<BottomDetailsProfile> {
   @override
   Widget build(BuildContext context) {
-    final userData = widget.getProfileResponse.data;
     final reelsData = widget.reelsData;
 
     return Positioned(
@@ -43,7 +41,7 @@ class _BottomDetailsProfileState extends State<BottomDetailsProfile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 250,
+              width: 260,
               padding: const EdgeInsets.only(left: 4,right: 4,top: 4,bottom: 4),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
@@ -61,7 +59,7 @@ class _BottomDetailsProfileState extends State<BottomDetailsProfile> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   cachedImageWidget(
-                      image:"$BASEURL/${userData?.profilePic??''}",
+                      image:"$BASEURL/${reelsData.profilePic??''}",
                       borderRadiusValue:50,
                       hasProfileImg:true,
                       height: 38,width: 38),
@@ -72,7 +70,7 @@ class _BottomDetailsProfileState extends State<BottomDetailsProfile> {
                       Row(
                         children: [
                           largeText16(
-                            context,"${userData?.name??''} . ",
+                            context,"${reelsData.username??''} . ",
                             textColor: Color(0xfffcb4b9),
                             fontWeight: FontWeight.w500,
                             overflow: TextOverflow.ellipsis, // Ensure truncation

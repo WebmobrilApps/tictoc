@@ -4,7 +4,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 class CustomLoader extends StatelessWidget {
   final double size;
 
-  const CustomLoader({super.key, this.size = 50});
+  const CustomLoader({super.key, this.size = 45});
 
   @override
   Widget build(BuildContext context) {

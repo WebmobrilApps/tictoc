@@ -251,13 +251,13 @@ class TicTocRepository {
     }
   }
 
-  Future<ResponseData> suggestedAccount(String searchKey,String pageNumber) async {
+  Future<ResponseData> suggestedAccount(String searchKey,String page, String limit) async {
     try {
       // Check if searchKey is empty and construct the full URL accordingly
 
       String suggestedURL = searchKey.isNotEmpty
-          ? "/user/search-suggested?search=$searchKey&page=$pageNumber"
-          : "/user/search-suggested?&page=$pageNumber";
+          ? "/user/search-suggested?search=$searchKey&page=$page&limit=$limit"
+          : "/user/search-suggested?&page=$page&limit=$limit";
 
       final response = await ApiService(token: getToken()).sendRequest.get(suggestedURL);
       return ResponseData(
@@ -271,9 +271,9 @@ class TicTocRepository {
     }
   }
 
-  Future<ResponseData> followerList(String pageNumber) async {
+  Future<ResponseData> followerList(String pageNumber, String limit) async {
     try {
-      final response = await ApiService(token: getToken()).sendRequest.get('/user/get-follower?page=$pageNumber');
+      final response = await ApiService(token: getToken()).sendRequest.get('/user/get-follower?page=$pageNumber&limit=$limit');
       return ResponseData(
           statusCode: response.statusCode,
           response: FollowerListResponse.fromJson(response.data));
@@ -321,9 +321,9 @@ class TicTocRepository {
     }
   }
 
-  Future<ResponseData> followingList(String pageNumber) async {
+  Future<ResponseData> followingList(String pageNumber, String limit) async {
     try {
-      final response = await ApiService(token: getToken()).sendRequest.get('/user/get-following?page=$pageNumber');
+      final response = await ApiService(token: getToken()).sendRequest.get('/user/get-following?page=$pageNumber&limit=$limit');
       return ResponseData(
           statusCode: response.statusCode,
           response: FollowingListResponse.fromJson(response.data));
@@ -467,10 +467,10 @@ class TicTocRepository {
     }
   }
 
-  Future<ResponseData> followingFeed() async {
+  Future<ResponseData> followingFeed(String pageNumber,String limit) async {
     print('getToken():${getToken()}');
     try {
-      final response = await ApiService(token: getToken()).sendRequest.get("/user/following-feed");
+      final response = await ApiService(token: getToken()).sendRequest.get("/user/following-feed?page=$pageNumber&limit=$limit");
       return ResponseData(
           statusCode: response.statusCode,
           response: FollowingFeedResponse.fromJson(response.data));
@@ -482,7 +482,8 @@ class TicTocRepository {
     }
   }
 
-  Future<ResponseData> hitLikeFollowingReels(Map<String, dynamic> hitLikeDetails) async {
+  Future<ResponseData> hitLikeDetailsReels(Map<String, dynamic> hitLikeDetails) async {
+    print('hitLikeDetails:$hitLikeDetails');
     try {
       final response = await ApiService(token: getToken()).sendRequest.post(
         "/user/like-content",
@@ -523,7 +524,7 @@ class TicTocRepository {
       final response = await ApiService(token: getToken()).sendRequest.get("/user/get-saved-content?page=$pageNumber&limit=$limit");
       return ResponseData(
           statusCode: response.statusCode,
-          response: GetBookmarkedResponse.fromJson(response.data));
+          response: GetUserContentResponse.fromJson(response.data));
     } on DioException catch (e) {
       throw ErrorData(
           message: e.response!.data['msg'], code: e.response!.statusCode);
@@ -538,7 +539,7 @@ class TicTocRepository {
       final response = await ApiService(token: getToken()).sendRequest.get("/user/other-saved-content?userId=$userID");
       return ResponseData(
           statusCode: response.statusCode,
-          response: GetBookmarkedResponse.fromJson(response.data));
+          response: GetOtherUserContentResponse.fromJson(response.data));
     } on DioException catch (e) {
       throw ErrorData(
           message: e.response!.data['msg'], code: e.response!.statusCode);
@@ -566,7 +567,7 @@ class TicTocRepository {
   }
 
   Future<ResponseData> getComments(String contentId,String pageNumber,String limit) async {
-    print('getToken():${getToken()}');
+    print('limit():$limit');
     try {
       final response = await ApiService(token: getToken()).sendRequest.get("/user/get-content-comment?content_id=$contentId&page=$pageNumber&limit=$limit");
       return ResponseData(

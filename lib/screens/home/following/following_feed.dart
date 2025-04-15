@@ -23,6 +23,14 @@ class _FollowingFeedState extends State<FollowingFeed> {
   FollowingFeedResponse followingFeedResponse = FollowingFeedResponse();
   final TextEditingController commentController = TextEditingController();
 
+  bool isLoadingMore = false;
+  bool hasMore = true;
+  int currentPage = 1;
+  final int limit = 10;
+  int totalItems = 0;
+  final PageController _pageController = PageController();
+
+
   final List storiesData = [
     {"storyImage":"assets/images/profile2.png", "name":"Thiru", "isLive":true},
     {"storyImage":"assets/images/profile3.png", "name":"Ram", "isLive":true},
@@ -41,11 +49,42 @@ class _FollowingFeedState extends State<FollowingFeed> {
   void initState() {
     super.initState();
     _getFollowingFeed(); // Initial API call
+    _pageController.addListener(_onPageScroll);
   }
-  Future<void> _getFollowingFeed() async {
-    await BlocProvider.of<TicTocCubit>(context).followingFeedCall();
+  void _onPageScroll() {
+    if (_pageController.position.pixels >= _pageController.position.maxScrollExtent - 200 &&
+        !isLoadingMore && hasMore) {
+      _loadMore();
+    }
+  }
+  Future<void> _getFollowingFeed({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      setState(() => isLoadingMore = true);
+      currentPage++;
+    } else {
+      setState(() {
+        showLoader = true;
+        currentPage = 1;
+        hasMore = true;
+      });
+    }
+
+    await BlocProvider.of<TicTocCubit>(context).followingFeedCall(currentPage.toString(), limit.toString());
   }
 
+  Future<void> _loadMore() async {
+    await _getFollowingFeed(isLoadMore: true);
+  }
+
+ /* Future<void> _getFollowingFeed() async {
+    await BlocProvider.of<TicTocCubit>(context).followingFeedCall("1","10");
+  }*/
+  @override
+  void dispose() {
+    commentController.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,10 +92,31 @@ class _FollowingFeedState extends State<FollowingFeed> {
       body: BlocConsumer<TicTocCubit,TicTocState>(
         listener: (context,state){
           print("sate.status:${state.status}");
-          if(state.status == TicTocStatus.followingFeedSuccess){
+          /*if(state.status == TicTocStatus.followingFeedSuccess){
             showLoader = false;
             followingFeedResponse = state.responseData?.response as FollowingFeedResponse;
+          }*/
+          if (state.status == TicTocStatus.followingFeedSuccess) {
+            final response = state.responseData?.response as FollowingFeedResponse;
+            final newData = response.data ?? [];
+
+            setState(() {
+              totalItems = response.total ?? 0;
+
+              if (currentPage == 1) {
+                followingFeedResponse.data = newData;
+              } else {
+                followingFeedResponse.data?.addAll(newData);
+              }
+
+              showLoader = false;
+              isLoadingMore = false;
+              // ✅ Fix: Stop further calls if newData is empty
+              hasMore = newData.isNotEmpty && (followingFeedResponse.data?.length ?? 0) < totalItems;
+            });
           }
+
+
         },
         builder: (context,state){
           if (showLoader) {
@@ -148,6 +208,7 @@ class _FollowingFeedState extends State<FollowingFeed> {
                 Expanded(
                   child:
                   PageView.builder(
+                    controller: _pageController,
                     scrollDirection: Axis.vertical,
                     itemCount:  followingFeedResponse.data?.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -176,6 +237,8 @@ class _FollowingFeedState extends State<FollowingFeed> {
                     },
                   ),
                 ),
+                if (isLoadingMore) const CustomLoader(size: 30),
+
               ],
             ),
           );

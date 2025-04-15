@@ -6,26 +6,24 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/screens/home/following/widgets/comment_following.dart';
 import 'package:tictoc/screens/home/sound_screen.dart';
-import 'package:tictoc/screens/profile/feeds/delete_post_bottom_sheet.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/ui_helper.dart';
-import 'package:tictoc/model/get_user_content_response.dart'as dfrContent;
+import 'package:tictoc/model/get_other_user_content_response.dart' as dfrOtherContent;
 
-class SideIconProfile extends StatefulWidget {
-  final dfrContent.Data reelsData; // <-- Receive the Data object
-  final String? fromPage;
-  const SideIconProfile({super.key,required this.reelsData, this.fromPage});
+
+class SideIconOther extends StatefulWidget {
+  final dfrOtherContent.Data reelsData; // <-- Receive the Data object
+  const SideIconOther({super.key, required this.reelsData});
 
   @override
-  State<SideIconProfile> createState() => _SideIconProfileState();
+  State<SideIconOther> createState() => _SideIconOtherState();
 }
 
-class _SideIconProfileState extends State<SideIconProfile> {
+class _SideIconOtherState extends State<SideIconOther> {
   @override
   Widget build(BuildContext context) {
-    print('fromPage:${widget.fromPage}');
     final reelsData = widget.reelsData;
     return  Positioned(
       bottom: 70,
@@ -42,7 +40,7 @@ class _SideIconProfileState extends State<SideIconProfile> {
               child: Stack( alignment: Alignment.bottomCenter,
                 children: [
                   Container(
-                    margin: const EdgeInsets.only(bottom: 9),
+                    margin: const EdgeInsets.only(bottom: 11),
                     child: cachedImageWidget(
                         image:"$BASEURL/${reelsData.profilePic??''}",
                         borderRadiusValue:50,
@@ -56,13 +54,14 @@ class _SideIconProfileState extends State<SideIconProfile> {
               ),
             ),
             UiHelper.verticalSpace(height: 14),
+            // Image.asset('assets/images/like_heart.png',height: 33.6,width: 33.6,),
             MyInkWell(
                 onTap: ()async{
                   Map<String, dynamic> hitLikeDetails = {
-                    "pk_videos": reelsData.pkVideos,
+                    "pk_videos": reelsData.videoId,
                   };
                   print('hitLikeDetails:$hitLikeDetails');
-                  BlocProvider.of<TicTocCubit>(context).hitLikeProfileCall(hitLikeDetails).whenComplete((){
+                  BlocProvider.of<TicTocCubit>(context).hitLikeOtherProfileCall(hitLikeDetails).whenComplete((){
                     setState(() {
                       if (reelsData.isLiked == 0) {
                         reelsData.isLiked = 1;
@@ -71,7 +70,7 @@ class _SideIconProfileState extends State<SideIconProfile> {
                         reelsData.isLiked = 0;
                         reelsData.likeCount = (reelsData.likeCount ?? 1) - 1;
                       }
-                   });
+                    });
                   });
                 },
                 child: Image.asset('assets/images/like_heart.png',height: 33.6,width: 33.6,color: reelsData.isLiked==0?Colors.white:buttonColor,)),
@@ -88,7 +87,7 @@ class _SideIconProfileState extends State<SideIconProfile> {
                     enableDrag: false,    // ❌ disable swipe down to dismiss
                     builder: (context) {
                       return CommentBottomSheetWrapper(
-                        videoId: widget.reelsData.pkVideos.toString() ?? '',
+                        videoId: widget.reelsData.videoId.toString() ?? '',
                       );
                     },
                   );
@@ -101,53 +100,15 @@ class _SideIconProfileState extends State<SideIconProfile> {
                 child: Image.asset('assets/images/chat.png',height: 33.6,width: 33.6,)),
             mediumText14(context, reelsData.commentCount.toString(),textColor: whiteColor,fontWeight: FontWeight.w600),
             UiHelper.verticalSpace(height: 14),
-         //   Image.asset('assets/images/bookmark.png',height: 25.2,width:26,),
-            MyInkWell(
-                onTap: ()async{
-                  Map<String, dynamic> bookmarkDetails = {
-                    "content_id": reelsData.pkVideos,
-                  };
-                  print('bookmarkDetails:$bookmarkDetails');
-                  BlocProvider.of<TicTocCubit>(context).bookmarkProfileCall(bookmarkDetails).whenComplete((){
-                    setState(() {
-                      if (reelsData.isSaved == 0) {
-                        reelsData.isSaved = 1;
-                        reelsData.saveCount = (reelsData.saveCount ?? 0) + 1;
-                      } else {
-                        reelsData.isSaved = 0;
-                        reelsData.saveCount = (reelsData.saveCount ?? 1) - 1;
-                        if (widget.fromPage == "MyBookMarkGallery") {
-                          Navigator.pop(context, {
-                            'unBookmarked': true,
-                            'id': reelsData.pkVideos,
-                          });
-                        }
-                      }
-                    });
-                  });
-                },
-                child: Image.asset(reelsData.isSaved==0?'assets/images/bookmark.png':'assets/images/bookmark_filled.png',height: 25.2,width:26)),
+            Image.asset('assets/images/bookmark.png',height: 25.2,width:26,),
             mediumText14(context, reelsData.saveCount.toString(),textColor: whiteColor,fontWeight: FontWeight.w600),
-            widget.fromPage=="MyBookMarkGallery"?
-            const SizedBox():Column(
-              children: [
-                UiHelper.verticalSpace(height: 10),
-                IconButton(
-                  onPressed: ()async {
-                    final result = await showModalBottomSheet(
-                      isScrollControlled: true,
-                      useRootNavigator: true,
-                      context: context,
-                      builder: (context) =>  DeletePostBottomSheet(contentId: reelsData.pkVideos.toString(),),
-                    );
-                    if (result != null && result['deleted'] == true) {
-                      Navigator.pop(context, {'deleted': true, 'id': result['id']});
-                    }
-                  },
-                  icon: Image.asset('assets/images/delete.png',height: 25.6,width:26, color: Colors.white,),
-                ),
-              ],
+            UiHelper.verticalSpace(height: 8),
+            IconButton(
+              onPressed: () {},
+              icon: Image.asset('assets/images/share.png',height: 33.6,width:33.6,),
+              color: Colors.white,
             ),
+            //     UiHelper.verticalSpace(height: 14),
             IconButton(
                 onPressed: () {
                   PersistentNavBarNavigator.pushNewScreen(

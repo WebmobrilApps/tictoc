@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
@@ -49,7 +50,7 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
               if(isChanged && titleValueController.text.isNotEmpty){
                 Navigator.pop(context, titleValueController.text);
               }else{
-                if(isChanged)UiHelper.toastMessage("${widget.titleName} Should be empty");
+                if(isChanged)UiHelper.toastMessage("${widget.titleName} should not be empty");
               }
             },
 
@@ -79,6 +80,13 @@ class _EditProfileFieldsState extends State<EditProfileFields> {
               child: TextFormField(
                 controller: titleValueController,
                 style: GoogleFonts.jost(color: Colors.black,fontSize: 16,),
+                inputFormatters: [
+                  NoLeadingSpaceFormatter(),
+                  if (widget.titleName == "Name") ...[
+                    FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z ]")),],
+                  FilteringTextInputFormatter.deny(RegExp(r"\s{2,}")), // Prevents consecutive spaces
+                  // You can add other formatters here if needed
+                ],
                 decoration:  InputDecoration(
                   hintText: widget.titleName,
                   hintStyle: GoogleFonts.jost(color: Colors.grey,fontSize: 16,),

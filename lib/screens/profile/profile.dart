@@ -7,7 +7,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/get_profile_response.dart';
 import 'package:tictoc/model/get_user_content_response.dart';
-import 'package:tictoc/screens/profile/bookmark/bookmarked_reels.dart';
+import 'package:tictoc/screens/profile/bookmark/my_bookmark_gallery.dart';
 import 'package:tictoc/screens/profile/feeds/gallery_view.dart';
 import 'package:tictoc/screens/profile/widgets/profile_appbar.dart';
 import 'package:tictoc/utils/color.dart';
@@ -15,34 +15,56 @@ import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_loader.dart';
 import 'package:tictoc/utils/error_display.dart';
 import 'package:tictoc/utils/ui_helper.dart';
+// Global declaration (you can place this wherever needed, e.g., in a parent widget or above Profile class)
+final GlobalKey<ProfileState> profileKey = GlobalKey<ProfileState>();
+
 class Profile extends StatefulWidget {
   final PersistentTabController controller;
-  const Profile({super.key, required this.controller});
+
+  // Pass the global key to the constructor
+  Profile({Key? key, required this.controller}) : super(key: profileKey);
 
   @override
-  State<Profile> createState() => _ProfileState();
+  State<Profile> createState() => ProfileState();
 }
 
-class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
+class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   GetProfileResponse getProfileResponse = GetProfileResponse();
   GetUserContentResponse getUserContentResponse = GetUserContentResponse();
 
+  bool showLoader = false;
+
   @override
   void initState() {
     _getProfileAPi();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0); // 3 tabs, "Following" as default
+    _tabController.addListener(_handleTabChange);
+
     super.initState();
   }
+
+
+  void _handleTabChange() {
+    if (_tabController.indexIsChanging) return;
+    setState(() {
+      showLoader = true;
+    });
+    if (_tabController.index == 0) {
+      BlocProvider.of<TicTocCubit>(context).getUserContentCall("1", "50");
+    }
+  }
+
+
 
   Future<void> _getProfileAPi() async {
     await BlocProvider.of<TicTocCubit>(context).getProfileCall();
   }
 
-
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChange); // Clean up listener
     _tabController.dispose();
     super.dispose();
   }
@@ -62,10 +84,11 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             if(state.status == TicTocStatus.getProfileSuccess){
               Loader.hide();
               getProfileResponse = state.responseData?.response as GetProfileResponse;
-              BlocProvider.of<TicTocCubit>(context).getUserContentCall("1", "50");
+              BlocProvider.of<TicTocCubit>(context).getUserContentCall("1", "9");
             }
             if(state.status == TicTocStatus.getUserContentSuccess){
               Loader.hide();
+              showLoader = false;
               getUserContentResponse = state.responseData?.response as GetUserContentResponse;
             }
           },
@@ -77,8 +100,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               return CustomErrorWidget(
                 errorMessage: state.errorData?.message ?? state.error,
                 statusCode: state.errorData?.code,
-                onRetry: _refreshPage,
-                onRefresh: _refreshPage,
+                onRetry: refreshPage,
+                onRefresh: refreshPage,
               );
             }
             return  Column(
@@ -86,7 +109,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               children: [
                 UiHelper.verticalSpace(height: screenHeight*0.075),
                 RefreshIndicator( // Ensures pull to refresh works
-                  onRefresh: _refreshPage, // Calls API on pull down
+                  onRefresh: refreshPage, // Calls API on pull down
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(), // Allows pull down even if content is small
                     child: Column(
@@ -134,23 +157,26 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   child: TabBarView(
                     controller: _tabController,
                     children:  [
-                      state.status == TicTocStatus.getUserContentLoading ? const CustomLoader() :
-                      GalleryView(getUserContentResponse:getUserContentResponse,getProfileResponse: getProfileResponse,),
-                      const BookmarkedReels(),
+                      state.status == TicTocStatus.getUserContentLoading || showLoader ? const CustomLoader() :
+                      GalleryView(getUserContentResponse:getUserContentResponse,getProfileResponse: getProfileResponse,
+                          showLoader:showLoader
+                      ),
+                       MyBookmarkGallery(getProfileResponse: getProfileResponse,),
                      // Center(child: largeText16(context, 'Bookmark')),
                     ],
                   ),
                 ),
               ],
             );
-
-
           },
         ),
       ),
     );
   }
-  Future<void> _refreshPage() async{
+  Future<void> refreshPage() async{
+    setState(() {
+      showLoader = true;
+    });
     await _getProfileAPi();
   }
 }

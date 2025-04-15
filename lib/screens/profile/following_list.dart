@@ -4,6 +4,7 @@ import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/following_list_response.dart';
 import 'package:tictoc/screens/inbox/chat_screen.dart';
+import 'package:tictoc/screens/otherprofile/other_profile.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_appbar.dart';
 import 'package:tictoc/utils/custom_loader.dart';
@@ -21,32 +22,61 @@ class FollowingList extends StatefulWidget {
 }
 
 class _FollowingListState extends State<FollowingList> {
-  final List inboxData = [
-    {"storyImage":"assets/images/inbox1.png", "name":"Thiru", "followStatus":"Following", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox2.png", "name":"DisaSmith", "followStatus":"Follow Back", "message":"Follows you"},
-    {"storyImage":"assets/images/inbox3.png", "name":"Suriya", "followStatus":"Following", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox1.png", "name":"Angel", "followStatus":"Following","message":"Following"},
-    {"storyImage":"assets/images/inbox2.png", "name":"Bengamine", "followStatus":"Follow Back", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox3.png", "name":"Tokyo", "followStatus":"Following","message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox1.png", "name":"Thiru", "followStatus":"Follow Back", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox2.png", "name":"DisaSmith", "followStatus":"Follow Back", "message":"Follows you"},
-    {"storyImage":"assets/images/inbox3.png", "name":"Suriya", "followStatus":"Follow Back", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox1.png", "name":"Angel", "followStatus":"Following","message":"Following"},
-    {"storyImage":"assets/images/inbox2.png", "name":"Bengamine", "followStatus":"Following", "message":"lorem ipsum"},
-    {"storyImage":"assets/images/inbox3.png", "name":"Tokyo", "followStatus":"Follow Back","message":"lorem ipsum"},
-  ];
-  FollowingListResponse followingListResponse = FollowingListResponse();
+  FollowingListResponse followingListResponse = FollowingListResponse(data: []);
   int selectedIndex = -1;
+
+  bool showLoader = true;
+  int currentPage = 1;
+  final int limit = 14;
+  bool isLoadingMore = false;
+  bool hasMore = true;
+  int totalItems = 0;
+
+  final ScrollController _scrollController = ScrollController();
+
+
+
   @override
   void initState() {
     getFollowingListApi();
+    _scrollController.addListener(_onScroll);
     super.initState();
   }
 
-  Future<void> getFollowingListApi() async {
-    await BlocProvider.of<TicTocCubit>(context).followingListCall("1");
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+        !isLoadingMore && hasMore) {
+      _loadMore();
+    }
   }
-
+  Future<void> getFollowingListApi({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      setState(() => isLoadingMore = true);
+      currentPage++;
+    } else {
+      currentPage = 1;
+      setState(() {
+        showLoader = true;
+        hasMore = true;
+      });
+    }
+    await BlocProvider.of<TicTocCubit>(context).followingListCall(currentPage.toString(), limit.toString());
+  }
+  Future<void> _loadMore() async {
+    await getFollowingListApi(isLoadMore: true);
+  }
+  Future<void> _refreshPage() async {
+    setState(() {
+      showLoader = true;
+      hasMore = true;
+    });
+    await getFollowingListApi();
+  }
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,13 +85,28 @@ class _FollowingListState extends State<FollowingList> {
       body: BlocConsumer<TicTocCubit,TicTocState>(
         listener: (context,state){
           print("sate.status:${state.status}");
-          if(state.status == TicTocStatus.followingListSuccess){
-            Loader.hide();
-            followingListResponse = state.responseData?.response as FollowingListResponse;
+          if (state.status == TicTocStatus.followingListSuccess) {
+            final response = state.responseData?.response as FollowingListResponse;
+            final newData = response.data ?? [];
+
+            setState(() {
+              totalItems = response.total ?? 0;
+
+              if (currentPage == 1) {
+                followingListResponse.data = newData;
+              } else {
+                followingListResponse.data?.addAll(newData);
+              }
+
+              showLoader = false;
+              isLoadingMore = false;
+
+              hasMore = (followingListResponse.data?.length ?? 0) < totalItems;
+            });
           }
         },
         builder: (context,state){
-          if (state.status == TicTocStatus.followingListLoading) {
+          if (showLoader) {
             return const CustomLoader();
           }
           if (state.status == TicTocStatus.followingListError) {
@@ -75,6 +120,7 @@ class _FollowingListState extends State<FollowingList> {
           return  RefreshIndicator(
             onRefresh: _refreshPage,
             child: SingleChildScrollView(
+              controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               child: Padding(
                 padding: const EdgeInsets.only(top:4,left: 18,right: 18),
@@ -100,7 +146,8 @@ class _FollowingListState extends State<FollowingList> {
                                 Expanded(
                                   child: MyInkWell(
                                     onTap:()async{
-                                      CustomNavigator.push(context: context, screen: ChatScreen(userId:followingData.pkUser.toString()));
+                                     // CustomNavigator.push(context: context, screen: ChatScreen(userId:followingData.pkUser.toString()));
+                                      CustomNavigator.push(context: context, screen: OtherProfile(userId:followingData.pkUser.toString()));
                                     },
                                     child: Row(
                                       children: [
@@ -129,25 +176,21 @@ class _FollowingListState extends State<FollowingList> {
 
                               ],
                             ),
-                            if(index+1 != inboxData.length)const SizedBox(height: 14,),
-
+                            const SizedBox(height: 14,),
                           ],
                         );
                       },
                     ),
                     const SizedBox(height: 2,),
+                    if (isLoadingMore) const CustomLoader(size: 30),
+                    const SizedBox(height: 12,),
                   ],
                 ),
               ),
             ),
           );
-
-
         },
       ),
     );
-  }
-  Future<void> _refreshPage() async{
-    await getFollowingListApi();
   }
 }

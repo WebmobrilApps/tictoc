@@ -1,26 +1,23 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/time_rule.dart';
-import 'package:tictoc/model/get_user_content_response.dart'as dfrContent;
-import 'package:tictoc/model/get_other_profile_response.dart' as dfrOtherProfile;
+import 'package:tictoc/model/get_other_user_content_response.dart' as dfrOtherContent;
 
-class OtherBottomDetails extends StatefulWidget {
-  final dfrContent.Data reelsData; // <-- Receive the Data object
-  final dfrOtherProfile.GetOtherProfileResponse getOtherProfileResponse;
-  const OtherBottomDetails({super.key, required this.getOtherProfileResponse,required this.reelsData});
-
+class BottomDetailsOther extends StatefulWidget {
+  final dfrOtherContent.Data reelsData; // <-- Receive the Data object
+  const BottomDetailsOther({super.key,required this.reelsData});
 
   @override
-  State<OtherBottomDetails> createState() => _OtherBottomDetailsState();
+  State<BottomDetailsOther> createState() => _BottomDetailsOtherState();
 }
 
-class _OtherBottomDetailsState extends State<OtherBottomDetails> {
+class _BottomDetailsOtherState extends State<BottomDetailsOther> {
   @override
   Widget build(BuildContext context) {
-    final userData = widget.getOtherProfileResponse.data;
     final reelsData = widget.reelsData;
 
     return Positioned(
@@ -45,7 +42,7 @@ class _OtherBottomDetailsState extends State<OtherBottomDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 250,
+              width: 260,
               padding: const EdgeInsets.only(left: 4,right: 4,top: 4,bottom: 4),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
@@ -63,7 +60,7 @@ class _OtherBottomDetailsState extends State<OtherBottomDetails> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   cachedImageWidget(
-                      image:"$BASEURL/${userData?.profilePic??''}",
+                      image:"$BASEURL/${reelsData.profilePic??''}",
                       borderRadiusValue:50,
                       hasProfileImg:true,
                       height: 38,width: 38),
@@ -74,8 +71,8 @@ class _OtherBottomDetailsState extends State<OtherBottomDetails> {
                       Row(
                         children: [
                           largeText16(
-                            context,"${userData?.name??''} . ",
-                            textColor: Color(0xfffcb4b9),
+                            context,"${reelsData.username??''} . ",
+                            textColor: const Color(0xfffcb4b9),
                             fontWeight: FontWeight.w500,
                             overflow: TextOverflow.ellipsis, // Ensure truncation
                             maxLines: 1, // Limit to one line

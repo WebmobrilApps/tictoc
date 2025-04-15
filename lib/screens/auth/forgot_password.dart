@@ -58,6 +58,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           if (state.status == TicTocStatus.forgotPasswordSuccess){
             ForgotPasswordResponse forgotPasswordResponse = state.responseData?.response as ForgotPasswordResponse;
             UiHelper.toastMessage(forgotPasswordResponse.msg??'');
+            emailOrPhoneController.clear();
             CustomNavigator.push(context: context, screen: OtpVerification(fromPage: 'ForgotPassword',
                 tempToken:forgotPasswordResponse.data?.tempToken??'',
                 tmpOtp:forgotPasswordResponse.data?.otp.toString()??'',

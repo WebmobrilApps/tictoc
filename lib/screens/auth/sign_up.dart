@@ -37,8 +37,8 @@ class _SignUpState extends State<SignUp> {
   @override
   void initState() {
     // TODO: implement initState
-  //  passwordController.text = "Thiru@003";
-   // confirmPasswordController.text = "Thiru@003";
+    passwordController.text = "Thiru@003";
+    confirmPasswordController.text = "Thiru@003";
     super.initState();
   }
   void _clearControllers() {
@@ -110,6 +110,7 @@ class _SignUpState extends State<SignUp> {
                               textCapitalization: TextCapitalization.words,
                               maxLength: 50,
                               inputFormatters: [
+                                NoLeadingSpaceFormatter(),
                                 FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z ]")), // Allows only letters and spaces
                                 FilteringTextInputFormatter.deny(RegExp(r"\s{2,}")), // Prevents consecutive spaces
                                /* TextInputFormatter.withFunction((oldValue, newValue) {

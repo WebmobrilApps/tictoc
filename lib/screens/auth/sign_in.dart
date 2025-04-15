@@ -18,6 +18,8 @@ import 'package:tictoc/utils/custom_navigator.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/shared_preference.dart';
 import 'package:tictoc/utils/ui_helper.dart';
+
+import '../../main.dart';
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
 
@@ -33,7 +35,7 @@ class _SignInState extends State<SignIn> {
   @override
   void initState() {
     // TODO: implement initState
-  //  passwordController.text = "Thiru@003";
+    passwordController.text = "Thiru@003";
     _fetchDeviceId();
 
     super.initState();
@@ -91,7 +93,8 @@ class _SignInState extends State<SignIn> {
           listener: (context,state){
             if (state.status == TicTocStatus.signInSuccess){
               SignInResponse signInResponse = state.responseData?.response as SignInResponse;
-
+              emailOrPhoneController.clear();
+              passwordController.clear();
               if(signInResponse.data?.user?.isVerify != 1){
                 print('Not verified');
                 CustomNavigator.push(
@@ -106,6 +109,9 @@ class _SignInState extends State<SignIn> {
                     screen: Interest(tmpToken: signInResponse.data?.token??'',
                         userID:signInResponse.data?.user?.pkUser??0));
               }else{
+                setState(() {
+                  loginValue = true;
+                });
                 PreferenceManager.insertValue(key: TOKEN, value: signInResponse.data?.token.toString());
                 PreferenceManager.insertValue(key: PHONE_NO, value: signInResponse.data?.user?.phone.toString());
                 PreferenceManager.insertValue(key: EMAIL_ID, value: signInResponse.data?.user?.email.toString());

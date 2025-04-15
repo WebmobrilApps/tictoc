@@ -154,10 +154,10 @@ class TicTocCubit extends Cubit<TicTocState> {
       emit(state.copyWith(status: TicTocStatus.updateProfileError,error: e.toString(),errorData: null));
     }
   }
-  Future<void> suggestedAccountCall(String searchKey, String pageNumber) async{
+  Future<void> suggestedAccountCall(String searchKey, String page, String limit) async{
    // emit(state.copyWith(status: TicTocStatus.suggestedAccountLoading));
     try{
-      ResponseData responseData = await repository.suggestedAccount(searchKey, pageNumber);
+      ResponseData responseData = await repository.suggestedAccount(searchKey, page,limit);
       emit(state.copyWith(status: TicTocStatus.suggestedAccountSuccess,responseData: responseData));
     }
     on ErrorData catch (errorData){
@@ -167,10 +167,10 @@ class TicTocCubit extends Cubit<TicTocState> {
       emit(state.copyWith(status: TicTocStatus.suggestedAccountError,error: e.toString(),errorData: null));
     }
   }
-  Future<void> followerListCall(String pageNumber) async{
-    emit(state.copyWith(status: TicTocStatus. followerListLoading));
+  Future<void> followerListCall(String pageNumber, String limit) async{
+  //  emit(state.copyWith(status: TicTocStatus. followerListLoading));
     try{
-      ResponseData responseData = await repository.followerList(pageNumber);
+      ResponseData responseData = await repository.followerList(pageNumber,limit);
       emit(state.copyWith(status: TicTocStatus. followerListSuccess,responseData: responseData));
     }
     on ErrorData catch (errorData){
@@ -209,10 +209,10 @@ class TicTocCubit extends Cubit<TicTocState> {
     }
   }
 
-  Future<void> followingListCall(String pageNumber) async{
-    emit(state.copyWith(status: TicTocStatus.followingListLoading));
+  Future<void> followingListCall(String pageNumber, String limit) async{
+  //  emit(state.copyWith(status: TicTocStatus.followingListLoading));
     try{
-      ResponseData responseData = await repository.followingList(pageNumber);
+      ResponseData responseData = await repository.followingList(pageNumber,limit);
       emit(state.copyWith(status: TicTocStatus.followingListSuccess,responseData: responseData));
     }
     on ErrorData catch (errorData){
@@ -321,10 +321,10 @@ class TicTocCubit extends Cubit<TicTocState> {
     }
   }
 
-  Future<void> followingFeedCall() async {
+  Future<void> followingFeedCall(String pageNumber,String limit) async {
     //  emit(state.copyWith(status: TicTocStatus.followingFeedLoading));
     try{
-      ResponseData responseData = await repository.followingFeed();
+      ResponseData responseData = await repository.followingFeed(pageNumber, limit);
       emit(state.copyWith(status: TicTocStatus.followingFeedSuccess,responseData: responseData));
     }
     on ErrorData catch (errorData){
@@ -338,7 +338,7 @@ class TicTocCubit extends Cubit<TicTocState> {
   Future<void> hitLikeFollowingReelsCall(Map<String, dynamic> hitLikeDetails) async {
     emit(state.copyWith(status: TicTocStatus.hitLikeFollowingReelsLoading));
     try{
-      ResponseData responseData = await repository.hitLikeFollowingReels(hitLikeDetails);
+      ResponseData responseData = await repository.hitLikeDetailsReels(hitLikeDetails);
       emit(state.copyWith(status: TicTocStatus.hitLikeFollowingReelsSuccess,responseData: responseData));
     }
     on ErrorData catch (errorData){
@@ -351,7 +351,7 @@ class TicTocCubit extends Cubit<TicTocState> {
   Future<void> hitLikeProfileCall(Map<String, dynamic> hitLikeDetails) async {
     emit(state.copyWith(status: TicTocStatus.hitLikeProfileLoading));
     try{
-      ResponseData responseData = await repository.hitLikeFollowingReels(hitLikeDetails);
+      ResponseData responseData = await repository.hitLikeDetailsReels(hitLikeDetails);
       emit(state.copyWith(status: TicTocStatus.hitLikeProfileSuccess,responseData: responseData));
     }
     on ErrorData catch (errorData){
@@ -359,6 +359,19 @@ class TicTocCubit extends Cubit<TicTocState> {
     }
     catch(e){
       emit(state.copyWith(status: TicTocStatus.hitLikeProfileError,error: e.toString(),errorData: null));
+    }
+  }
+  Future<void> hitLikeOtherProfileCall(Map<String, dynamic> hitLikeDetails) async {
+    emit(state.copyWith(status: TicTocStatus.hitLikeOtherProfileLoading));
+    try{
+      ResponseData responseData = await repository.hitLikeDetailsReels(hitLikeDetails);
+      emit(state.copyWith(status: TicTocStatus.hitLikeOtherProfileSuccess,responseData: responseData));
+    }
+    on ErrorData catch (errorData){
+      emit(state.copyWith(status: TicTocStatus.hitLikeOtherProfileError,errorData: errorData,error: null));
+    }
+    catch(e){
+      emit(state.copyWith(status: TicTocStatus.hitLikeOtherProfileError,error: e.toString(),errorData: null));
     }
   }
   Future<void> bookmarkFollowingCall(Map<String, dynamic> bookmarkDetails) async {
@@ -403,16 +416,16 @@ class TicTocCubit extends Cubit<TicTocState> {
     }
   }
   Future<void> getOtherBookmarkContentCall(String userID) async {
-    emit(state.copyWith(status: TicTocStatus.getBookmarkContentLoading));
+    emit(state.copyWith(status: TicTocStatus.getOtherBookmarkContentLoading));
     try{
       ResponseData responseData = await repository.getOtherBookmarkContent(userID);
-      emit(state.copyWith(status: TicTocStatus.getBookmarkContentSuccess,responseData: responseData));
+      emit(state.copyWith(status: TicTocStatus.getOtherBookmarkContentSuccess,responseData: responseData));
     }
     on ErrorData catch (errorData){
-      emit(state.copyWith(status: TicTocStatus.getBookmarkContentError,errorData: errorData,error: null));
+      emit(state.copyWith(status: TicTocStatus.getOtherBookmarkContentError,errorData: errorData,error: null));
     }
     catch(e){
-      emit(state.copyWith(status: TicTocStatus.getBookmarkContentError,error: e.toString(),errorData: null));
+      emit(state.copyWith(status: TicTocStatus.getOtherBookmarkContentError,error: e.toString(),errorData: null));
     }
   }
 

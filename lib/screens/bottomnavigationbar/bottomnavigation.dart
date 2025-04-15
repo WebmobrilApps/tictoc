@@ -49,7 +49,8 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
         isGuest == false ? const Friends() : Container(),// Prevent guest from accessing
         Container(),
         isGuest == false ? Inbox(controller: _controller) : Container(),// Prevent guest from accessing
-        isGuest == false ? Profile(controller: _controller) : Container(), // Prevent guest from accessing
+     //   isGuest == false ? Profile(controller: _controller) : Container(), // Prevent guest from accessing
+        isGuest == false ? Profile(key: profileKey, controller: _controller) : Container(),
 
       ];
     }
@@ -172,6 +173,11 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
                 LoginRequiredBottomSheet.show(context);
                 _controller.jumpToTab(_currentIndex);
                 return;
+              }
+              // If tapped again on Profile tab
+              if (_currentIndex == index && index == 4) {
+                print('Profile tapped');
+                profileKey.currentState?.refreshPage(); // 🔁 Trigger refresh manually
               }
               setState(() {
                 _currentIndex = index;

@@ -95,7 +95,7 @@ class _MyAppState extends State<MyApp> {
            ? const ConnectivityListener(child: PersistentCustomBottomMenu(initialIndex:0)):
         //   ? PersistentCustomBottomMenu(initialIndex:0):
 
-              const SignIn(),
+        const ConnectivityListener(child: SignIn()),
       ),
     );
   }

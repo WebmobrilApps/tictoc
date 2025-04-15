@@ -33,11 +33,11 @@ class Data {
   final String? descr;
   final String? url;
   final String? createdAt;
-  final int? likeCount;
-  final int? commentCount;
-  final int? saveCount;
-  final int? isLiked;
-  final int? isSaved;
+  int? likeCount;
+  int? commentCount;
+  int? saveCount;
+  int? isLiked;
+  int? isSaved;
   final List<String>? tags;
 
   Data({

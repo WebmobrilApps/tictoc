@@ -110,6 +110,10 @@ enum TicTocStatus {
   hitLikeProfileSuccess,
   hitLikeProfileError,
 
+  hitLikeOtherProfileLoading,
+  hitLikeOtherProfileSuccess,
+  hitLikeOtherProfileError,
+
   bookmarkFollowingLoading,
   bookmarkFollowingSuccess,
   bookmarkFollowingError,
@@ -121,6 +125,10 @@ enum TicTocStatus {
   getBookmarkContentLoading,
   getBookmarkContentSuccess,
   getBookmarkContentError,
+
+  getOtherBookmarkContentLoading,
+  getOtherBookmarkContentSuccess,
+  getOtherBookmarkContentError,
 
   getCommentsLoading,
   getCommentsSuccess,

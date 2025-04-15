@@ -1,15 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:tictoc/model/get_user_content_response.dart'as dfrContent;
-import 'package:tictoc/model/get_other_profile_response.dart' as dfrOtherProfile;
-import 'package:tictoc/screens/otherprofile/other_bottom_details.dart';
-import 'package:tictoc/screens/otherprofile/other_side_icon.dart';
-import 'package:tictoc/screens/profile/feeds/bottom_details_profile.dart';
+import 'package:tictoc/model/get_other_user_content_response.dart' as dfrOtherContent;
+import 'package:tictoc/screens/otherprofile/widgets/bottom_details_other.dart';
+import 'package:tictoc/screens/otherprofile/widgets/side_icon_other.dart';
 
 class OtherDetailedFeed extends StatefulWidget {
-  final dfrContent.Data reelsData; // <-- Receive the Data object
-  final dfrOtherProfile.GetOtherProfileResponse getOtherProfileResponse;
-  const OtherDetailedFeed({super.key, required this.reelsData, required this.getOtherProfileResponse });
+  final dfrOtherContent.Data reelsData; // <-- Receive the Data object
+  const OtherDetailedFeed({super.key, required this.reelsData,});
 
   @override
   State<OtherDetailedFeed> createState() => _OtherDetailedFeedState();
@@ -18,7 +15,6 @@ class OtherDetailedFeed extends StatefulWidget {
 class _OtherDetailedFeedState extends State<OtherDetailedFeed> {
   @override
   Widget build(BuildContext context) {
-    final userData = widget.getOtherProfileResponse.data;
     return Scaffold(
       backgroundColor: Colors.black, // for better full-screen effect
       body: Stack(
@@ -46,8 +42,8 @@ class _OtherDetailedFeedState extends State<OtherDetailedFeed> {
               ),
             ),
           ),
-          OtherSideIcon(getOtherProfileResponse:widget.getOtherProfileResponse, reelsData: widget.reelsData,),
-          OtherBottomDetails(getOtherProfileResponse:widget.getOtherProfileResponse, reelsData: widget.reelsData,),
+          SideIconOther(reelsData: widget.reelsData,),
+          BottomDetailsOther(reelsData: widget.reelsData,),
         ],
       ),
     );
