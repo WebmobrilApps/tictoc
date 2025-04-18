@@ -41,7 +41,7 @@ class _InterestState extends State<Interest> {
              // UiHelper.toastMessage(state.responseData?.response ?? '');
               PreferenceManager.insertValue(key: TOKEN, value: widget.tmpToken);
               PreferenceManager.insertValue(key: USER_ID, value: widget.userID);
-              userID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
+              myUserID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
               CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
             }
             else if(state.status == TicTocStatus.userInterestError){

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/get_other_profile_response.dart';
+import 'package:tictoc/screens/follower_list/my_follower_list.dart';
+import 'package:tictoc/screens/following_list/other_user_following_list.dart';
 import 'package:tictoc/screens/profile/profile_details/like_dialog.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
@@ -52,7 +55,8 @@ class _OtherProfileAppBarState extends State<OtherProfileAppBar> {
             Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MyInkWell(
-                    onTap: ()async{  Navigator.pop(context, hasUpdated);},
+                 //   onTap: ()async{  Navigator.pop(context, hasUpdated);},
+                    onTap: ()async{  Navigator.pop(context, hasUpdated?otherProfileData?.isFollowing:null);},
                     child: Image.asset('assets/images/back_arrow_black.png',height:25.5,width: 25.5,)),
                 Row(
                   children: [
@@ -94,18 +98,38 @@ class _OtherProfileAppBarState extends State<OtherProfileAppBar> {
                 UiHelper.verticalSpace(height: 12),
                 Row( mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Column(
-                      children: [
-                        smallText12(context,otherProfileData?.followers.toString()??'',fontWeight: FontWeight.w600),
-                        smallText12(context, 'Followers',),
-                      ],
+                    MyInkWell(
+                      onTap: ()async{
+                        PersistentNavBarNavigator.pushNewScreen(
+                          context,
+                          screen: MyFollowerList(otherUserId: otherProfileData?.pkUser.toString(),),
+                          withNavBar: false, // OPTIONAL VALUE. True by default.
+                          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          smallText12(context,otherProfileData?.followers.toString()??'',fontWeight: FontWeight.w600),
+                          smallText12(context, 'Followers',),
+                        ],
+                      ),
                     ),
                     const SizedBox(width:40),
-                    Column(
-                      children: [
-                        smallText12(context, otherProfileData?.following.toString()??'',fontWeight: FontWeight.w600),
-                        smallText12(context, 'Following',),
-                      ],
+                    MyInkWell(
+                      onTap: ()async{
+                        PersistentNavBarNavigator.pushNewScreen(
+                          context,
+                          screen: OtherUserFollowingList(otherUserId: otherProfileData!.pkUser.toString(),),
+                          withNavBar: false, // OPTIONAL VALUE. True by default.
+                          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          smallText12(context, otherProfileData?.following.toString()??'',fontWeight: FontWeight.w600),
+                          smallText12(context, 'Following',),
+                        ],
+                      ),
                     ),
                     const SizedBox(width:40),
                     MyInkWell(
@@ -134,7 +158,7 @@ class _OtherProfileAppBarState extends State<OtherProfileAppBar> {
                       onTap: () {
                         if(otherProfileData?.isFollowing==0){
                           Map<String, dynamic> followUserMap = {
-                            "follower_id": userID,
+                            "follower_id": myUserID,
                             "following_id": otherProfileData?.pkUser,
                           };
                           BlocProvider.of<TicTocCubit>(context).followUserCall(followUserMap);

@@ -62,6 +62,10 @@ enum TicTocStatus {
   followUserSuccess,
   followUserError,
 
+  inOtherFollowingListFollowUserLoading,
+  inOtherFollowingListFollowUserSuccess,
+  inOtherFollowingListFollowUserError,
+
   unFollowUserLoading,
   unFollowUserSuccess,
   unFollowUserError,
@@ -69,6 +73,10 @@ enum TicTocStatus {
   followingListLoading,
   followingListSuccess,
   followingListError,
+
+  otherUserFollowingListLoading,
+  otherUserFollowingListSuccess,
+  otherUserFollowingListError,
 
   forYouFeedLoading,
   forYouFeedSuccess,
@@ -122,6 +130,14 @@ enum TicTocStatus {
   bookmarkProfileSuccess,
   bookmarkProfileError,
 
+  bookmarkExploreLoading,
+  bookmarkExploreSuccess,
+  bookmarkExploreError,
+
+  bookmarkOtherProfileLoading,
+  bookmarkOtherProfileSuccess,
+  bookmarkOtherProfileError,
+
   getBookmarkContentLoading,
   getBookmarkContentSuccess,
   getBookmarkContentError,
@@ -141,6 +157,10 @@ enum TicTocStatus {
   otherUserFollowersLoading,
   otherUserFollowersSuccess,
   otherUserFollowersError,
+
+  changePasswordLoading,
+  changePasswordSuccess,
+  changePasswordError,
 
 
 

@@ -1,36 +1,40 @@
-class OtherUserFollowersResponse {
+class OtherUserFollowingListResponse {
   final int? resCode;
   final bool? success;
   final String? msg;
-  final List<Data>? data;
+  List<Data>? data;
+  final int? total;
 
-  OtherUserFollowersResponse({
+  OtherUserFollowingListResponse({
     this.resCode,
     this.success,
     this.msg,
     this.data,
+    this.total,
   });
 
-  OtherUserFollowersResponse.fromJson(Map<String, dynamic> json)
+  OtherUserFollowingListResponse.fromJson(Map<String, dynamic> json)
       : resCode = json['resCode'] as int?,
         success = json['success'] as bool?,
         msg = json['msg'] as String?,
-        data = (json['data'] as List?)?.map((dynamic e) => Data.fromJson(e as Map<String,dynamic>)).toList();
+        data = (json['data'] as List?)?.map((dynamic e) => Data.fromJson(e as Map<String,dynamic>)).toList(),
+        total = json['total'] as int?;
 
   Map<String, dynamic> toJson() => {
     'resCode' : resCode,
     'success' : success,
     'msg' : msg,
-    'data' : data?.map((e) => e.toJson()).toList()
+    'data' : data?.map((e) => e.toJson()).toList(),
+    'total' : total
   };
 }
 
 class Data {
   final int? userId;
   final String? username;
-  final String? profilePic;
+  final dynamic profilePic;
   final String? name;
-  final int? isFollowing;
+  int? isFollowing;
 
   Data({
     this.userId,
@@ -43,7 +47,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json)
       : userId = json['userId'] as int?,
         username = json['username'] as String?,
-        profilePic = json['profile_pic'] as String?,
+        profilePic = json['profile_pic'],
         name = json['name'] as String?,
         isFollowing = json['isFollowing'] as int?;
 

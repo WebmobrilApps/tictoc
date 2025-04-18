@@ -175,7 +175,8 @@ class _PersistentCustomBottomMenuState extends State<PersistentCustomBottomMenu>
                 return;
               }
               // If tapped again on Profile tab
-              if (_currentIndex == index && index == 4) {
+              //if (_currentIndex == index && index == 4) {
+              if (index == 4) {
                 print('Profile tapped');
                 profileKey.currentState?.refreshPage(); // 🔁 Trigger refresh manually
               }

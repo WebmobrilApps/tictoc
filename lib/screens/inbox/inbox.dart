@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:tictoc/screens/auth/forgot_password.dart';
+import 'package:tictoc/screens/follower_list/my_follower_list.dart';
 import 'package:tictoc/screens/inbox/activity_model_top.dart';
-import 'package:tictoc/screens/inbox/chat_screen.dart';
-import 'package:tictoc/screens/inbox/followers.dart';
 import 'package:tictoc/screens/notification/system_notification.dart';
-import 'package:tictoc/screens/profile/choose_photo_bottom.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
-import 'package:tictoc/utils/custom_navigator.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -72,7 +68,7 @@ class _InboxState extends State<Inbox> {
                     onTap:()async{
                       PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        screen: const Followers(),
+                        screen: const MyFollowerList(),
                         withNavBar: false, // OPTIONAL VALUE. True by default.
                         pageTransitionAnimation: PageTransitionAnimation.cupertino,
                       );
@@ -186,7 +182,7 @@ class _InboxState extends State<Inbox> {
                                         onTap: ()async{
                                           PersistentNavBarNavigator.pushNewScreen(
                                             context,
-                                            screen: const Followers(),
+                                            screen: const MyFollowerList(),
                                             withNavBar: false, // OPTIONAL VALUE. True by default.
                                             pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                           );

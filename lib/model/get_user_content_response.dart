@@ -2,26 +2,30 @@ class GetUserContentResponse {
   final int? resCode;
   final bool? success;
   final String? msg;
-  final List<Data>? data;
+  List<Data>? data;
+  final int? total;
 
   GetUserContentResponse({
     this.resCode,
     this.success,
     this.msg,
     this.data,
+    this.total,
   });
 
   GetUserContentResponse.fromJson(Map<String, dynamic> json)
-      : resCode = json['resCode'] as int?,
-        success = json['success'] as bool?,
-        msg = json['msg'] as String?,
-        data = (json['data'] as List?)?.map((dynamic e) => Data.fromJson(e as Map<String,dynamic>)).toList();
+    : resCode = json['resCode'] as int?,
+      success = json['success'] as bool?,
+      msg = json['msg'] as String?,
+      data = (json['data'] as List?)?.map((dynamic e) => Data.fromJson(e as Map<String,dynamic>)).toList(),
+      total = json['total'] as int?;
 
   Map<String, dynamic> toJson() => {
     'resCode' : resCode,
     'success' : success,
     'msg' : msg,
-    'data' : data?.map((e) => e.toJson()).toList()
+    'data' : data?.map((e) => e.toJson()).toList(),
+    'total' : total
   };
 }
 
@@ -32,6 +36,7 @@ class Data {
   final String? url;
   final String? createdAt;
   final String? username;
+  final String? name;
   final dynamic profilePic;
   int? likeCount;
   int? commentCount;
@@ -46,6 +51,7 @@ class Data {
     this.url,
     this.createdAt,
     this.username,
+    this.name,
     this.profilePic,
     this.likeCount,
     this.commentCount,
@@ -55,18 +61,19 @@ class Data {
   });
 
   Data.fromJson(Map<String, dynamic> json)
-      : pkVideos = json['pk_videos'] as int?,
-        userId = json['user_id'] as int?,
-        descr = json['descr'] as String?,
-        url = json['url'] as String?,
-        createdAt = json['created_at'] as String?,
-        username = json['username'] as String?,
-        profilePic = json['profile_pic'],
-        likeCount = json['like_count'] as int?,
-        commentCount = json['comment_count'] as int?,
-        saveCount = json['save_count'] as int?,
-        isLiked = json['is_liked'] as int?,
-        isSaved = json['is_saved'] as int?;
+    : pkVideos = json['pk_videos'] as int?,
+      userId = json['user_id'] as int?,
+      descr = json['descr'] as String?,
+      url = json['url'] as String?,
+      createdAt = json['created_at'] as String?,
+      username = json['username'] as String?,
+      name = json['name'] as String?,
+      profilePic = json['profile_pic'],
+      likeCount = json['like_count'] as int?,
+      commentCount = json['comment_count'] as int?,
+      saveCount = json['save_count'] as int?,
+      isLiked = json['is_liked'] as int?,
+      isSaved = json['is_saved'] as int?;
 
   Map<String, dynamic> toJson() => {
     'pk_videos' : pkVideos,
@@ -75,6 +82,7 @@ class Data {
     'url' : url,
     'created_at' : createdAt,
     'username' : username,
+    'name' : name,
     'profile_pic' : profilePic,
     'like_count' : likeCount,
     'comment_count' : commentCount,

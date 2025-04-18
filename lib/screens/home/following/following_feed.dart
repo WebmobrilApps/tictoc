@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/following_feed_response.dart';
+import 'package:tictoc/screens/home/following/widgets/bottom_details_following.dart';
 import 'package:tictoc/screens/home/following/widgets/bottom_icons_following.dart';
 import 'package:tictoc/screens/home/following/widgets/side_icons_following.dart';
 import 'package:tictoc/utils/empty_list_found.dart';
@@ -231,7 +232,7 @@ class _FollowingFeedState extends State<FollowingFeed> {
                             ),
                           ),*/
                           SideIconsFollowing(fromPage: 'FollowingTab',reelsData: followingData,),
-                          BottomIconsFollowing(fromPage: 'FollowingTab', reelsData: followingData,),
+                          BottomDetailsFollowing(fromPage: 'FollowingTab', reelsData: followingData,),
                         ],
                       );
                     },

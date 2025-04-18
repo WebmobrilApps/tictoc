@@ -6,7 +6,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/screens/home/following/widgets/comment_following.dart';
 import 'package:tictoc/screens/home/sound_screen.dart';
-import 'package:tictoc/screens/profile/feeds/delete_post_bottom_sheet.dart';
+import 'package:tictoc/screens/profile/my_uploaded_feeds/delete_post_bottom_sheet.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/color.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tictoc/screens/auth/forgot_password.dart';
-import 'package:tictoc/screens/profile/following_list.dart';
+import 'package:tictoc/screens/following_list/following_list.dart';
 import 'package:tictoc/screens/settings_policies_and_support/content_preference.dart';
 import 'package:tictoc/screens/settings_policies_and_support/security/manage_app_permissions.dart';
 import 'package:tictoc/screens/settings_policies_and_support/security/manage_device.dart';

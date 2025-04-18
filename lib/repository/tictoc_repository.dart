@@ -9,14 +9,13 @@ import 'package:tictoc/model/following_feed_response.dart';
 import 'package:tictoc/model/following_list_response.dart';
 import 'package:tictoc/model/for_you_feed_response.dart';
 import 'package:tictoc/model/forgot_password_response.dart';
-import 'package:tictoc/model/get_bookmarked_response.dart';
 import 'package:tictoc/model/get_comments_response.dart';
 import 'package:tictoc/model/get_other_profile_response.dart';
 import 'package:tictoc/model/get_other_user_content_response.dart';
 import 'package:tictoc/model/get_profile_response.dart';
 import 'package:tictoc/model/get_user_content_response.dart';
 import 'package:tictoc/model/guest_login_response.dart';
-import 'package:tictoc/model/other_user_followers_response.dart';
+import 'package:tictoc/model/other_user_following_response.dart';
 import 'package:tictoc/model/resend_verify_otp_response.dart';
 import 'package:tictoc/model/sign_in_response.dart';
 import 'package:tictoc/model/sign_up_response.dart';
@@ -284,6 +283,22 @@ class TicTocRepository {
       rethrow;
     }
   }
+
+  Future<ResponseData> otherUserFollowerList(String userId,String pageNumber, String limit) async {
+    try {
+      final response = await ApiService(token: getToken()).sendRequest.get('/user/other-user-follower?userId=$userId&page=$pageNumber&limit=$limit');
+      return ResponseData(
+          statusCode: response.statusCode,
+          response: FollowerListResponse.fromJson(response.data));
+    } on DioException catch (e) {
+      throw ErrorData(
+          message: e.response!.data['msg'], code: e.response!.statusCode);
+    } on Exception catch (_) {
+      rethrow;
+    }
+  }
+
+
   Future<ResponseData> followUser(Map<String, dynamic> followUserMap) async {
     print('followUserBody:$followUserMap');
     try {
@@ -327,6 +342,20 @@ class TicTocRepository {
       return ResponseData(
           statusCode: response.statusCode,
           response: FollowingListResponse.fromJson(response.data));
+    } on DioException catch (e) {
+      throw ErrorData(
+          message: e.response!.data['msg'], code: e.response!.statusCode);
+    } on Exception catch (_) {
+      rethrow;
+    }
+  }
+
+  Future<ResponseData> otherUserFollowingList(String otherUserId, String pageNumber, String limit) async {
+    try {
+      final response = await ApiService(token: getToken()).sendRequest.get('/user/other-user-following?userId=$otherUserId&page=$pageNumber&limit=$limit');
+      return ResponseData(
+          statusCode: response.statusCode,
+          response: OtherUserFollowingListResponse.fromJson(response.data));
     } on DioException catch (e) {
       throw ErrorData(
           message: e.response!.data['msg'], code: e.response!.statusCode);
@@ -533,10 +562,10 @@ class TicTocRepository {
     }
   }
 
-  Future<ResponseData> getOtherBookmarkContent(String userID) async {
+  Future<ResponseData> getOtherBookmarkContent(String userID,String pageNumber,String limit) async {
     print('getToken():${getToken()}');
     try {
-      final response = await ApiService(token: getToken()).sendRequest.get("/user/other-saved-content?userId=$userID");
+      final response = await ApiService(token: getToken()).sendRequest.get("/user/other-saved-content?userId=$userID&page=$pageNumber&limit=$limit");
       return ResponseData(
           statusCode: response.statusCode,
           response: GetOtherUserContentResponse.fromJson(response.data));
@@ -581,16 +610,20 @@ class TicTocRepository {
     }
   }
 
-  Future<ResponseData> otherUserFollowers(String otherUserId) async {
-    print('getToken():${getToken()}');
+
+  Future<ResponseData> changePassword(Map<String, dynamic> passwordDetails) async {
     try {
-      final response = await ApiService(token: getToken()).sendRequest.get("/user/other-user-follower?userId=$otherUserId");
+      final response = await ApiService(token: getToken()).sendRequest.post("/user/change-password",
+        data: passwordDetails,
+      );
       return ResponseData(
-          statusCode: response.statusCode,
-          response: OtherUserFollowersResponse.fromJson(response.data));
+        statusCode: response.statusCode,
+        response: response.data["msg"],
+      );
     } on DioException catch (e) {
       throw ErrorData(
-          message: e.response!.data['msg'], code: e.response!.statusCode);
+          message: e.response!.data['msg'],
+          code: e.response!.statusCode);
     } on Exception catch (_) {
       rethrow;
     }

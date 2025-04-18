@@ -100,7 +100,31 @@ class _SideIconOtherState extends State<SideIconOther> {
                 child: Image.asset('assets/images/chat.png',height: 33.6,width: 33.6,)),
             mediumText14(context, reelsData.commentCount.toString(),textColor: whiteColor,fontWeight: FontWeight.w600),
             UiHelper.verticalSpace(height: 14),
-            Image.asset('assets/images/bookmark.png',height: 25.2,width:26,),
+            MyInkWell(
+                onTap: ()async{
+                  Map<String, dynamic> bookmarkDetails = {
+                    "content_id": reelsData.videoId,
+                  };
+                  print('bookmarkDetails:$bookmarkDetails');
+                  BlocProvider.of<TicTocCubit>(context).bookmarkOtherProfileCall(bookmarkDetails).whenComplete((){
+                    setState(() {
+                      if (reelsData.isSaved == 0) {
+                        reelsData.isSaved = 1;
+                        reelsData.saveCount = (reelsData.saveCount ?? 0) + 1;
+                      } else {
+                        reelsData.isSaved = 0;
+                        reelsData.saveCount = (reelsData.saveCount ?? 1) - 1;
+                      /*  if (widget.fromPage == "MyBookMarkGallery") {
+                          Navigator.pop(context, {
+                            'unBookmarked': true,
+                            'id': reelsData.pkVideos,
+                          });
+                        }*/
+                      }
+                    });
+                  });
+                },
+                child: Image.asset(reelsData.isSaved==0?'assets/images/bookmark.png':'assets/images/bookmark_filled.png',height: 25.2,width:26)),
             mediumText14(context, reelsData.saveCount.toString(),textColor: whiteColor,fontWeight: FontWeight.w600),
             UiHelper.verticalSpace(height: 8),
             IconButton(

@@ -27,19 +27,56 @@ class OtherBookmarkGallery extends StatefulWidget {
 }
 
 class _OtherBookmarkGalleryState extends State<OtherBookmarkGallery> {
-  TextEditingController searchController = TextEditingController();
   GetOtherUserContentResponse getOtherUserContentResponse = GetOtherUserContentResponse();
-  int selectedIndex = -1;
   bool showLoader = true;
+
+  bool isLoadingMore = false;
+  bool hasMore = true;
+  int currentPage = 1;
+  final int limit = 9;
+  final ScrollController _scrollController = ScrollController();
+
+
 
   @override
   void initState() {
     getOtherSavedContentApi();
+    _scrollController.addListener(_onScroll);
     super.initState();
   }
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !isLoadingMore && hasMore) {
+      _loadMore();
+    }
+  }
+  Future<void> getOtherSavedContentApi({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      setState(() => isLoadingMore = true);
+      currentPage++;
+    } else {
+      currentPage = 1;
+      setState(() {
+        showLoader = true;
+        hasMore = true;
+      });
+    }
 
-  Future<void> getOtherSavedContentApi() async {
-    await BlocProvider.of<TicTocCubit>(context).getOtherBookmarkContentCall(widget.otherUserID??'');
+    await BlocProvider.of<TicTocCubit>(context).getOtherBookmarkContentCall(widget.otherUserID??'',currentPage.toString(), limit.toString());
+  }
+ /* Future<void> getOtherSavedContentApi() async {
+    await BlocProvider.of<TicTocCubit>(context).getOtherBookmarkContentCall(widget.otherUserID??'',"1","10");
+  }*/
+  // Load more content
+  Future<void> _loadMore() async {
+    await getOtherSavedContentApi(isLoadMore: true);
+  }
+
+
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,10 +86,28 @@ class _OtherBookmarkGalleryState extends State<OtherBookmarkGallery> {
       body: BlocConsumer<TicTocCubit,TicTocState>(
         listener: (context,state){
           print("sate.status:${state.status}");
-          if(state.status == TicTocStatus.getOtherBookmarkContentSuccess){
+        /*  if(state.status == TicTocStatus.getOtherBookmarkContentSuccess){
             showLoader = false;
             getOtherUserContentResponse = state.responseData?.response as GetOtherUserContentResponse;
+          }*/
+
+          if (state.status == TicTocStatus.getOtherBookmarkContentSuccess) {
+            final response = state.responseData?.response as GetOtherUserContentResponse;
+            final newData = response.data ?? [];
+
+            setState(() {
+              if (currentPage == 1) {
+                getOtherUserContentResponse.data = newData;
+              } else {
+                getOtherUserContentResponse.data?.addAll(newData);
+              }
+
+              showLoader = false;
+              isLoadingMore = false;
+              hasMore = (getOtherUserContentResponse.data?.length ?? 0) < (response.total ??0);
+            });
           }
+
           if (state.status == TicTocStatus.getOtherBookmarkContentError) {
             UiHelper.toastMessage(state.errorData?.message ?? state.error ?? "");
           }
@@ -67,14 +122,15 @@ class _OtherBookmarkGalleryState extends State<OtherBookmarkGallery> {
               errorMessage: state.errorData?.message ?? state.error,
               statusCode: state.errorData?.code,
               onRetry: getOtherSavedContentApi,
-              onRefresh: _refreshPage,
+              onRefresh: refreshPage,
             );
           }
           return  Padding(
             padding: const EdgeInsets.only(left: 18,right: 18),
             child: RefreshIndicator(
-              onRefresh: _refreshPage,
+              onRefresh: refreshPage,
               child:  ListView(
+                controller: _scrollController, // 💥 Attach the scroll controller
                 padding: EdgeInsets.zero,
                 physics: const AlwaysScrollableScrollPhysics(), // Enables pull-to-refresh
                 children: [
@@ -98,7 +154,7 @@ class _OtherBookmarkGalleryState extends State<OtherBookmarkGallery> {
                         final item = getOtherUserContentResponse.data![index];
                         return MyInkWell(
                           onTap: ()async{
-                            print('Updated Profile: ${jsonEncode(item.toJson())}');
+                            print('Reel Details: ${jsonEncode(item.toJson())}');
                             final result = await PersistentNavBarNavigator.pushNewScreen(
                               context,
                               screen: OtherDetailedFeed(
@@ -107,24 +163,6 @@ class _OtherBookmarkGalleryState extends State<OtherBookmarkGallery> {
                               withNavBar: false,
                               pageTransitionAnimation: PageTransitionAnimation.cupertino,
                             );
-                            if (result != null && result['deleted'] == true) {
-                              profileKey.currentState?.refreshPage();
-                            }
-                            /* final result = await PersistentNavBarNavigator.pushNewScreen(
-                              context,
-                              screen: DetailedFeed(
-                                reelsData: item,
-                                getProfileResponse: widget.getProfileResponse,
-                              ),
-                              withNavBar: false,
-                              pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                            );
-
-                            if (result != null && result['deleted'] == true) {
-                              setState(() {
-                                contentData.removeWhere((element) => element.pkVideos.toString() == result['id'].toString());
-                              });
-                            }*/
                           },
                           child: Column(
                             children: [
@@ -147,7 +185,7 @@ class _OtherBookmarkGalleryState extends State<OtherBookmarkGallery> {
                       },
                     ),
                   ),
-
+                  if (isLoadingMore) const CustomLoader(size:30),
                   UiHelper.verticalSpace(height: screenHeight*0.09),
                 ],
               ),
@@ -158,11 +196,13 @@ class _OtherBookmarkGalleryState extends State<OtherBookmarkGallery> {
     );
   }
 
-  Future<void> _refreshPage() async{
+  // Refresh the page
+  Future<void> refreshPage() async {
     setState(() {
-      searchController.clear();
-      showLoader = true; // Show the loader
+      showLoader = true;
+      hasMore = true;
     });
     await getOtherSavedContentApi();
   }
+
 }

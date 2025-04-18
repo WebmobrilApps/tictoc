@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tictoc/screens/settings_policies_and_support/account/account_information.dart';
+import 'package:tictoc/screens/settings_policies_and_support/account/change_password.dart';
 import 'package:tictoc/screens/settings_policies_and_support/account/deactivate_delete_account.dart';
 import 'package:tictoc/screens/settings_policies_and_support/account/password.dart';
 import 'package:tictoc/screens/settings_policies_and_support/activity_center.dart';
@@ -29,7 +30,8 @@ class _AccountState extends State<Account> {
               RowActivityWidget(labelText: 'Account information',
                 onTap: (){CustomNavigator.push(context: context, screen: const AccountInformation());},),
               RowActivityWidget(labelText: 'Password',
-                onTap: (){CustomNavigator.push(context: context, screen: const Password());},),
+              //  onTap: (){CustomNavigator.push(context: context, screen: const Password());},),
+                onTap: (){CustomNavigator.push(context: context, screen: const ChangePassword());},),
               RowActivityWidget(labelText: 'Deactivate or delete account',
                 onTap: (){CustomNavigator.push(context: context, screen: const DeactivateDeleteAccount());},),
             ],

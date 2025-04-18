@@ -22,9 +22,10 @@ class _OtherDetailedFeedState extends State<OtherDetailedFeed> {
           Center(
             child: CachedNetworkImage(
               imageUrl: widget.reelsData.url ?? '',
-              fit: BoxFit.fitHeight,
+            //  fit: BoxFit.fitHeight,
+              fit: BoxFit.cover,
               width: double.infinity,
-              height: double.infinity,
+           //   height: double.infinity,
               placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
               errorWidget: (context, url, error) => const Center(child: Icon(Icons.error, color: Colors.white)),
             ),

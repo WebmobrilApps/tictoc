@@ -40,7 +40,7 @@ class Data {
   final String? createdAt;
   int? likeCount;
   int? isLiked;
-  final int? isSaved;
+  int? isSaved;
   final List<String>? tags;
 
   Data({

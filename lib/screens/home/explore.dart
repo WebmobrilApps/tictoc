@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -6,10 +10,10 @@ import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/explore_response.dart';
 import 'package:tictoc/screens/home/explore_detail.dart';
 import 'package:tictoc/utils/color.dart';
+import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_loader.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/error_display.dart';
-import 'package:tictoc/utils/ui_helper.dart';
 class Explore extends StatefulWidget {
   const Explore({super.key});
 
@@ -18,7 +22,8 @@ class Explore extends StatefulWidget {
 }
 
 
-class _ExploreState extends State<Explore>  {
+//class _ExploreState extends State<Explore> with AutomaticKeepAliveClientMixin {
+class _ExploreState extends State<Explore> {
   bool showLoader = true;
   bool isLoadingMore = false;
 
@@ -76,6 +81,9 @@ class _ExploreState extends State<Explore>  {
     _scrollController.dispose();
     super.dispose();
   }
+
+ // @override
+  //bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -140,17 +148,36 @@ class _ExploreState extends State<Explore>  {
                             children: [
                               MyInkWell(
                                 onTap: () async {
+                                  print('Reels Data: ${jsonEncode(exploreData.toJson())}');
                                   PersistentNavBarNavigator.pushNewScreen(
                                     context,
-                                    screen: const ExploreDetail(),
+                                    screen:  ExploreDetail(reelsData:exploreData),
                                     withNavBar: false,
                                     pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                   );
                                 },
-                                child: cachedImageFullHeight(
+                                child: CachedNetworkImage(
+                                  imageUrl: exploreData.url ?? '',
+                                  placeholder: (context, url) => Container(
+                                    height: 200,
+                                    color: Colors.grey[800],
+                                    child: const Center(
+                                      child: CupertinoActivityIndicator(
+                                        color: Color(0xffFF0134),),
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                                  fit: BoxFit.cover,
+                                  memCacheHeight: 600, // adjust for performance
+                                  useOldImageOnUrlChange: true,
+                                  fadeInDuration: const Duration(milliseconds: 100),
+                                  fadeOutDuration: const Duration(milliseconds: 100),
+                                  cacheKey: exploreData.videoId.toString(), // optional
+                                ),
+                              /*  child: cachedImageFullHeight(
                                   image: exploreData.url ?? '',
                                   borderRadiusValue: 7,
-                                ),
+                                ),*/
                               ),
                               const SizedBox(height: 4),
                               Row(
@@ -159,16 +186,20 @@ class _ExploreState extends State<Explore>  {
                                   Flexible(
                                     child: MyInkWell(
                                       onTap: () async {
-                                        PersistentNavBarNavigator.pushNewScreen(
+                                       /* PersistentNavBarNavigator.pushNewScreen(
                                           context,
-                                          screen: const ExploreDetail(),
+                                          screen: ExploreDetail(reelsData:exploreData),
                                           withNavBar: false,
                                           pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                                        );
+                                        );*/
                                       },
                                       child: Row(
                                         children: [
-                                          Image.asset('assets/images/profile6.png', height: 24, width: 24),
+                                          cachedImageWidget(
+                                              image:"$BASEURL/${exploreData.profilePic??''}",
+                                              borderRadiusValue:50,
+                                              hasProfileImg:true,
+                                              height: 24,width: 24),
                                           const SizedBox(width: 4),
                                           Flexible(
                                             child: smallText12(

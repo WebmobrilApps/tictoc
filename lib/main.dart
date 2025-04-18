@@ -105,10 +105,10 @@ class _MyAppState extends State<MyApp> {
 Future<void> getStoredValue() async {
   var token = PreferenceManager.getStringValue(key: TOKEN) ?? '';
   isGuest = PreferenceManager.getBooleanValue(key: ISGUEST) ?? false;
-  userID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
+  myUserID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
 
   print('isGuest:$isGuest');
-  print('userID:$userID');
+  print('myUserID:$myUserID');
   print('tokenMain:$token');
   if (token != '') {
     loginValue = true;

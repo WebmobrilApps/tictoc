@@ -228,7 +228,7 @@ class _CommentBottomSheetWrapperState extends State<CommentBottomSheetWrapper> {
                                   BlocProvider.of<TicTocCubit>(context).sendCommentCall(commentDetails);
                                 }
                               },
-                              child: state.status==TicTocStatus.sendCommentLoading?const CircularProgressIndicator(color: buttonColor):
+                              child: state.status==TicTocStatus.sendCommentLoading?const SizedBox(height:20,width:20,child: CircularProgressIndicator(color: buttonColor,strokeWidth: 3.0,)):
                               Image.asset('assets/images/share_grey.png', height: 22, width: 22)),
                         ],
                       ),

@@ -35,7 +35,7 @@ class _SignInState extends State<SignIn> {
   @override
   void initState() {
     // TODO: implement initState
-    passwordController.text = "Thiru@003";
+ //   passwordController.text = "Thiru@003";
     _fetchDeviceId();
 
     super.initState();
@@ -116,7 +116,7 @@ class _SignInState extends State<SignIn> {
                 PreferenceManager.insertValue(key: PHONE_NO, value: signInResponse.data?.user?.phone.toString());
                 PreferenceManager.insertValue(key: EMAIL_ID, value: signInResponse.data?.user?.email.toString());
                 PreferenceManager.insertValue(key: USER_ID, value: signInResponse.data?.user?.pkUser);
-                userID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
+                myUserID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
                 CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
               }
             }

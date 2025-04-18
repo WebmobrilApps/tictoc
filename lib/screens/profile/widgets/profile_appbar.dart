@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/model/get_profile_response.dart';
-import 'package:tictoc/screens/inbox/followers.dart';
+import 'package:tictoc/screens/follower_list/my_follower_list.dart';
 import 'package:tictoc/screens/profile/edit_profile.dart';
-import 'package:tictoc/screens/profile/following_list.dart';
+import 'package:tictoc/screens/following_list/following_list.dart';
 import 'package:tictoc/screens/profile/menu_profile_bottom.dart';
 import 'package:tictoc/screens/profile/profile_details/like_dialog.dart';
 import 'package:tictoc/screens/profile/profile_views.dart';
@@ -125,7 +125,7 @@ class ProfileInfo extends StatelessWidget {
                 onTap: ()async{
                   PersistentNavBarNavigator.pushNewScreen(
                     context,
-                    screen: const Followers(),
+                    screen: const MyFollowerList(),
                     withNavBar: false, // OPTIONAL VALUE. True by default.
                     pageTransitionAnimation: PageTransitionAnimation.cupertino,
                   );

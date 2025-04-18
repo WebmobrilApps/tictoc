@@ -958,6 +958,9 @@ class TextFormFieldWithLabel extends StatelessWidget {
   final Color? textFontColor;
   final Color? cursorColor;
   final int? maxLength;
+  final TextStyle? textStyle;
+  final TextStyle? hintStyle;
+  final TextStyle? labelStyle;
 
    const TextFormFieldWithLabel({
     super.key,
@@ -980,7 +983,10 @@ class TextFormFieldWithLabel extends StatelessWidget {
     this.bottomBorderColor,
     this.textFontColor,
     this.cursorColor,
-    this.maxLength
+    this.maxLength,
+     this.textStyle,
+     this.hintStyle,
+     this.labelStyle,
   });
 
   @override
@@ -1001,13 +1007,13 @@ class TextFormFieldWithLabel extends StatelessWidget {
         onTap: onTap,
         readOnly: readOnly,
         cursorColor: cursorColor??Colors.white,
-        style: GoogleFonts.jost(fontWeight: FontWeight.w500,
+        style: textStyle ?? GoogleFonts.jost(fontWeight: FontWeight.w500,
           fontSize: 16, color: textFontColor ?? Colors.white,),
         decoration: InputDecoration(
           labelText: label?.isNotEmpty == true ? label : null,
           hintText: hintText,
-          labelStyle: GoogleFonts.jost(fontWeight: FontWeight.w500, fontSize: 18, color: Colors.white,),
-          hintStyle: GoogleFonts.jost(fontWeight: FontWeight.w400, fontSize: 16, color: const Color(0xffc4c4c4),),
+          labelStyle: labelStyle ?? GoogleFonts.jost(fontWeight: FontWeight.w500, fontSize: 18, color: Colors.white,),
+          hintStyle: hintStyle ?? GoogleFonts.jost(fontWeight: FontWeight.w400, fontSize: 16, color: const Color(0xffc4c4c4),),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           prefixIcon: prefixIcon,
           suffixIcon: Padding(

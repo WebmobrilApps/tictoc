@@ -12,20 +12,22 @@ import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/error_display.dart';
 import 'package:tictoc/utils/empty_list_found.dart';
 import 'package:tictoc/utils/ui_helper.dart';
-class Followers extends StatefulWidget {
-  const Followers({super.key});
+
+class MyFollowerList extends StatefulWidget {
+  final String? otherUserId;
+  const MyFollowerList({super.key, this.otherUserId});
 
   @override
-  State<Followers> createState() => _FollowersState();
+  State<MyFollowerList> createState() => _MyFollowerListState();
 }
 
-class _FollowersState extends State<Followers> {
+class _MyFollowerListState extends State<MyFollowerList> {
   FollowerListResponse followerListResponse = FollowerListResponse();
   int selectedIndex = -1;
 
   bool showLoader = true;
   int currentPage = 1;
-  final int limit = 14;
+  final int limit = 15;
   bool isLoadingMore = false;
   bool hasMore = true;
   int totalItems = 0;
@@ -55,7 +57,12 @@ class _FollowersState extends State<Followers> {
         hasMore = true;
       });
     }
-    await BlocProvider.of<TicTocCubit>(context).followerListCall(currentPage.toString(), limit.toString());
+    if(widget.otherUserId==null){
+      await BlocProvider.of<TicTocCubit>(context).followerListCall(currentPage.toString(), limit.toString());
+    }else{
+      await BlocProvider.of<TicTocCubit>(context).otherUserFollowerListCall(widget.otherUserId??'',currentPage.toString(), limit.toString());
+    }
+
   }
   Future<void> _loadMore() async {
     await getFollowersListApi(isLoadMore: true);
@@ -66,11 +73,6 @@ class _FollowersState extends State<Followers> {
     _scrollController.dispose();
     super.dispose();
   }
-
- /* Future<void> getFollowersListApi() async {
-    await BlocProvider.of<TicTocCubit>(context).followerListCall("1","50");
-  }
-*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,14 +81,9 @@ class _FollowersState extends State<Followers> {
       body: BlocConsumer<TicTocCubit,TicTocState>(
         listener: (context,state){
           print("sate.status:${state.status}");
-       /*   if(state.status == TicTocStatus.followerListSuccess){
-            Loader.hide();
-            followerListResponse = state.responseData?.response as FollowerListResponse;
-          }*/
           if (state.status == TicTocStatus.followerListSuccess) {
             final response = state.responseData?.response as FollowerListResponse;
             final newData = response.data ?? [];
-
             setState(() {
               totalItems = response.total ?? 0;
 
@@ -99,14 +96,6 @@ class _FollowersState extends State<Followers> {
               isLoadingMore = false;
               hasMore = (followerListResponse.data?.length ?? 0) < totalItems;
             });
-          }
-          if(state.status == TicTocStatus.followUserSuccess){
-            Loader.hide();
-            UiHelper.toastMessage(state.responseData?.response ?? '');
-          }
-          if (state.status == TicTocStatus.followUserError){
-            Loader.hide();
-            UiHelper.toastMessage(state.errorData?.message ?? state.error ?? "");
           }
         },
         builder: (context,state){
@@ -150,8 +139,10 @@ class _FollowersState extends State<Followers> {
                                 Expanded(
                                   child: MyInkWell(
                                     onTap:()async{
-                                    //  CustomNavigator.push(context: context, screen:  ChatScreen(userId:followersData.userId.toString()));
-                                      CustomNavigator.push(context: context, screen: OtherProfile(userId:followersData.userId.toString()));
+                                      //  CustomNavigator.push(context: context, screen:  ChatScreen(userId:followersData.userId.toString()));
+                                      if(myUserID.toString() != followersData.userId.toString()){
+                                        CustomNavigator.push(context: context, screen: OtherProfile(userId:followersData.userId.toString()));
+                                      }
                                     },
                                     child: Row(
                                       children: [
@@ -175,37 +166,45 @@ class _FollowersState extends State<Followers> {
                                   ),
                                 ),
                                 followersData.isFollowing==amNotFollowing?
-                                  Row(
-                                    children: [
-                                      const SizedBox(width: 6,),
-                                      SmallPinkButton(label: 'Follow Back',fontSize:10,padding:const EdgeInsets.only(left:10,right:10,top:4,bottom: 4),
+                                Row(
+                                  children: [
+                                    const SizedBox(width: 6,),
+                                    SmallPinkButton(label: widget.otherUserId==null?'Follow Back':'Follow',fontSize:10,padding:const EdgeInsets.only(left:10,right:10,top:4,bottom: 4),
                                       isLoading:selectedIndex==index&&state.status == TicTocStatus.followUserLoading,
                                       onTap: (){
                                         setState(() {
                                           selectedIndex = index;
                                         });
                                         Map<String, dynamic> followUserMap = {
-                                          "follower_id": userID,
-                                          "following_id": followersData.followerId,
+                                          "follower_id": myUserID,
+                                          "following_id": followersData.userId,
                                         };
-                                       // BlocProvider.of<TicTocCubit>(context).followUserCall(followUserMap);
+                                        // BlocProvider.of<TicTocCubit>(context).followUserCall(followUserMap);
                                         BlocProvider.of<TicTocCubit>(context).followUserCall(followUserMap).then((_) {
-                                          setState(() {
-                                            followerListResponse.data![index].isFollowing = 1; // Update the status
-                                            selectedIndex = -1; // Reset selected index
-                                          });
+                                          TicTocState state = BlocProvider.of<TicTocCubit>(context).state;
+                                          if(state.status == TicTocStatus.followUserError){
+                                            print(state.errorData?.message);
+                                            String message = state.errorData?.message ?? state.error ?? "";
+                                            UiHelper.toastMessage(message);
+                                          }
+                                          if(state.status == TicTocStatus.followUserSuccess){
+                                            setState(() {
+                                              followerListResponse.data![index].isFollowing = 1; // Update the status
+                                              selectedIndex = -1; // Reset selected index
+                                            });
+                                          }
                                         }).catchError((error) {
                                           // Handle error (optional)
                                           print("Error following user: $error");
                                         });
-                                       },
-                                      ),
-                                      const SizedBox(width: 6,),
-                                      Image.asset('assets/images/clear.png',height: 18, width: 18,)
-                                    ],
-                                  ):
-                                  const SmallPinkButton(label: 'Following',fontSize:10,backgroundColor:Color(0xffD9D9D9),textColor:Color(0xff484848),
-                                   padding:  EdgeInsets.only(left:10,right:10,top:4,bottom: 4),),
+                                      },
+                                    ),
+                                    const SizedBox(width: 6,),
+                                    Image.asset('assets/images/clear.png',height: 18, width: 18,)
+                                  ],
+                                ):
+                                const SmallPinkButton(label: 'Following',fontSize:10,backgroundColor:Color(0xffD9D9D9),textColor:Color(0xff484848),
+                                  padding:  EdgeInsets.only(left:10,right:10,top:4,bottom: 4),),
 
                               ],
                             ),

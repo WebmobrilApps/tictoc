@@ -34,7 +34,7 @@ class _FriendsState extends State<Friends> {
   bool isLoadingMore = false;
   bool hasMore = true;
   int currentPage = 1;
-  final int limit = 10;
+  final int limit = 15;
 
 
 
@@ -128,9 +128,7 @@ class _FriendsState extends State<Friends> {
               });
             }
 
-            if(state.status == TicTocStatus.followUserSuccess){
-              UiHelper.toastMessage(state.responseData?.response ?? '');
-            }
+
             if (state.status == TicTocStatus.followUserError){
               print(state.errorData?.message);
               String message = state.errorData?.message ?? state.error ?? "";
@@ -196,14 +194,17 @@ class _FriendsState extends State<Friends> {
                                           children: [
                                             MyInkWell(
                                                 onTap:()async{
-                                                  final result = await PersistentNavBarNavigator.pushNewScreen(
-                                                    context,
-                                                    screen: OtherProfile(userId: suggestedData.pkUser.toString()),
-                                                    withNavBar: false,
-                                                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                                                  );
-                                                  if (result == true) {
-                                                    _getSuggestedAccount(); // or update single item if preferred
+                                                  if(myUserID.toString() != suggestedData.pkUser.toString()){
+                                                    final resultProfile = await PersistentNavBarNavigator.pushNewScreen(
+                                                      context,
+                                                      screen: OtherProfile(userId: suggestedData.pkUser.toString()),
+                                                      withNavBar: false,
+                                                      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                                    );
+                                                    print('resultProfile:$resultProfile');
+                                                    if (resultProfile != null) {
+                                                      _getSuggestedAccount(); // Only call if follow/unfollow happened
+                                                    }
                                                   }
                                                 },
                                                 child: cachedImageWidget(
@@ -237,14 +238,24 @@ class _FriendsState extends State<Friends> {
                                               });
                                               if(suggestedAccountResponse.data![index].followingStatus==0){
                                                 Map<String, dynamic> followUserMap = {
-                                                  "follower_id": userID,
+                                                  "follower_id": myUserID,
                                                   "following_id": suggestedData.pkUser,
                                                 };
                                                 BlocProvider.of<TicTocCubit>(context).followUserCall(followUserMap).then((_) {
-                                                  setState(() {
-                                                    suggestedAccountResponse.data![index].followingStatus = 1; // Update the status
-                                                    selectedIndex = -1; // Reset selected index
-                                                  });
+                                                  TicTocState state = BlocProvider.of<TicTocCubit>(context).state;
+                                                  if(state.status == TicTocStatus.followUserError){
+                                                    print(state.errorData?.message);
+                                                    String message = state.errorData?.message ?? state.error ?? "";
+                                                    UiHelper.toastMessage(message);
+                                                  }
+                                                  if(state.status == TicTocStatus.followUserSuccess){
+                                                    UiHelper.toastMessage(state.responseData?.response ?? '');
+                                                    setState(() {
+                                                      suggestedAccountResponse.data![index].followingStatus = 1; // Update the status
+                                                      selectedIndex = -1; // Reset selected index
+                                                    });
+                                                  }
+
                                                 }).catchError((error) {
                                                   // Handle error (optional)
                                                   print("Error following user: $error");
@@ -274,12 +285,13 @@ class _FriendsState extends State<Friends> {
                               );
                             },
                           ),
-                          UiHelper.verticalSpace(height: screenHeight*0.09),
+                          if (isLoadingMore) const CustomLoader(size: 30),
+                          UiHelper.verticalSpace(height: screenHeight*0.1),
                         ],
                       ),
                     ),
                   ),
-                  if (isLoadingMore) const CustomLoader(size: 30),
+
                 ],
               ),
             );

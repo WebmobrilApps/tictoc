@@ -70,7 +70,7 @@ class _BottomDetailsProfileState extends State<BottomDetailsProfile> {
                       Row(
                         children: [
                           largeText16(
-                            context,"${reelsData.username??''} . ",
+                            context,"${reelsData.name??''} . ",
                             textColor: Color(0xfffcb4b9),
                             fontWeight: FontWeight.w500,
                             overflow: TextOverflow.ellipsis, // Ensure truncation

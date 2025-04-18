@@ -73,12 +73,14 @@ class _SideIconsFollowingState extends State<SideIconsFollowing> {
               children: [
                 MyInkWell(
                   onTap: () async {
-                    PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen:  OtherProfile(userId: reelsData!.uploaderId.toString()),
-                      withNavBar: false, // OPTIONAL VALUE. True by default.
-                      pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                    );
+                   if(myUserID.toString() != reelsData!.uploaderId?.toString()){
+                     PersistentNavBarNavigator.pushNewScreen(
+                       context,
+                       screen:  OtherProfile(userId: reelsData.uploaderId.toString()),
+                       withNavBar: false, // OPTIONAL VALUE. True by default.
+                       pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                     );
+                   }
                   },
                   child: Stack( alignment: Alignment.bottomCenter,
                     children: [

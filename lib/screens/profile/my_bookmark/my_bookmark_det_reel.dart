@@ -1,18 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:tictoc/model/get_user_content_response.dart'as dfrContent;
-import 'package:tictoc/model/get_profile_response.dart' as dfrProfile;
-import 'package:tictoc/screens/profile/feeds/bottom_details_profile.dart';
-import 'package:tictoc/screens/profile/feeds/side_icon_profile.dart';
-class MyBmDetReel extends StatefulWidget {
+import 'package:tictoc/screens/profile/my_uploaded_feeds/bottom_details_profile.dart';
+import 'package:tictoc/screens/profile/my_uploaded_feeds/side_icon_profile.dart';
+
+class MyBookmarkDetReel extends StatefulWidget {
   final dfrContent.Data reelsData; // <-- Receive the Data object
-  const MyBmDetReel({super.key, required this.reelsData});
+  const MyBookmarkDetReel({super.key, required this.reelsData});
+
 
   @override
-  State<MyBmDetReel> createState() => _MyBmDetReelState();
+  State<MyBookmarkDetReel> createState() => _MyBookmarkDetReelState();
 }
 
-class _MyBmDetReelState extends State<MyBmDetReel> {
+class _MyBookmarkDetReelState extends State<MyBookmarkDetReel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -7,8 +7,8 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/get_profile_response.dart';
 import 'package:tictoc/model/get_user_content_response.dart';
-import 'package:tictoc/screens/profile/bookmark/my_bookmark_gallery.dart';
-import 'package:tictoc/screens/profile/feeds/gallery_view.dart';
+import 'package:tictoc/screens/profile/my_bookmark/my_bookmark_gallery.dart';
+import 'package:tictoc/screens/profile/my_uploaded_feeds/gallery_view.dart';
 import 'package:tictoc/screens/profile/widgets/profile_appbar.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
@@ -34,7 +34,9 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   GetProfileResponse getProfileResponse = GetProfileResponse();
   GetUserContentResponse getUserContentResponse = GetUserContentResponse();
 
-  bool showLoader = false;
+  int limit = 9;
+
+  bool showLoader = true;
 
   @override
   void initState() {
@@ -52,7 +54,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
       showLoader = true;
     });
     if (_tabController.index == 0) {
-      BlocProvider.of<TicTocCubit>(context).getUserContentCall("1", "50");
+      BlocProvider.of<TicTocCubit>(context).getUserContentCall("1", limit.toString());
     }
   }
 
@@ -84,7 +86,7 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             if(state.status == TicTocStatus.getProfileSuccess){
               Loader.hide();
               getProfileResponse = state.responseData?.response as GetProfileResponse;
-              BlocProvider.of<TicTocCubit>(context).getUserContentCall("1", "9");
+              BlocProvider.of<TicTocCubit>(context).getUserContentCall("1",limit.toString());
             }
             if(state.status == TicTocStatus.getUserContentSuccess){
               Loader.hide();
@@ -157,7 +159,8 @@ class ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   child: TabBarView(
                     controller: _tabController,
                     children:  [
-                      state.status == TicTocStatus.getUserContentLoading || showLoader ? const CustomLoader() :
+                   //   state.status == TicTocStatus.getUserContentLoading || showLoader ? const CustomLoader() :
+                      showLoader ? const CustomLoader() :
                       GalleryView(getUserContentResponse:getUserContentResponse,getProfileResponse: getProfileResponse,
                           showLoader:showLoader
                       ),

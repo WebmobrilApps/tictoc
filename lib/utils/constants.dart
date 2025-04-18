@@ -14,7 +14,7 @@ double screenWidth = 428.0;
 String? deviceId;
 bool isGuest = false;
 
-int? userID;
+int? myUserID;
 
 const TOKEN = 'token';
 const EMAIL_ID = 'emailId';
@@ -83,7 +83,7 @@ const EMPTY_DOB_VALIDATION = "Please enter your DOB";
 const EMPTY_AGE_DOB_VALIDATION = "User must be of age 18 years or above";
 const VALID_EMAIL_VALIDATION = 'Please enter a valid email address';
 const EMPTY_PASSWORD_VALIDATION = 'Please enter a password to continue';
-const EMPTY_CONFIRM_PASSWORD_VALIDATION = 'Please Enter Confirm Password';
+const EMPTY_CONFIRM_PASSWORD_VALIDATION = 'Please enter confirm password';
 const EMPTY_OTP_VALIDATION = 'Please enter an OTP';
 const EMPTY_EMAIL_VALIDATION = 'Please enter Email ID';
 const PASSWORD_LENGTH_VALIDATION =
@@ -102,7 +102,7 @@ const VALID_PASSWORD_VALIDATION =
     'The password entered does not meet the required criteria. Passwords must be between 8 to 16 characters in length and include at least one uppercase letter, one lowercase letter, one number, and one special character from the following set of characters: !"#\$%&\'()*+,-.:;<=>?@[]^_`{|}~. Please update your password to meet these requirements and try again.';
 const MATCHING_PASSWORD_VALIDATION =
 // 'The passwords you entered do not match. Please re-enter your password and confirm it to ensure they match';
-    'Password And Confirm Password Should Match';
+    'Password and confirm password should match';
 const TNC = 'Please Agree our Terms & Conditions';
 const VALID_OTP_CODE_LENGTH_VALIDATION = 'OTP should be of four digits';
 

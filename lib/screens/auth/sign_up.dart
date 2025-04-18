@@ -37,8 +37,8 @@ class _SignUpState extends State<SignUp> {
   @override
   void initState() {
     // TODO: implement initState
-    passwordController.text = "Thiru@003";
-    confirmPasswordController.text = "Thiru@003";
+ //   passwordController.text = "Thiru@003";
+  //  confirmPasswordController.text = "Thiru@003";
     super.initState();
   }
   void _clearControllers() {

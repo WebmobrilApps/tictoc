@@ -127,8 +127,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           textInputAction:TextInputAction.done,
                           //     keyboardType: TextInputType.emailAddress,
                         ),
-                        UiHelper.verticalSpace(height: 12),
-                        Row(
+                     //   UiHelper.verticalSpace(height: 12),
+                        UiHelper.verticalSpace(height: 30),
+                       /* Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
@@ -163,7 +164,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   fontSize: 10,fontWeight: FontWeight.w500),
                             ),
                           ],
-                        ),
+                        ),*/
                         UiHelper.verticalSpace(height: screenHeight*0.1),
                         const PasswordRequirementText(),
                       ],

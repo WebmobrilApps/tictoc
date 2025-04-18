@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
-import 'package:tictoc/model/following_list_response.dart';
-import 'package:tictoc/screens/inbox/chat_screen.dart';
+import 'package:tictoc/model/other_user_following_response.dart';
 import 'package:tictoc/screens/otherprofile/other_profile.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_appbar.dart';
@@ -12,17 +10,19 @@ import 'package:tictoc/utils/custom_navigator.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/error_display.dart';
 import 'package:tictoc/utils/empty_list_found.dart';
+import 'package:tictoc/utils/ui_helper.dart';
 
 
-class FollowingList extends StatefulWidget {
-  const FollowingList({super.key});
+class OtherUserFollowingList extends StatefulWidget {
+  final String otherUserId;
+  const OtherUserFollowingList({super.key, required this.otherUserId});
 
   @override
-  State<FollowingList> createState() => _FollowingListState();
+  State<OtherUserFollowingList> createState() => _OtherUserFollowingListState();
 }
 
-class _FollowingListState extends State<FollowingList> {
-  FollowingListResponse followingListResponse = FollowingListResponse(data: []);
+class _OtherUserFollowingListState extends State<OtherUserFollowingList> {
+  OtherUserFollowingListResponse otherUserFollowingListResponse = OtherUserFollowingListResponse(data: []);
   int selectedIndex = -1;
 
   bool showLoader = true;
@@ -38,7 +38,7 @@ class _FollowingListState extends State<FollowingList> {
 
   @override
   void initState() {
-    getFollowingListApi();
+    getOtherFollowingListApi();
     _scrollController.addListener(_onScroll);
     super.initState();
   }
@@ -49,7 +49,7 @@ class _FollowingListState extends State<FollowingList> {
       _loadMore();
     }
   }
-  Future<void> getFollowingListApi({bool isLoadMore = false}) async {
+  Future<void> getOtherFollowingListApi({bool isLoadMore = false}) async {
     if (isLoadMore) {
       setState(() => isLoadingMore = true);
       currentPage++;
@@ -60,17 +60,17 @@ class _FollowingListState extends State<FollowingList> {
         hasMore = true;
       });
     }
-    await BlocProvider.of<TicTocCubit>(context).followingListCall(currentPage.toString(), limit.toString());
+    await BlocProvider.of<TicTocCubit>(context).otherUserFollowingListCall(widget.otherUserId,currentPage.toString(), limit.toString());
   }
   Future<void> _loadMore() async {
-    await getFollowingListApi(isLoadMore: true);
+    await getOtherFollowingListApi(isLoadMore: true);
   }
   Future<void> _refreshPage() async {
     setState(() {
       showLoader = true;
       hasMore = true;
     });
-    await getFollowingListApi();
+    await getOtherFollowingListApi();
   }
   @override
   void dispose() {
@@ -85,23 +85,23 @@ class _FollowingListState extends State<FollowingList> {
       body: BlocConsumer<TicTocCubit,TicTocState>(
         listener: (context,state){
           print("sate.status:${state.status}");
-          if (state.status == TicTocStatus.followingListSuccess) {
-            final response = state.responseData?.response as FollowingListResponse;
+          if (state.status == TicTocStatus.otherUserFollowingListSuccess) {
+            final response = state.responseData?.response as OtherUserFollowingListResponse;
             final newData = response.data ?? [];
 
             setState(() {
               totalItems = response.total ?? 0;
 
               if (currentPage == 1) {
-                followingListResponse.data = newData;
+                otherUserFollowingListResponse.data = newData;
               } else {
-                followingListResponse.data?.addAll(newData);
+                otherUserFollowingListResponse.data?.addAll(newData);
               }
 
               showLoader = false;
               isLoadingMore = false;
 
-              hasMore = (followingListResponse.data?.length ?? 0) < totalItems;
+              hasMore = (otherUserFollowingListResponse.data?.length ?? 0) < totalItems;
             });
           }
         },
@@ -109,11 +109,11 @@ class _FollowingListState extends State<FollowingList> {
           if (showLoader) {
             return const CustomLoader();
           }
-          if (state.status == TicTocStatus.followingListError) {
+          if (state.status == TicTocStatus.otherUserFollowingListError) {
             return CustomErrorWidget(
               errorMessage: state.errorData?.message ?? state.error,
               statusCode: state.errorData?.code,
-              onRetry: getFollowingListApi,
+              onRetry: getOtherFollowingListApi,
               onRefresh: _refreshPage,
             );
           }
@@ -127,16 +127,16 @@ class _FollowingListState extends State<FollowingList> {
                 child: Column(
                   children: [
                     const SizedBox(height: 12,),
-                    followingListResponse.data!.isEmpty?
+                    otherUserFollowingListResponse.data!.isEmpty?
                     const EmptyListFound(message: 'There is no Following list'):
                     ListView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: followingListResponse.data?.length,
+                      itemCount: otherUserFollowingListResponse.data?.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        final followingData = followingListResponse.data![index];
+                        final followingData = otherUserFollowingListResponse.data![index];
                         return Column(
                           children: [
                             Row(
@@ -146,8 +146,10 @@ class _FollowingListState extends State<FollowingList> {
                                 Expanded(
                                   child: MyInkWell(
                                     onTap:()async{
-                                     // CustomNavigator.push(context: context, screen: ChatScreen(userId:followingData.pkUser.toString()));
-                                      CustomNavigator.push(context: context, screen: OtherProfile(userId:followingData.pkUser.toString()));
+                                      // CustomNavigator.push(context: context, screen: ChatScreen(userId:followingData.pkUser.toString()));
+                                      if(myUserID.toString() != followingData.userId.toString()){
+                                        CustomNavigator.push(context: context, screen: OtherProfile(userId:followingData.userId.toString()));
+                                      }
                                     },
                                     child: Row(
                                       children: [
@@ -162,7 +164,7 @@ class _FollowingListState extends State<FollowingList> {
                                               mediumText14(context,followingData.name??'',
                                                   maxLines: 1,overflow: TextOverflow.ellipsis,
                                                   fontWeight: FontWeight.w500),
-                                          //    smallText12(context, followingData.isFollowing==0?'Follows you':'Following',  maxLines: 1,overflow: TextOverflow.ellipsis,),
+                                              //    smallText12(context, followingData.isFollowing==0?'Follows you':'Following',  maxLines: 1,overflow: TextOverflow.ellipsis,),
                                             ],
                                           ),
                                         ),
@@ -170,9 +172,50 @@ class _FollowingListState extends State<FollowingList> {
                                     ),
                                   ),
                                 ),
-
+                                followingData.isFollowing==amNotFollowing?
+                                Row(
+                                  children: [
+                                    const SizedBox(width: 6,),
+                                    SmallPinkButton(label: 'Follow',fontSize:10,padding:const EdgeInsets.only(left:10,right:10,top:4,bottom: 4),
+                                      isLoading:selectedIndex==index&&state.status == TicTocStatus.inOtherFollowingListFollowUserLoading,
+                                      onTap: (){
+                                        setState(() {
+                                          selectedIndex = index;
+                                        });
+                                      /*  Map<String, dynamic> followUserMap = {
+                                          "follower_id": followingData.userId,
+                                          "following_id": myUserID,
+                                        };*/
+                                        Map<String, dynamic> followUserMap = {
+                                          "follower_id": myUserID,
+                                          "following_id": followingData.userId,
+                                        };
+                                        // BlocProvider.of<TicTocCubit>(context).followUserCall(followUserMap);
+                                        BlocProvider.of<TicTocCubit>(context).inOtherFollowingListFollowCall(followUserMap).then((_) {
+                                          TicTocState state = BlocProvider.of<TicTocCubit>(context).state;
+                                          if(state.status == TicTocStatus.inOtherFollowingListFollowUserError){
+                                            print(state.errorData?.message);
+                                            String message = state.errorData?.message ?? state.error ?? "";
+                                            UiHelper.toastMessage(message);
+                                          }
+                                          if(state.status == TicTocStatus.inOtherFollowingListFollowUserSuccess){
+                                            setState(() {
+                                              followingData.isFollowing = 1; // Update the status
+                                              selectedIndex = -1; // Reset selected index
+                                            });
+                                          }
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 6,),
+                                    Image.asset('assets/images/clear.png',height: 18, width: 18,)
+                                  ],
+                                ):
                                 const SmallPinkButton(label: 'Following',fontSize:10,backgroundColor:Color(0xffD9D9D9),textColor:Color(0xff484848),
                                   padding:  EdgeInsets.only(left:10,right:10,top:4,bottom: 4),),
+
+                             /*   const SmallPinkButton(label: 'Following',fontSize:10,backgroundColor:Color(0xffD9D9D9),textColor:Color(0xff484848),
+                                  padding:  EdgeInsets.only(left:10,right:10,top:4,bottom: 4),),*/
 
                               ],
                             ),

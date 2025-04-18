@@ -78,7 +78,7 @@ class _ExploreState extends State<Explore> {
                             onTap: ()async{
                               PersistentNavBarNavigator.pushNewScreen(
                                 context,
-                                screen: const ExploreDetail(),
+                                screen: ExploreDetail(reelsData:exploreData),
                                 withNavBar: false, // OPTIONAL VALUE. True by default.
                                 pageTransitionAnimation: PageTransitionAnimation.cupertino,
                               );
@@ -96,7 +96,7 @@ class _ExploreState extends State<Explore> {
                                   onTap: ()async{
                                     PersistentNavBarNavigator.pushNewScreen(
                                       context,
-                                      screen: const ExploreDetail(),
+                                      screen: ExploreDetail(reelsData:exploreData),
                                       withNavBar: false, // OPTIONAL VALUE. True by default.
                                       pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                     );
