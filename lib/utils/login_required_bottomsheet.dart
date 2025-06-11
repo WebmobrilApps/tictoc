@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:tictoc/screens/auth/not_interested.dart';
 import 'package:tictoc/screens/auth/sign_up.dart';
 import 'package:tictoc/screens/bottomnavigationbar/bottomnavigation.dart';
 import 'package:tictoc/utils/color.dart';
@@ -45,6 +46,18 @@ class _LoginRequiredBottomSheetWidgetState extends State<LoginRequiredBottomShee
                 isGuest = false;
                 PreferenceManager.clearPreferences();
                 CustomNavigator.pushAndRemoveUntil(context: context, screen: const SignUp());
+              },
+            ),
+            const SizedBox(height: 12),
+            pinkButton(context: context, labelText: 'Not Interested/Logout',
+              buttonColor: Colors.grey.shade400,
+              textColor: Colors.black,
+              onTap: () {
+                /*Navigator.pop(context);
+                isGuest = false;
+                PreferenceManager.clearPreferences();*/
+             //   CustomNavigator.pushAndRemoveUntil(context: context, screen:  NotInterested(tmpToken:"",userID: 0,));
+                CustomNavigator.push(context: context, screen:  NotInterested(tmpToken:"",userID: 0,));
               },
             ),
             TextButton(

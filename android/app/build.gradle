@@ -39,7 +39,7 @@ android {
         applicationId "com.tt.tictoc"
         minSdkVersion 23
         targetSdkVersion 34
-        compileSdk 34
+        compileSdk 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
 

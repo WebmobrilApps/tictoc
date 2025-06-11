@@ -1,0 +1,2 @@
+/Users/thiru/FlutterIndore/tictoc/android/app/.cxx/Debug/44z455b4/x86_64/CMakeFiles/edit_cache.dir
+/Users/thiru/FlutterIndore/tictoc/android/app/.cxx/Debug/44z455b4/x86_64/CMakeFiles/rebuild_cache.dir

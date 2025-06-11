@@ -32,7 +32,7 @@ class LikeDialog extends StatelessWidget {
               UiHelper.verticalSpace(height: 42),
               Image.asset('assets/images/total_likes.png',width: 197,height: 140,),
               UiHelper.verticalSpace(height: 32),
-              Center(child: largeText16(context, 'You have $totalLikes Likes', fontSize: 25,textColor: Colors.white, fontWeight: FontWeight.w700)),
+              Center(child: largeText16(context, '$totalLikes Likes', fontSize: 25,textColor: Colors.white, fontWeight: FontWeight.w700)),
               UiHelper.verticalSpace(height: 32),
             ],
           ),

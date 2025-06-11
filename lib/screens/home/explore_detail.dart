@@ -83,6 +83,7 @@ class _ExploreDetailState extends State<ExploreDetail> {
                           ),
                           Row(
                             children: [
+                              myUserID==reelsData.uploaderId?const SizedBox():
                               SmallPinkButton(label: 'Follow',fontSize:12,
                                 onTap: ()async{
                                   UiHelper.toastMessage('Not implemented api pending');

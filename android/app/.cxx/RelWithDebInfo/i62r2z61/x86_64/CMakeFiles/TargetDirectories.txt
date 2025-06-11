@@ -1,0 +1,2 @@
+/Users/thiru/FlutterIndore/tictoc/android/app/.cxx/RelWithDebInfo/i62r2z61/x86_64/CMakeFiles/edit_cache.dir
+/Users/thiru/FlutterIndore/tictoc/android/app/.cxx/RelWithDebInfo/i62r2z61/x86_64/CMakeFiles/rebuild_cache.dir
