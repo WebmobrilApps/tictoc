@@ -541,6 +541,34 @@ class TicTocCubit extends Cubit<TicTocState> {
     }
   }
 
+  Future<void> leaveReasonCall() async {
+    emit(state.copyWith(status: TicTocStatus.leaveReasonLoading));
+    try{
+      ResponseData responseData = await repository.leaveReason();
+      emit(state.copyWith(status: TicTocStatus.leaveReasonSuccess,responseData: responseData));
+    }
+    on ErrorData catch (errorData){
+      emit(state.copyWith(status: TicTocStatus.leaveReasonError,errorData: errorData,error: null));
+    }
+    catch(e){
+      emit(state.copyWith(status: TicTocStatus.leaveReasonError,error: e.toString(),errorData: null));
+    }
+  }
+
+  Future<void> guestLogoutCall(Map<String, dynamic> logoutDetails) async {
+    emit(state.copyWith(status: TicTocStatus.guestLogoutLoading));
+    try{
+      ResponseData responseData = await repository.guestLogout(logoutDetails);
+      emit(state.copyWith(status: TicTocStatus.guestLogoutSuccess,responseData: responseData));
+    }
+    on ErrorData catch (errorData){
+      emit(state.copyWith(status: TicTocStatus.guestLogoutError,errorData: errorData,error: null));
+    }
+    catch(e){
+      emit(state.copyWith(status: TicTocStatus.guestLogoutError,error: e.toString(),errorData: null));
+    }
+  }
+
 
 /*
   Future<void> getProfileCall() async {

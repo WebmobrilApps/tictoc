@@ -15,6 +15,7 @@ import 'package:tictoc/model/get_other_user_content_response.dart';
 import 'package:tictoc/model/get_profile_response.dart';
 import 'package:tictoc/model/get_user_content_response.dart';
 import 'package:tictoc/model/guest_login_response.dart';
+import 'package:tictoc/model/leave_reason_response.dart';
 import 'package:tictoc/model/other_user_following_response.dart';
 import 'package:tictoc/model/resend_verify_otp_response.dart';
 import 'package:tictoc/model/sign_in_response.dart';
@@ -628,7 +629,38 @@ class TicTocRepository {
       rethrow;
     }
   }
+  Future<ResponseData> leaveReason() async {
+    try {
+      final response = await ApiService(token: getToken()).sendRequest.get("/user/leave-reason");
+      return ResponseData(
+          statusCode: response.statusCode,
+          response: LeaveReasonResponse.fromJson(response.data));
+    } on DioException catch (e) {
+      throw ErrorData(
+          message: e.response!.data['msg'], code: e.response!.statusCode);
+    } on Exception catch (_) {
+      rethrow;
+    }
+  }
 
+
+  Future<ResponseData> guestLogout(Map<String, dynamic> logoutDetails) async {
+    try {
+      final response = await ApiService(token: getToken()).sendRequest.post("/user/save-leave-reason",
+        data: logoutDetails,
+      );
+      return ResponseData(
+        statusCode: response.statusCode,
+        response: response.data["msg"],
+      );
+    } on DioException catch (e) {
+      throw ErrorData(
+          message: e.response!.data['msg'],
+          code: e.response!.statusCode);
+    } on Exception catch (_) {
+      rethrow;
+    }
+  }
 
 
 /* Future<ResponseData> registerOTPVerify(String otp, String token) async {

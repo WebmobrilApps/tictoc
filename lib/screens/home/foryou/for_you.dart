@@ -11,7 +11,7 @@ import 'package:tictoc/utils/error_display.dart';
 import 'widgets/video_reel.dart';
 
 // List of video URLs
-final List<String> videoUrls = [
+final List<String> videoUrls1 = [
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
   'https://www.exit109.com/~dnn/clips/RW20seconds_1.mp4',
  // 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
@@ -38,6 +38,8 @@ class ForYou extends StatefulWidget {
 class _ForYouState extends State<ForYou> {
   ForYouFeedResponse forYouFeedResponse = ForYouFeedResponse();
 
+  List<String> videoUrls = [];
+
   @override
   void initState() {
     _forYouFeedAPI();
@@ -57,6 +59,22 @@ class _ForYouState extends State<ForYou> {
           print("sate.status:${state.status}");
           if(state.status == TicTocStatus.forYouFeedSuccess){
             Loader.hide();
+            videoUrls.addAll([
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+              'https://www.exit109.com/~dnn/clips/RW20seconds_1.mp4',
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+              'https://www.exit109.com/~dnn/clips/RW20seconds_1.mp4',
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+            ]);
+
+         //   setState(() {}); // Trigger UI update
             forYouFeedResponse = state.responseData?.response as ForYouFeedResponse;
           }
         },
@@ -70,6 +88,7 @@ class _ForYouState extends State<ForYou> {
               statusCode: state.errorData?.code,
               onRetry: _forYouFeedAPI,
               onRefresh: _refreshPage,
+              textColor:Colors.white
             );
           }
           return PageView.builder(

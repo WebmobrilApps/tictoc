@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:tictoc/screens/auth/exit_reason.dart';
 import 'package:tictoc/screens/auth/not_interested.dart';
 import 'package:tictoc/screens/auth/sign_up.dart';
 import 'package:tictoc/screens/bottomnavigationbar/bottomnavigation.dart';
@@ -57,7 +58,7 @@ class _LoginRequiredBottomSheetWidgetState extends State<LoginRequiredBottomShee
                 isGuest = false;
                 PreferenceManager.clearPreferences();*/
              //   CustomNavigator.pushAndRemoveUntil(context: context, screen:  NotInterested(tmpToken:"",userID: 0,));
-                CustomNavigator.push(context: context, screen:  NotInterested(tmpToken:"",userID: 0,));
+                CustomNavigator.push(context: context, screen:  ExitReason(tmpToken:"",userID: 0,));
               },
             ),
             TextButton(

@@ -2,26 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tictoc/cubit/tictoc_cubit.dart';
-import 'package:tictoc/screens/bottomnavigationbar/bottomnavigation.dart';
+import 'package:tictoc/model/leave_reason_response.dart';
+import 'package:tictoc/screens/profile/guest_logout_bottom.dart';
 import 'package:tictoc/screens/profile/logout_delete_bottom.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
 import 'package:tictoc/utils/custom_appbar.dart';
-import 'package:tictoc/utils/custom_navigator.dart';
+import 'package:tictoc/utils/custom_loader.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
-import 'package:tictoc/utils/shared_preference.dart';
+import 'package:tictoc/utils/error_display.dart';
 import 'package:tictoc/utils/ui_helper.dart';
-class NotInterested extends StatefulWidget {
+
+class ExitReason extends StatefulWidget {
   final String tmpToken;
   final int userID;
-  const NotInterested({super.key, required this.tmpToken,required this.userID});
+  const ExitReason({super.key, required this.tmpToken,required this.userID});
 
   @override
-  State<NotInterested> createState() => _NotInterestedState();
+  State<ExitReason> createState() => _ExitReasonState();
 }
 
-class _NotInterestedState extends State<NotInterested> {
-  List<String> interests = [
+class _ExitReasonState extends State<ExitReason> {
+  LeaveReasonResponse leaveReasonResponse = LeaveReasonResponse();
+/*  List<String> interests = [
     "App is not attractive as like as Chines TikTok",
     "No latest features and advanced",
     "I have too many social media subscriptions",
@@ -33,9 +36,22 @@ class _NotInterestedState extends State<NotInterested> {
     "Content is not attaracrtive in terms of videos and pic are not HD",
     "Content is stale or very old and no longer attractive",
     "Content Category is not in line of not syncing with content avaibile on App",
-  ];
+  ];*/
 
-  List<String> selectedInterests = [];
+  List<Data> dynamicReasons = [];
+  List<int> selectedReasonIds = [];
+
+ // List<String> selectedReason = [];
+
+  @override
+  void initState() {
+    _getProfileAPi();
+    super.initState();
+  }
+
+  Future<void> _getProfileAPi() async {
+    await BlocProvider.of<TicTocCubit>(context).leaveReasonCall();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,79 +64,47 @@ class _NotInterestedState extends State<NotInterested> {
         appBar: const CustomAppBar(title: '',arrowBeforeWidth: 20,),
         body: BlocConsumer<TicTocCubit,TicTocState>(
           listener: (context,state){
-            if (state.status == TicTocStatus.userInterestSuccess){
-              // UiHelper.toastMessage(state.responseData?.response ?? '');
-              PreferenceManager.insertValue(key: TOKEN, value: widget.tmpToken);
-              PreferenceManager.insertValue(key: USER_ID, value: widget.userID);
-              myUserID = PreferenceManager.getIntegerValue(key: USER_ID) ?? 0;
-              CustomNavigator.pushAndRemoveUntil(context: context, screen: const PersistentCustomBottomMenu(initialIndex:0));
-            }
-            else if(state.status == TicTocStatus.userInterestError){
-              print(state.errorData?.message);
-              String message = state.errorData?.message ?? state.error ?? "";
-              UiHelper.toastMessage(message);
+            if (state.status == TicTocStatus.leaveReasonSuccess){
+              leaveReasonResponse = state.responseData?.response as LeaveReasonResponse;
+              dynamicReasons = leaveReasonResponse.data ?? [];
+
             }
           },
           builder: (context,state){
+            if (state.status == TicTocStatus.leaveReasonLoading) {
+              return const CustomLoader();
+            }
+            if (state.status == TicTocStatus.leaveReasonError) {
+              return CustomErrorWidget(
+                errorMessage: state.errorData?.message ?? state.error,
+                statusCode: state.errorData?.code,
+                onRetry: refreshPage,
+                onRefresh: refreshPage,
+              );
+            }
             return Padding(
               padding: const EdgeInsets.only(left:20,right: 20,bottom: 20),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                 //   SizedBox(height: screenHeight*0.1,),
+                    //   SizedBox(height: screenHeight*0.1,),
                     largeText16(context, 'Choose your \nExit Reason',fontSize: 34,fontWeight: FontWeight.w800,lineHeight: 1.2),
                     const SizedBox(height: 10),
                     largeText16(context, 'Please select any three point for exiting the app',textColor:const Color(0xff484848),fontWeight: FontWeight.w400,fontSize: 18),
                     const SizedBox(height: 10),
-                  /*  Wrap(
-                      spacing: 8,
-                      runSpacing: 4.0,
-                      children: interests.map((interest) {
-                        final isSelected = selectedInterests.contains(interest);
-                        return ChoiceChip(
-                          label: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.7, // constrain width
-                            child: Text(interest,style: GoogleFonts.jost(color: Colors.black, fontSize: 14,fontWeight: FontWeight.w500),)),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                selectedInterests.add(interest);
-                              } else {
-                                selectedInterests.remove(interest);
-                              }
-                            });
-                          },
-                          backgroundColor: Colors.white,
-                          //  selectedColor: Colors.pink.shade100,
-                          selectedColor: Colors.green.shade100,
-                          labelPadding:const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                          labelStyle: TextStyle(
-                            color: isSelected ? Colors.pink : Colors.black,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20), // Rounded corners
-                            side: BorderSide(color: Colors.grey.shade200), // Light grey border
-                          ),
-                          elevation: 4, // Subtle shadow
-                          shadowColor: Colors.grey.shade200, // Light shadow color
-                        );
-                      }).toList(),
-                    ),*/
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: interests.map((interest) {
-                        final isSelected = selectedInterests.contains(interest);
+                      children: dynamicReasons.map((item) {
+                        final isSelected = selectedReasonIds.contains(item.id);
                         return GestureDetector(
                           onTap: () {
                             setState(() {
                               if (isSelected) {
-                                selectedInterests.remove(interest);
+                                selectedReasonIds.remove(item.id);
                               } else {
-                                selectedInterests.add(interest);
+                                selectedReasonIds.add(item.id!);
                               }
                             });
                           },
@@ -150,7 +134,7 @@ class _NotInterestedState extends State<NotInterested> {
                                   ),
                                 Expanded(
                                   child: Text(
-                                    interest,
+                                    item.reason??'',
                                     style: GoogleFonts.jost(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
@@ -171,22 +155,23 @@ class _NotInterestedState extends State<NotInterested> {
                           width: 285, context: context, labelText:'Continue',
                           isLoading:state.status == TicTocStatus.userInterestLoading,
                           onTap: () async {
-                            if(selectedInterests.length<3){
+                            print('selectedReasonIds:$selectedReasonIds');
+                            if(selectedReasonIds.length<3){
                               UiHelper.toastMessage("Please Select Any Three Reason");
                             }else{
-                         //     Navigator.pop(context);
-                           //   isGuest = false;
-                            //  PreferenceManager.clearPreferences();
-                            //  BlocProvider.of<TicTocCubit>(context).userInterestCall(interestList,widget.tmpToken);
+                              //     Navigator.pop(context);
+                              //   isGuest = false;
+                              //  PreferenceManager.clearPreferences();
+                              //  BlocProvider.of<TicTocCubit>(context).userInterestCall(interestList,widget.tmpToken);
 
-                               await showModalBottomSheet(
+                              await showModalBottomSheet(
                                 isScrollControlled: true,
                                 useRootNavigator: true,
                                 context: context,
-                                builder: (context) => const LogoutDeleteBottom(fromMenu:'logout'),
+                                builder: (context) => GuestLogoutBottom(fromMenu:'Exit Reason',reasonIds: selectedReasonIds,),
                               );
                             }
-                
+
                           }
                       ),
                     ),
@@ -199,5 +184,9 @@ class _NotInterestedState extends State<NotInterested> {
         ),
       ),
     );
+  }
+
+  Future<void> refreshPage() async{
+    await _getProfileAPi();
   }
 }

@@ -162,6 +162,18 @@ enum TicTocStatus {
   changePasswordSuccess,
   changePasswordError,
 
+  leaveReasonLoading,
+  leaveReasonSuccess,
+  leaveReasonError,
+
+  guestLogoutLoading,
+  guestLogoutSuccess,
+  guestLogoutError,
+
+
+
+
+
 
 
 

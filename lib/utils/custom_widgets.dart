@@ -212,7 +212,7 @@ Widget customTextField({
   decoration: BoxDecoration(
     color: bgColor,
     border: Border.all(
-        color: Colors.grey.withOpacity(0.3), width: 0.1,
+        color: Colors.grey.withOpacity(0.3), width: 1.1,
         style: BorderStyle.solid), //Border.all
     borderRadius: particularSideRadius? BorderRadius.only(
       topLeft: Radius.circular(borderRadiusValue),
@@ -224,8 +224,8 @@ Widget customTextField({
         // color: const Color(0xFFFF0235).withOpacity(0.25), // Specify color and opacity
         color:  boxShadowColor.withOpacity(0.25), // Specify color and opacity
         spreadRadius: 0,
-        blurRadius: 4,
-        offset: const Offset(0, 2.5), // Offset for bottom shadow
+        blurRadius: 0,
+        offset: const Offset(0, 1.0), // Offset for bottom shadow
       ),
     ],
   ),

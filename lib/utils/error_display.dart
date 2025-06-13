@@ -6,6 +6,7 @@ class CustomErrorWidget extends StatelessWidget {
   final int? statusCode;
   final VoidCallback onRetry;
   final Future<void> Function() onRefresh;
+  final Color textColor; // Add textColor as a parameter with default value
 
   const CustomErrorWidget({
     super.key,
@@ -13,6 +14,7 @@ class CustomErrorWidget extends StatelessWidget {
     required this.statusCode,
     required this.onRetry,
     required this.onRefresh,
+    this.textColor = const Color(0xff000000), // Default to black
   });
 
   @override
@@ -27,6 +29,7 @@ class CustomErrorWidget extends StatelessWidget {
             error: errorMessage ?? 'Unknown error occurred',
             statusCode: statusCode ?? 0,
             onRetry: onRetry,
+            textColor: textColor,
           ),
         ),
       ),

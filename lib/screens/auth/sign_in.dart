@@ -263,8 +263,8 @@ class _SignInState extends State<SignIn> {
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               Map<String,dynamic> signInDetails = {
-                           //    "deviceId": deviceId,
-                               "deviceId": "121",
+                              "deviceId": deviceId,
+                           //    "deviceId": "121",
                               };
                               print('signInDetails:$signInDetails');
                               BlocProvider.of<TicTocCubit>(context).guestLoginCall(signInDetails);
