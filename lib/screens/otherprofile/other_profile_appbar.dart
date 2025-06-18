@@ -6,9 +6,11 @@ import 'package:tictoc/cubit/tictoc_cubit.dart';
 import 'package:tictoc/model/get_other_profile_response.dart';
 import 'package:tictoc/screens/follower_list/my_follower_list.dart';
 import 'package:tictoc/screens/following_list/other_user_following_list.dart';
+import 'package:tictoc/screens/inbox/chat_screen.dart';
 import 'package:tictoc/screens/profile/profile_details/like_dialog.dart';
 import 'package:tictoc/utils/color.dart';
 import 'package:tictoc/utils/constants.dart';
+import 'package:tictoc/utils/custom_navigator.dart';
 import 'package:tictoc/utils/custom_widgets.dart';
 import 'package:tictoc/utils/ui_helper.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -162,6 +164,8 @@ class _OtherProfileAppBarState extends State<OtherProfileAppBar> {
                             "following_id": otherProfileData?.pkUser,
                           };
                           BlocProvider.of<TicTocCubit>(context).followUserCall(followUserMap);
+                        }else{
+                            CustomNavigator.push(context: context, screen:  ChatScreen(userId:otherProfileData!.pkUser.toString()));
                         }
                       },
                       label: otherProfileData?.isFollowing==1?"Message":"Follow",),
